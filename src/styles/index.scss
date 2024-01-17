@@ -1,0 +1,31 @@
+@import './tailwindicss.css';
+@import './root.scss';
+
+@font-face {
+  font-family: 'HelveticaNeue-Bold'; /* 自定义字体名称 */
+  src: url('./HelveticaNeue-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Helvetica-Neue'; /* 自定义字体名称 */
+  src: url('./Helvetica-Neue.ttf');
+}
+
+[data-theme='dark'] {
+  background-color: #000;
+  svg path {
+    fill: inherit;
+  }
+}
+
+body {
+  font-family: 'Helvetica-Neue', sans-serif;
+}
+
+._bold {
+  font-family: 'HelveticaNeue-Bold', sans-serif;
+}
+
+._neue {
+  font-family: 'Helvetica-Neue', sans-serif;
+}

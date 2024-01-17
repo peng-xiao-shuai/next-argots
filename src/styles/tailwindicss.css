@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .row-active {
+    @apply px-2 transition-all;
+    transition-duration: 300ms;
+  }
+  .row-active:hover,
+  .row-active:active,
+  .row-active:focus {
+    @apply bg-neutral-content/[0.15];
+  }
+
+  .svg-icon {
+    @apply h-6 fill-accent-content w-6;
+  }
+
+  svg {
+    width: inherit;
+    height: inherit;
+    fill: inherit;
+  }
+
+  .chat-end .chat-bubble::before {
+    left: 99% !important;
+  }
+  .chat-start .chat-bubble::before {
+    right: 99% !important;
+  }
+}
