@@ -1,33 +1,27 @@
 import { Inter } from 'next/font/google';
-import { Navbar } from './components';
-import meta from './meta';
+import { Navbar, Transition } from './components';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
-import { headers } from 'next/headers';
-import { parseCookies } from '@/utils/string-transform';
+import { useEffect, useState } from 'react';
+// import meta from './meta';
 
 const inter = Inter({ subsets: ['latin'] });
-const headersList = headers();
-const path = headersList.get('next-url') || '/';
-const cookies = parseCookies(headersList.get('cookie') || '');
 
-export const metadata = meta[path];
+// export const metadata = meta['/'];
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const theme = cookies.theme || 'dark';
-
   return (
-    <html lang="en" data-theme={theme}>
+    <html lang="en" data-theme={'dark'}>
       <body className={inter.className}>
         <main className="w-full h-[100vh] m-0 p-[var(--padding)] relative box-border">
-          <Navbar metadata={metadata}></Navbar>
+          <Navbar />
 
-          <div className="w-[calc(100vw-var(--padding)*2)] h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-x-auto">
-            {children}
+          <div className="w-full h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-x-auto">
+            <Transition>{children}</Transition>
           </div>
 
           <Toaster />

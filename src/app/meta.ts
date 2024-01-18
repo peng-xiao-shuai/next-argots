@@ -12,5 +12,12 @@ const meta: { [key: string]: Meta } = {
     isPlaceholder: true,
     rightOperateType: 'setting',
   },
+
+  '/setting': {
+    title: 'Setting',
+    // locale: KEYS.SETTINGS,
+    isPlaceholder: true,
+    rightOperateType: 'none',
+  },
 };
 export default meta;

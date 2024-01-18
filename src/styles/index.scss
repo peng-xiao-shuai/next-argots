@@ -11,8 +11,13 @@
   src: url('./Helvetica-Neue.ttf');
 }
 
+[data-theme] {
+  transition: all 0.3s;
+}
+
 [data-theme='dark'] {
   background-color: #000;
+  color: #fff;
   svg path {
     fill: inherit;
   }
@@ -28,4 +33,20 @@ body {
 
 ._neue {
   font-family: 'Helvetica-Neue', sans-serif;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0%);
+    // position: static;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
 }

@@ -1,11 +1,11 @@
 'use client';
 import bus from '@/utils/bus';
 import type { Meta } from '../meta';
+import meta from '../meta';
 import { AiOutlineHome, AiOutlineLeft, AiOutlineSetting } from 'react-icons/ai';
 import { usePathname, useRouter } from 'next/navigation';
 
 const NavRight = ({ metadata }: { metadata: Meta }) => {
-  const path = usePathname();
   const router = useRouter();
 
   // 完成事件，点击触发全局通信
@@ -37,11 +37,17 @@ const NavRight = ({ metadata }: { metadata: Meta }) => {
   );
 };
 
-export const Navbar = ({ metadata }: { metadata: Meta }) => {
+export const Navbar = () => {
+  const path = usePathname();
+  const router = useRouter();
+  const metadata = meta[path] || {};
+
   // 点击左侧区域
   const leftClick = () => {
-    console.log('触发地那几');
+    if (metadata.title === 'Home') return;
+    router.back();
   };
+
   return (
     <>
       <div className="navbar rounded-lg min-h-12 fixed z-10 bg-base-300 box-border w-[calc(100%-var(--padding)*2)]">
