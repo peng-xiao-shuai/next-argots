@@ -1,11 +1,16 @@
 'use client';
-import { useState, useEffect, PropsWithChildren, useRef } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { usePathname } from 'next/navigation';
-export const Transition = ({ children }: PropsWithChildren) => {
+export const Transition = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className: string;
+}) => {
   const [show, setShow] = useState(true);
   const pathname = usePathname();
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShow(true);
 
     const time = setTimeout(() => {
@@ -18,8 +23,12 @@ export const Transition = ({ children }: PropsWithChildren) => {
   }, [pathname]);
 
   return (
-    <>
-      <div className={`w-full h-full ${show ? 'fade-in' : ''}`}>{children}</div>
-    </>
+    <div
+      className={`w-full h-full${show ? ' fade-in' : ''} ${className} ${
+        pathname.match(/\/([\w-]+)$/)?.[1]
+      }`}
+    >
+      {children}
+    </div>
   );
 };
