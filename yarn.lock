@@ -1964,17 +1964,10 @@
   resolved "https://registry.npmmirror.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
 
-"@types/next@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.npmmirror.com/@types/next/-/next-9.0.0.tgz#29aca06f8a5cfffc974a83b87e52ca57b2a506c4"
-  integrity sha512-gnBXM8rP1mnCgT1uE2z8SnpFTKRWReJlhbZLZkOLq/CH1ifvTNwjIVtXvsywTy1dwVklf+y/MB0Eh6FOa94yrg==
-  dependencies:
-    next "*"
-
 "@types/node@*", "@types/node@^20":
-  version "20.11.4"
-  resolved "https://registry.npmmirror.com/@types/node/-/node-20.11.4.tgz#c724a5d6723182af758b91b994209336f4439cb7"
-  integrity sha512-6I0fMH8Aoy2lOejL3s4LhyIYX34DPwY8bl5xlNjBvUEk8OHrcuzsFt+Ied4LvJihbtXPM+8zUqdydfIti86v9g==
+  version "20.11.5"
+  resolved "https://registry.npmmirror.com/@types/node/-/node-20.11.5.tgz#be10c622ca7fcaa3cf226cf80166abc31389d86e"
+  integrity sha512-g557vgQjUUfN76MZAN/dt1z3dzcUsimuysco0KeluHgrPdJXkP/XdAURgyO2W9fZWHRtRBiVKzKn8vyOAwlG+w==
   dependencies:
     undici-types "~5.26.4"
 
@@ -2779,9 +2772,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001565:
-  version "1.0.30001577"
-  resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001577.tgz#a24991eb4ad67324ba8b96716340d53151f2f6f8"
-  integrity sha512-rs2ZygrG1PNXMfmncM0B5H1hndY5ZCC9b5TkFaVNfZ+AUlyqcMyVIQtc3fsezi0NUCk5XZfDf9WS6WxMxnfdrg==
+  version "1.0.30001578"
+  resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001578.tgz#11741580434ce60aae4b4a9abee9f9f8d7bf5be5"
+  integrity sha512-J/jkFgsQ3NEl4w2lCoM9ZPxrD+FoBNJ7uJUpGVjIg/j0OwJosWM36EPDv+Yyi0V4twBk9pPmlFS+PLykgEvUmg==
 
 chalk@^2.4.2:
   version "2.4.2"
@@ -3577,9 +3570,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.601:
-  version "1.4.633"
-  resolved "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.4.633.tgz#df8831d2fef994fe9c013e61db6cfb98eeebf52d"
-  integrity sha512-7BvxzXrHFliyQ1oZc6NRMjyEaKOO1Ma1NY98sFZofogWlm+klLWSgrDw7EhatiMgi4R4NV+iWxDdxuIKXtPbOw==
+  version "1.4.634"
+  resolved "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.4.634.tgz#a39d85c21e2007e2e23725f3d43eb6cae3dfd58a"
+  integrity sha512-gQNahJfF5AE4MZo+pMSwmnwkzVZ+F4ZGGj4Z/MMddOXVQM0y9OHy6ts3W9SDzAJaiZM3p6eixn5ABCQ+AfXzcQ==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -5896,7 +5889,7 @@ next-tick@1, next-tick@^1.1.0:
   resolved "https://registry.npmmirror.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
 
-next@*, next@^14.0.1:
+next@^14.0.1:
   version "14.0.4"
   resolved "https://registry.npmmirror.com/next/-/next-14.0.4.tgz#bf00b6f835b20d10a5057838fa2dfced1d0d84dc"
   integrity sha512-qbwypnM7327SadwFtxXnQdGiKpkuhaRLE2uq62/nRul9cj9KhQ5LhHmlziTNqUidZotw/Q1I9OjirBROdUJNgA==
@@ -8019,7 +8012,6 @@ streamx@^2.15.0:
     queue-tick "^1.0.1"
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
-  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.npmmirror.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==

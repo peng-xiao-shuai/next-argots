@@ -19,7 +19,6 @@
     "incremental": true,
     "types": [
       "@types/node",
-      "@types/react"
     ],
     "plugins": [
       {

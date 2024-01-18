@@ -1,6 +1,16 @@
 const path = require('path')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // 设置别名
     config.resolve.alias['@'] = path.join(__dirname, 'src')
