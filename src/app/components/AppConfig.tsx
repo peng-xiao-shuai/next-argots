@@ -4,13 +4,7 @@ import logo from '/public/logo4.png';
 import { createContext, useEffect, useState } from 'react';
 import { StaticImageData } from 'next/image';
 import { usePathname } from 'next/navigation';
-
-export type Language = {
-  'zh-TW': {};
-  'zh-CN': {};
-  'en-US': {};
-  'ja-JP': {};
-};
+import { Language } from '@/language';
 
 export interface SettingData {
   locale: keyof Language;
