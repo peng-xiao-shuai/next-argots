@@ -5,16 +5,19 @@ import { createContext, useEffect, useState } from 'react';
 import { StaticImageData } from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Language } from '@/language';
+import KEYS from '@/language/keys';
 
 export interface SettingData {
   locale: keyof Language;
   size: number;
+  name: string;
   logo: StaticImageData;
 }
 
 const defaultData: SettingData = {
   locale: 'zh-CN',
   size: 16,
+  name: KEYS.PACKAGE_NAME,
   logo,
 };
 
