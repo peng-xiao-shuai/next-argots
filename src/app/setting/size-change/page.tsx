@@ -5,22 +5,23 @@ import Image from 'next/image';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { usePathname } from 'next/navigation';
 import { AppContext } from '@/app/components';
+import KEYS from '../locales/keys';
 
 const BASE_SIZE = 13;
 const chat = [
   {
     type: 'user',
-    // locale: KEYS.FONT_NAIVGATOR,
+    locale: KEYS.FONT_NAIVGATOR,
     msg: '预览字体大小',
   },
   {
     type: 'other',
-    // locale: KEYS.CHAT1,
+    locale: KEYS.CHAT1,
     msg: '拖动下方滑块，可改变字体大小',
   },
   {
     type: 'other',
-    // locale: KEYS.CHAT2,
+    locale: KEYS.CHAT2,
     msg: '设置后，会改变聊天以及设置中字体大小，如果在使用中存在什么问题或意见，可以反馈给我们',
   },
 ];
@@ -95,7 +96,7 @@ export default function SizeChange() {
                 : ''
             } chat-bubble rounded-lg min-h-[unset] bg-base-300"`}
           >
-            {item.msg}
+            {item.locale}
           </div>
         </div>
       ))}

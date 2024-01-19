@@ -3,6 +3,7 @@ import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import LANGUAGE_KEYS from '@/language/keys';
 
 export default function Setting() {
   const router = useRouter();
@@ -14,17 +15,17 @@ export default function Setting() {
     // },
     {
       label: '字体大小',
-      // locale: KEYS.TEXT_SIZE,
+      locale: LANGUAGE_KEYS.TEXT_SIZE,
       path: '/size-change',
     },
     {
       label: '多语言',
-      // locale: KEYS.MULTI_LANGUAGE,
+      locale: LANGUAGE_KEYS.MULTI_LANGUAGE,
       path: '/lang-change',
     },
     {
       label: '关于',
-      // locale: KEYS.ABOUT,
+      locale: LANGUAGE_KEYS.ABOUT,
       path: '/about',
     },
   ]);
@@ -50,7 +51,7 @@ export default function Setting() {
       `}
           onClick={() => debounce(() => router.push(item.path))}
         >
-          <span className="px-0">{item.label}</span>
+          <span className="px-0">{item.locale}</span>
           <AiOutlineRight className="w-3 h-3 p-0 fill-base-content" />
         </li>
       ))}
