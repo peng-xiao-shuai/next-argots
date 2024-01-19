@@ -5,9 +5,9 @@
  * @last Modified time: 2023-09-25 14:24:00
  */
 
-let timer: any
+let timer: any;
 // 只执行一次
-let debounceOnly = true
+let debounceOnly = true;
 /**
  * 防抖
  * @param callback - 回调事件(必传)
@@ -23,22 +23,24 @@ export const debounce = (
   arg?: any[],
   immediate = true
 ): void => {
-  const args = arg ? arg : []
+  const args = arg ? arg : [];
   // 是否立即执行
   if (immediate && debounceOnly) {
-    debounceOnly = false
-    callback(...(args as []))
+    debounceOnly = false;
+    callback(...(args as []));
+
+    return;
   }
 
-  if (timer) clearTimeout(timer)
+  if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
-    callback(...(args as []))
-  }, time || 300)
-}
+    callback(...(args as []));
+  }, time || 300);
+};
 
-let bol = true
+let bol = true;
 // 只执行一次
-let throttleOnly = true
+let throttleOnly = true;
 /**
  * 节流
  * @param callback - 回调事件(必传)
@@ -53,19 +55,19 @@ export const throttle = (
   arg?: any[],
   immediate = true
 ): void => {
-  const args = arg ? arg : []
+  const args = arg ? arg : [];
 
   // 是否立即执行
   if (immediate && throttleOnly) {
-    throttleOnly = false
-    callback(...(args as []))
+    throttleOnly = false;
+    callback(...(args as []));
   }
 
   if (bol) {
-    bol = false
+    bol = false;
     setTimeout(() => {
-      bol = true
-      callback(...(args as []))
-    }, time || 300)
+      bol = true;
+      callback(...(args as []));
+    }, time || 300);
   }
-}
+};
