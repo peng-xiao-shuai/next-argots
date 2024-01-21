@@ -9,6 +9,14 @@ enum KEYS {
   SIZE_DEFAULT = 'size_default',
 
   FONT_NAIVGATOR = 'Font_naivgator',
+
+  E_MAIL = 'e-mail',
+  OPTIONAL = 'optional',
+  FEEDBACK_TYPES = 'feedback_types',
+  I_WANT_TO = 'i_want_to',
+  ISSUE = 'issue',
+  OPINION = 'opinion',
+  CONTENT = 'content_feedback',
 }
 
-export default KEYS
+export default KEYS;

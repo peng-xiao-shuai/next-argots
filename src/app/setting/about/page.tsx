@@ -16,17 +16,17 @@ type AboutList = {
 };
 
 const aboutList: AboutList[] = [
-  {
-    label: '检查更新',
-    locale: KEYS.CHECK_FOR_UPDATES,
-    click(item) {
-      console.log(item.label);
-    },
-  },
+  // {
+  //   label: '检查更新',
+  //   locale: KEYS.CHECK_FOR_UPDATES,
+  //   click(item) {
+  //     console.log(item.label);
+  //   },
+  // },
   {
     label: '意见反馈',
     locale: KEYS.FEEDBACK,
-    path: '/issue-opinion',
+    path: '/setting/about/feedback',
   },
   // {
   //   label: '隐私政策',

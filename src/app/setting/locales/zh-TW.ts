@@ -1,4 +1,4 @@
-import KEYS from './keys'
+import KEYS from './keys';
 
 // layout 语言配置
 export default {
@@ -13,4 +13,12 @@ export default {
 
   [KEYS.SIZE_DEFAULT]: '標準',
   [KEYS.FONT_NAIVGATOR]: '預覽字體',
-}
+
+  [KEYS.E_MAIL]: '郵箱',
+  [KEYS.OPTIONAL]: '可選',
+  [KEYS.FEEDBACK_TYPES]: '反餽類型',
+  [KEYS.I_WANT_TO]: '我想要',
+  [KEYS.ISSUE]: '問題',
+  [KEYS.OPINION]: '意見',
+  [KEYS.CONTENT]: '反饋內容',
+};

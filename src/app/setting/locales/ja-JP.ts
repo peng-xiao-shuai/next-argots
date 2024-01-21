@@ -1,4 +1,4 @@
-import KEYS from './keys'
+import KEYS from './keys';
 
 // layout 语言配置
 export default {
@@ -14,4 +14,10 @@ export default {
     '有効にすると、 PrivacyChat がシステム設定に合わせて、ダークモードのオン/オフを切り替えます',
   [KEYS.SIZE_DEFAULT]: '标準',
   [KEYS.FONT_NAIVGATOR]: 'プレビューフォント',
-}
+
+  [KEYS.OPTIONAL]: 'えらべる',
+  [KEYS.I_WANT_TO]: 'あなたが欲しい',
+  [KEYS.ISSUE]: 'もんだい',
+  [KEYS.OPINION]: '意見',
+  [KEYS.CONTENT]: 'フィードバックの内容です',
+};
