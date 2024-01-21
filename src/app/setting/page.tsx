@@ -8,11 +8,11 @@ import LANGUAGE_KEYS from '@/language/keys';
 export default function Setting() {
   const router = useRouter();
   const [lists, setLists] = useState([
-    // {
-    //   label: '深色模式',
-    //   locale: 'Dark.Mode',
-    //   path: '/theme-change',
-    // },
+    {
+      label: '深色模式',
+      locale: LANGUAGE_KEYS.DARK_PATTERN,
+      path: '/theme-change',
+    },
     {
       label: '字体大小',
       locale: LANGUAGE_KEYS.TEXT_SIZE,

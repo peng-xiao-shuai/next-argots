@@ -21,7 +21,7 @@ const meta: { [key: string]: Meta } = {
   },
 
   '/setting/theme-change': {
-    title: '深色模式',
+    title: 'ThemeChange',
     // locale: KEYS.DARK_PATTERN,
     isPlaceholder: true,
     rightOperateType: 'complete',
@@ -44,6 +44,13 @@ const meta: { [key: string]: Meta } = {
   '/setting/about': {
     title: 'About',
     // locale: KEYS.ABOUT,
+    isPlaceholder: true,
+    rightOperateType: 'none',
+  },
+
+  '/setting/about/feedback': {
+    title: 'Feedback',
+    // locale: KEYS.FEEDBACK,
     isPlaceholder: true,
     rightOperateType: 'none',
   },
