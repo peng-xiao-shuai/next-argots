@@ -1,3 +1,4 @@
+// 保证layout为服务端组件
 import { Inter } from 'next/font/google';
 import { Navbar, Transition, AppConfig } from './components';
 import { Toaster } from 'sonner';
