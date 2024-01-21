@@ -1,0 +1,15 @@
+.divider {
+  &::before {
+    width: 10%;
+  }
+  &::after {
+    width: 90%;
+  }
+}
+.pattern-list {
+  --tw-bg-opacity: 0.1;
+
+  &__item + .pattern-list__item {
+    border-top: 1px solid hsl(var(--bc) / var(--tw-bg-opacity));
+  }
+}

@@ -97,7 +97,7 @@ export default function About() {
       >
         <span
           className={`loading loading-spinner ${
-            loading ? 'opacity-1' : 'opacity-0 w-0'
+            loading ? 'opacity-0' : 'loading-hidden'
           }`}
         />
         {LANG_KEYS.CONFIRM}

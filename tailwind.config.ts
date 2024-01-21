@@ -20,6 +20,8 @@ const config: Config = {
           error: '#aa0b56',
 
           primary: '#8A13A4',
+
+          'primary-content': '#FFFFFF',
         },
         light: {
           ...require('daisyui/src/theming/themes')['light'],

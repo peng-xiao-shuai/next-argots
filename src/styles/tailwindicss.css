@@ -29,4 +29,13 @@
   .chat-start .chat-bubble::before {
     right: 99% !important;
   }
+
+  .btn,
+  .loading {
+    @apply transition-all duration-300;
+  }
+
+  .loading-hidden {
+    @apply opacity-0 w-0;
+  }
 }
