@@ -1851,6 +1851,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/crypto-js@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.npmmirror.com/@types/crypto-js/-/crypto-js-4.2.1.tgz#480edd76991a63050cb88db1a8840758c55a7135"
+  integrity sha512-FSPGd9+OcSok3RsM0UZ/9fcvMOXJ1ENE/ZbLfOPlBWj7BgXtEAM8VYfTtT760GiLbQIMoVozwVuisjvsVwqYWw==
+
 "@types/eslint-scope@^3.7.3":
   version "3.7.7"
   resolved "https://registry.npmmirror.com/@types/eslint-scope/-/eslint-scope-3.7.7.tgz#3108bd5f18b0cdb277c867b3dd449c9ed7079ac5"
@@ -3056,6 +3061,11 @@ crypt@0.0.2:
   version "0.0.2"
   resolved "https://registry.npmmirror.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
+
+crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.npmmirror.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 css-blank-pseudo@^6.0.0:
   version "6.0.1"
@@ -8012,6 +8022,7 @@ streamx@^2.15.0:
     queue-tick "^1.0.1"
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.npmmirror.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==

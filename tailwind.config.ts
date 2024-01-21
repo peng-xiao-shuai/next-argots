@@ -6,6 +6,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: ['chat-end', 'chat-start'],
   plugins: [require('daisyui')],
   daisyui: {
     themes: [
