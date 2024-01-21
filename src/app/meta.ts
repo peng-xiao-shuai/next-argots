@@ -48,9 +48,9 @@ const meta: { [key: string]: Meta } = {
     rightOperateType: 'none',
   },
 
-  '/setting/about/feedback': {
-    title: 'Feedback',
-    // locale: KEYS.FEEDBACK,
+  '/chat-room': {
+    title: 'Chat Room',
+    // locale: KEYS.CHAT,
     isPlaceholder: true,
     rightOperateType: 'none',
   },
