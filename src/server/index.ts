@@ -35,6 +35,33 @@ const start = async () => {
     },
   });
 
+  // @see https://github.com/vercel/next.js/issues/54977
+  // app.get('/setting', async (req, res) => {
+  //   try {
+  //     // 手动渲染页面到 HTML
+  //     const html = await nextApp.renderToHTML(req, res, '/setting', {});
+
+  //     if (!html) {
+  //       res.status(500).end('Internal Server Error');
+  //       return;
+  //     }
+
+  //     console.log(parseCookies(req.cookies));
+
+  //     // 修改 HTML 内容
+  //     const modifiedHtml = html.replace(
+  //       `data-theme="dark"`,
+  //       `data-theme="light"`
+  //     );
+
+  //     // 发送修改后的 HTML
+  //     res.send(modifiedHtml);
+  //   } catch (error: any) {
+  //  报错 Cannot read properties of undefined (reading 'ensurePage')
+  //     console.log('\x1b[36m%s\x1b[0m', error.message);
+  //   }
+  // });
+
   app.use(
     '/api/trpc',
     trpcExpress.createExpressMiddleware({

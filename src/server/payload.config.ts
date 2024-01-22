@@ -6,7 +6,6 @@
 
 import path from 'path';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
-import { postgresAdapter } from '@payloadcms/db-postgres';
 import { webpackBundler } from '@payloadcms/bundler-webpack';
 import { slateEditor } from '@payloadcms/richtext-slate';
 import { buildConfig } from 'payload/config';
@@ -40,12 +39,7 @@ export default buildConfig({
   rateLimit: {
     max: 2000,
   },
-  // db: mongooseAdapter({
-  //   url: process.env.DATABASE_URL!,
-  // }),
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.SUPABASE_URL,
-    },
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL!,
   }),
 });

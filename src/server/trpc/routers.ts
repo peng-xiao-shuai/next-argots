@@ -6,12 +6,10 @@
  * @Description:
  */
 import { procedure, router } from './trpc';
-import { authRouter } from './auth-router';
-import { PointsRouter } from './points-router';
 export const appRouter = router({
-  auth: authRouter,
-  pointsRouter: PointsRouter,
-  hello: procedure.query((opts) => {
+  hello: procedure.query(({ ctx }) => {
+    console.log(ctx);
+
     return 'hello world';
   }),
 });
