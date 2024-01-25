@@ -18,7 +18,7 @@ let debounceOnly = true;
  */
 
 export const debounce = (
-  callback: () => void,
+  callback: Function,
   time?: number,
   arg?: any[],
   immediate = true
@@ -28,12 +28,14 @@ export const debounce = (
   if (immediate && debounceOnly) {
     debounceOnly = false;
     callback(...(args as []));
-
-    return;
   }
 
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
+    if (!debounceOnly) {
+      debounceOnly = true;
+      return;
+    }
     callback(...(args as []));
   }, time || 300);
 };
