@@ -29,7 +29,8 @@ export const stringToUnicode = (str: string) => {
   return str
     .split('')
     .map((char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
-    .join('');
+    .join('')
+    .replace(/[\/\\]/g, '_');
 };
 
 /**
@@ -39,6 +40,7 @@ export const stringToUnicode = (str: string) => {
  */
 export const unicodeToString = (unicodeStr: string) => {
   return unicodeStr
+    .replace(/[_]/g, '/')
     .split('\\u')
     .filter(Boolean)
     .map((uni) => String.fromCharCode(Number.parseInt(uni, 16)))
