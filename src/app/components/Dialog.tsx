@@ -19,14 +19,14 @@ export const Dialog: FC<{
     const time = setTimeout(() => {
       setBoxVisible(true);
       clearTimeout(time);
-    }, 200);
+    }, 300);
   }, [visible]);
 
   return (
     <>
       <div
-        className={`fixed w-full h-[100vh] z-[999] left-0 top-0 transition-all duration-[300ms] ${
-          visible ? 'opacity-1' : 'opacity-0'
+        className={`dialog fixed w-full z-50 h-[100vh] left-0 top-0 transition-all duration-[300ms] ${
+          visible ? 'opacity-1' : 'opacity-0 pointer-events-none'
         }`}
       >
         <div
@@ -39,12 +39,12 @@ export const Dialog: FC<{
                 setVisible(!visible);
                 clearTimeout(time);
                 // 与 duration-300 时间相同
-              }, 200);
+              }, 300);
             })
           }
         >
           <div
-            className={`p-5 rounded-lg bg-base-300 max-w-xs min-w-[8rem] transition-all duration-300 transform scale-50 ${
+            className={`p-5 rounded-lg bg-base-300 max-w-[90vw] min-w-[8rem] transition-all duration-300 transform scale-50 ${
               boxVisible ? '!scale-100 opacity-100' : 'scale-50 opacity-0'
             }`}
             onClick={(e) => e.stopPropagation()}
