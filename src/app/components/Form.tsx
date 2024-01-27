@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
-import KEYS from '../locales/keys';
+import { HOME_KEYS } from '@/locales/keys';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
@@ -11,9 +11,9 @@ import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
 
 const formDataRules = z.object({
-  nickName: z.string().min(1, KEYS.EMPTY_NICKNAME).max(24),
-  roomName: z.string().min(1, KEYS.EMPTY_ROOM_NUMBER).max(24),
-  password: z.string().min(1, KEYS.EMPTY_PASSWORD).max(24),
+  nickName: z.string().min(1, HOME_KEYS.EMPTY_NICKNAME).max(24),
+  roomName: z.string().min(1, HOME_KEYS.EMPTY_ROOM_NUMBER).max(24),
+  password: z.string().min(1, HOME_KEYS.EMPTY_PASSWORD).max(24),
 });
 
 type FormData = z.infer<typeof formDataRules>;
@@ -32,28 +32,28 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
   const formView: FormView[] = [
     {
       type: 'text',
-      locale: KEYS.ROOM_NUMBER,
+      locale: HOME_KEYS.ROOM_NUMBER,
       prop: 'roomName',
       validation: {
-        required: KEYS.EMPTY_ROOM_NUMBER,
+        required: HOME_KEYS.EMPTY_ROOM_NUMBER,
         maxLength: 12,
       },
     },
     {
       type: 'text',
-      locale: KEYS.NICKNAME,
+      locale: HOME_KEYS.NICKNAME,
       prop: 'nickName',
       validation: {
-        required: KEYS.EMPTY_NICKNAME,
+        required: HOME_KEYS.EMPTY_NICKNAME,
         maxLength: 12,
       },
     },
     {
       type: 'password',
-      locale: KEYS.PASSWORD,
+      locale: HOME_KEYS.PASSWORD,
       prop: 'password',
       validation: {
-        required: KEYS.EMPTY_PASSWORD,
+        required: HOME_KEYS.EMPTY_PASSWORD,
         maxLength: 12,
       },
     },
@@ -90,7 +90,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
       if (roomStatus === 'JOIN' && !data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
-          message: `${KEYS.HOME_API}.${KEYS.NO_ROOM_NAME}`,
+          message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.NO_ROOM_NAME}`,
         });
         throw new Error('');
       }
@@ -98,7 +98,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
       if (roomStatus === 'ADD' && data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
-          message: `${KEYS.HOME_API}.${KEYS.ROOM_NAME}`,
+          message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.ROOM_NAME}`,
         });
 
         throw new Error(data.message);
@@ -136,7 +136,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
           </label>
           <input
             type={item.type}
-            placeholder={KEYS.PLEASE_INPUT + item.locale}
+            placeholder={HOME_KEYS.PLEASE_INPUT + item.locale}
             {...register(item.prop, item.validation)}
             className={`${
               index === formView.length - 1 ||

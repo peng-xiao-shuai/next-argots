@@ -1,10 +1,10 @@
 'use client';
 import { AppContext } from '@/app/components';
-import { Language } from '@/language';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { useContext, useState } from 'react';
+import { Resources } from '@/locales/i18n';
 
-const langs: { label: string; value: keyof Language }[] = [
+const langs: { label: string; value: keyof Resources }[] = [
   {
     label: '简体中文',
     value: 'zh-CN',

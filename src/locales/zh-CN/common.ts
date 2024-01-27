@@ -1,0 +1,22 @@
+import { COMMON_KEYS } from '../keys';
+
+export const COMMON = {
+  [COMMON_KEYS.PACKAGE_NAME]: '隐谈',
+
+  [COMMON_KEYS.HOME]: '主页',
+  [COMMON_KEYS.CHAT]: '聊天',
+  [COMMON_KEYS.SETTINGS]: '设置',
+  [COMMON_KEYS.DARK_PATTERN]: '深色模式',
+  [COMMON_KEYS.TEXT_SIZE]: '字体大小',
+  [COMMON_KEYS.MULTI_LANGUAGE]: '多语言',
+  [COMMON_KEYS.ABOUT]: '关于',
+  [COMMON_KEYS.FEEDBACK]: '意见反馈',
+  [COMMON_KEYS.CHECK_FOR_UPDATES]: '检查更新',
+  [COMMON_KEYS.PRIVACY_POLICY]: '隐私政策',
+  [COMMON_KEYS['E-MAIL_CONTACT']]: '邮件联系',
+
+  [COMMON_KEYS.CLOSE]: '关闭',
+  [COMMON_KEYS.OPEN]: '打开',
+  [COMMON_KEYS.CONFIRM]: '确认',
+  [COMMON_KEYS.COMPLETE]: '完成',
+};

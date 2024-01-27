@@ -1,0 +1,22 @@
+import { COMMON_KEYS } from '../keys';
+
+export const COMMON = {
+  [COMMON_KEYS.PACKAGE_NAME]: '隱談',
+
+  [COMMON_KEYS.HOME]: '主頁',
+  [COMMON_KEYS.CHAT]: '聊天',
+  [COMMON_KEYS.SETTINGS]: '設置',
+  [COMMON_KEYS.DARK_PATTERN]: '深色模式',
+  [COMMON_KEYS.TEXT_SIZE]: '字體大小',
+  [COMMON_KEYS.MULTI_LANGUAGE]: '多語言',
+  [COMMON_KEYS.ABOUT]: '關於',
+  [COMMON_KEYS.FEEDBACK]: '意見反餽',
+  [COMMON_KEYS.CHECK_FOR_UPDATES]: '檢查更新',
+  [COMMON_KEYS.PRIVACY_POLICY]: '隱私政策',
+  [COMMON_KEYS['E-MAIL_CONTACT']]: '郵件聯繫',
+
+  [COMMON_KEYS.CLOSE]: '關閉',
+  [COMMON_KEYS.OPEN]: '打開',
+  [COMMON_KEYS.CONFIRM]: '確認',
+  [COMMON_KEYS.COMPLETE]: '完成',
+};

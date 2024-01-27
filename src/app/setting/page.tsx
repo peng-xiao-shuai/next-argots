@@ -3,29 +3,29 @@ import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import LANGUAGE_KEYS from '@/language/keys';
+import { COMMON_KEYS } from '@/locales/keys';
 
 export default function Setting() {
   const router = useRouter();
   const [lists, setLists] = useState([
     {
       label: '深色模式',
-      locale: LANGUAGE_KEYS.DARK_PATTERN,
+      locale: COMMON_KEYS.DARK_PATTERN,
       path: '/theme-change',
     },
     {
       label: '字体大小',
-      locale: LANGUAGE_KEYS.TEXT_SIZE,
+      locale: COMMON_KEYS.TEXT_SIZE,
       path: '/size-change',
     },
     {
       label: '多语言',
-      locale: LANGUAGE_KEYS.MULTI_LANGUAGE,
+      locale: COMMON_KEYS.MULTI_LANGUAGE,
       path: '/lang-change',
     },
     {
       label: '关于',
-      locale: LANGUAGE_KEYS.ABOUT,
+      locale: COMMON_KEYS.ABOUT,
       path: '/about',
     },
   ]);

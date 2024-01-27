@@ -1,7 +1,7 @@
 'use client';
 import './style.css';
 import { AppContext } from '@/app/components';
-import KEYS from '@/language/keys';
+import { COMMON_KEYS } from '@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
@@ -18,14 +18,14 @@ type AboutList = {
 const aboutList: AboutList[] = [
   // {
   //   label: '检查更新',
-  //   locale: KEYS.CHECK_FOR_UPDATES,
+  //   locale: COMMON_KEYS.CHECK_FOR_UPDATES,
   //   click(item) {
   //     console.log(item.label);
   //   },
   // },
   {
     label: '意见反馈',
-    locale: KEYS.FEEDBACK,
+    locale: COMMON_KEYS.FEEDBACK,
     path: '/setting/about/feedback',
   },
   // {
@@ -35,7 +35,7 @@ const aboutList: AboutList[] = [
   // },
   {
     label: '邮件联系',
-    locale: KEYS['E-MAIL_CONTACT'],
+    locale: COMMON_KEYS['E-MAIL_CONTACT'],
     click(item) {
       const recipient = 'pxs161256513@gmail.com';
 

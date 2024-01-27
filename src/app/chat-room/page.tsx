@@ -1,10 +1,11 @@
 'use client';
 import './style.scss';
-import { useState } from 'react';
-import KEYS from './locales/keys';
-import { useWebsocket } from '@/hooks/use-websocket';
+import { useEffect, useState } from 'react';
+import { CHAT_ROOM_KEYS } from '@/locales/keys';
+import { usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.jpg';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const ChatRecords = (
   {
@@ -44,15 +45,25 @@ const ChatRecords = (
 };
 
 export default function Chat() {
+  const pathname = usePathname();
   const [content, setContent] = useState('');
   const [height, setHeight] = useState('');
-  const { handleSend, chat } = useWebsocket();
+  const { chat, pusher } = usePusher();
 
   // 自动增长高度
   const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHeight(`${target.scrollHeight}px`);
     setContent(target.value);
   };
+
+  useEffect(() => {
+    return () => {
+      if (window.location.pathname !== pathname) {
+        pusher.disconnect();
+      }
+    };
+  }, [pathname]);
+
   return (
     <>
       <div className="overflow-y-auto w-full flex-1 mb-4">
@@ -86,11 +97,10 @@ export default function Chat() {
           <button
             className="btn btn-primary min-h-[2.5rem] h-10"
             onClick={() => {
-              handleSend(content);
               setContent('');
             }}
           >
-            {KEYS.SEND}
+            {CHAT_ROOM_KEYS.SEND}
           </button>
         </div>
       </div>

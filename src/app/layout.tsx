@@ -2,10 +2,11 @@
 import { Inter } from 'next/font/google';
 import { Navbar, Transition, AppConfig } from './components';
 import { Toaster } from 'sonner';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import '@/styles/index.scss';
 // import meta from './meta';
 
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
 
 // export const metadata = meta['/'];
 
@@ -16,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme={'dark'}>
-      <body className={inter.className}>
+      <body>
         <main className="w-full h-[100vh] m-0 p-[var(--padding)] relative box-border  overflow-x-hidden">
           <AppConfig>
             <Navbar />
@@ -31,4 +32,15 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+
+export async function getServerSideProps({ locale }: any) {
+  console.log(locale);
+
+  return {
+    props: {
+      // 加载特定语言的翻译资源
+      ...(await serverSideTranslations(locale, ['common', 'homepage'])),
+    },
+  };
 }
