@@ -1,12 +1,12 @@
 'use client';
 import './style.css';
-import { AppContext } from '@/app/components';
+import { AppContext } from '@/context';
 import { COMMON_KEYS } from '@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { AiOutlineRight } from 'react-icons/ai';
-import pck from '../../../package.json';
+import pck from '../../../../../package.json';
 
 type AboutList = {
   label: string;
@@ -53,7 +53,7 @@ export default function About() {
       <div className="pt-12 flex justify-center flex-wrap">
         <Image
           className="w-32 h-32 mb-4 mask mask-squircle"
-          src={setting.logo}
+          src={setting.logo || ''}
           alt=""
         />
 

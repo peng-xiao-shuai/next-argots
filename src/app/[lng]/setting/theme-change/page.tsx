@@ -2,7 +2,7 @@
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import './style.scss';
 import { useContext, useState } from 'react';
-import { AppContext } from '@/app/components';
+import { AppContext } from '@/context';
 import { setDataTheme } from '@/utils/set-theme';
 
 const patternList = [
@@ -40,8 +40,6 @@ export default function ThemeChange() {
 
   return (
     <>
-      {/* <!-- TODO 白天黑夜模式 --> */}
-      {/* <!-- style(setting): 深色模式UI更改且注释入口 --> */}
       <div className="theme-change">
         <div className="flex justify-between items-center">
           <div>

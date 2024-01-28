@@ -1,5 +1,5 @@
 'use client';
-import { AppContext } from '@/app/components';
+import { AppContext } from '@/context';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { useContext, useState } from 'react';
 import { Resources } from '@/locales/i18n';
@@ -25,7 +25,7 @@ const langs: { label: string; value: keyof Resources }[] = [
 
 export default function LangChange() {
   const setting = useContext(AppContext);
-  const [locale, setLocale] = useState(setting.locale);
+  const [locale, setLocale] = useState(setting.language);
   // const { locale } = useI18n()
   const handleSwitchLang = (item: (typeof langs)[0]) => {
     if (item.value !== locale) {
