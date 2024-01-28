@@ -1,36 +1,49 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-// 导入你的翻译文件
+import { createInstance } from 'i18next';
+import { initReactI18next } from 'react-i18next/initReactI18next';
+import resourcesToBackend from 'i18next-resources-to-backend';
 import enUS from './en-US';
 import jaJP from './ja-JP';
 import zhTW from './zh-TW';
 import zhCN from './zh-CN';
-
-const resources = {
-  'ja-JP': { translation: jaJP },
-  'zh-TW': { translation: zhTW },
-  'en-US': { translation: {} },
-  'zh-CN': { translation: {} },
-};
+import { getOptions, DEFAULT_NS } from './settings';
 
 export type Resources = {
   [key in keyof typeof resources]: (typeof resources)[key] & {
-    translation: Indexes;
+    [DEFAULT_NS]: Indexes;
   };
 };
+export type Lng = keyof typeof resources;
+
+export const FALLBACK_LNG = 'en-US';
+export const resources = {
+  'ja-JP': { [DEFAULT_NS]: jaJP },
+  'zh-TW': { [DEFAULT_NS]: zhTW },
+  'en-US': { [DEFAULT_NS]: {} },
+  'zh-CN': { [DEFAULT_NS]: {} },
+};
+export const languages = Object.keys(resources) as Lng[];
 
 // 拆解中文语言 key 作为 英文
 for (const i in zhCN) {
-  (resources as Resources)['zh-CN'].translation[i] = (zhCN as Indexes)[i];
-  (resources as Resources)['en-US'].translation[i] =
+  (resources as Resources)['zh-CN'][DEFAULT_NS][i] = (zhCN as Indexes)[i];
+  (resources as Resources)['en-US'][DEFAULT_NS][i] =
     (enUS as Indexes)[i] || i.replace(/\_/g, ' ');
 }
 
-i18n.use(LanguageDetector).use(initReactI18next).init({
-  resources: resources,
-  fallbackLng: 'en-US',
-  debug: true,
-});
+const initI18next = async (lng: Lng, ns: string = DEFAULT_NS) => {
+  const i18nInstance = createInstance();
+  await i18nInstance
+    .use(initReactI18next)
+    .use(resourcesToBackend(resources))
+    .init(getOptions(lng, ns));
+  return i18nInstance;
+};
 
-export default i18n;
+export async function useTranslation(lng: Lng, options = { keyPrefix: '' }) {
+  const i18nextInstance = await initI18next(lng);
+
+  return {
+    t: i18nextInstance.getFixedT(lng, options?.keyPrefix || ''),
+    i18n: i18nextInstance,
+  };
+}

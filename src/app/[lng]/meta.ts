@@ -6,7 +6,7 @@ export interface Meta extends Metadata {
   isPlaceholder?: boolean;
   rightOperateType?: 'setting' | 'complete' | 'none';
 }
-const meta: { [key: string]: Meta } = {
+const meta: Indexes<Meta> = {
   '/': {
     title: 'Home',
     locale: COMMON_KEYS.HOME,
@@ -56,4 +56,5 @@ const meta: { [key: string]: Meta } = {
     rightOperateType: 'none',
   },
 };
+
 export default meta;

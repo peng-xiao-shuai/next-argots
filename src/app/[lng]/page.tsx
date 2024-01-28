@@ -4,7 +4,7 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { debounce } from '@/utils/debounce-throttle';
 import { Dialog, HomeForm } from './components';
 
-export default function Home() {
+export default function Home({ params: { lng } }: CustomReactParams) {
   const [roomStatus, setRoomStatus] = useState<'ADD' | 'JOIN'>('ADD');
   const { encryptData } = useRoomStore();
   const [visible, setVisible] = useState(false);
@@ -17,11 +17,11 @@ export default function Home() {
         连接欧易
       </button>
 
-      <Dialog visible={visible} setVisible={setVisible}>
+      {/* <Dialog visible={visible} setVisible={setVisible}>
         <div className="bg-base-300 flex flex-wrap justify-center">
           <HomeForm roomStatus={roomStatus}></HomeForm>
         </div>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

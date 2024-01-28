@@ -1,11 +1,17 @@
 'use client';
 import bus from '@/utils/bus';
+import { FC, useContext, useEffect } from 'react';
 import type { Meta } from '../meta';
 import meta from '../meta';
+import { AppContext } from '@/app/[lng]/components';
+import { Lng, languages, useTranslation } from '@/locales/i18n';
 import { AiOutlineHome, AiOutlineLeft, AiOutlineSetting } from 'react-icons/ai';
 import { usePathname, useRouter } from 'next/navigation';
+import i18next from 'i18next';
 
-const NavRight = ({ metadata }: { metadata: Meta }) => {
+const NavRight: FC<{
+  metadata: Meta;
+}> = ({ metadata }) => {
   const router = useRouter();
 
   // 完成事件，点击触发全局通信
@@ -38,10 +44,26 @@ const NavRight = ({ metadata }: { metadata: Meta }) => {
 };
 
 export const Navbar = () => {
+  const { locale } = useContext(AppContext);
+  const useGet = async (key: string) => {
+    const { t } = await useTranslation(locale);
+    console.log(t, t(key));
+  };
+  // path 路径携带 / 开头
   const path = usePathname();
   const router = useRouter();
-  const metadata = meta[path] || {};
 
+  const metadata = languages.includes(path.replace('/', '') as Lng)
+    ? meta['/']
+    : meta[path.replace('/' + locale, '')] || {};
+  // console.log(metadata, path);
+  // console.log(
+  //   i18next,
+  //   t(metadata.locale),
+  //   i18next.t(metadata.locale),
+  //   metadata.locale
+  // );
+  useGet(metadata.locale);
   // 点击左侧区域
   const leftClick = () => {
     if (metadata.title === 'Home') return;
@@ -63,7 +85,7 @@ export const Navbar = () => {
         </div>
         <div className="flex-1">
           <span className="font-sans _bold text-color pl-2 text-1rem normal-case">
-            {metadata.title}
+            {metadata.locale}
           </span>
         </div>
         <div className="flex-none">

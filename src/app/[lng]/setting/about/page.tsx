@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { AiOutlineRight } from 'react-icons/ai';
-import pck from '../../../../package.json';
+import pck from '../../../package.json';
 
 type AboutList = {
   label: string;
