@@ -2,11 +2,13 @@
 import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { COMMON_KEYS } from '@/locales/keys';
+import { LocaleContext } from '@/context';
 
 export default function Setting() {
   const router = useRouter();
+  const { t } = useContext(LocaleContext);
   const [lists, setLists] = useState([
     {
       label: '深色模式',
@@ -51,7 +53,7 @@ export default function Setting() {
       `}
           onClick={() => debounce(() => router.push(item.path))}
         >
-          <span className="px-0">{item.locale}</span>
+          <span className="px-0">{t(item.locale)}</span>
           <AiOutlineRight className="w-3 h-3 p-0 fill-base-content" />
         </li>
       ))}

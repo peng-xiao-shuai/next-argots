@@ -3,6 +3,8 @@ import { SETTING_KEYS } from '../keys';
 export const SETTING = {
   [SETTING_KEYS.MODE_AUTO]: '自動',
   [SETTING_KEYS.CHOOSE_MANUALLY]: '手動選択',
+  // TODO 值一样，需要重新翻译
+  [SETTING_KEYS.DARK_MODE]: 'ダークモード',
   [SETTING_KEYS.LIGHT_MODE]: 'ダークモード',
   [SETTING_KEYS.CHAT1]:
     '下のスライダーをドラッグしてフォントサイズを変えます。',

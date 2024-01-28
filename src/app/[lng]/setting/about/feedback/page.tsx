@@ -1,6 +1,7 @@
 'use client';
+import { LocaleContext } from '@/context';
 import { COMMON_KEYS, SETTING_KEYS } from '@/locales/keys';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 const issueType = [
   {
@@ -21,6 +22,7 @@ const issueType = [
 ];
 
 export default function About() {
+  const { t } = useContext(LocaleContext);
   const [formData, setFormData] = useState({
     email: '',
     content: '',
@@ -46,21 +48,21 @@ export default function About() {
   return (
     <>
       <div className="text-neutral-content mb-2 opacity-50 _p-x">
-        {SETTING_KEYS.E_MAIL}
+        {t(SETTING_KEYS.E_MAIL)}
       </div>
       <input
         v-model="formData.email"
-        placeholder={SETTING_KEYS.E_MAIL}
+        placeholder={t(SETTING_KEYS.E_MAIL)}
         className={`mb-4 input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
       />
 
       <div className="text-neutral-content mb-2 opacity-50 _p-x">
-        {SETTING_KEYS.CONTENT}
+        {t(SETTING_KEYS.CONTENT)}
       </div>
 
       <textarea
         value={formData.content}
-        placeholder={SETTING_KEYS.CONTENT + '...'}
+        placeholder={t(SETTING_KEYS.CONTENT) + '...'}
         className="textarea resize-none h-56 mb-4 w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary"
         onChange={({ target }) => {
           setFormData((state) => ({
@@ -71,7 +73,7 @@ export default function About() {
       />
 
       <div className="text-neutral-content mb-2 opacity-50 _p-x">
-        {SETTING_KEYS.FEEDBACK_TYPES}
+        {t(SETTING_KEYS.FEEDBACK_TYPES)}
       </div>
 
       <div className="flex flex-wrap">
@@ -84,7 +86,7 @@ export default function About() {
             onClick={() => (formData.type = issue.value)}
           >
             <span className="text-xl inline-block mr-1">{issue.emo}</span>
-            <span>{issue.locale}</span>
+            <span>{t(issue.locale)}</span>
           </div>
         ))}
       </div>
@@ -99,7 +101,7 @@ export default function About() {
             loading ? 'opacity-0' : 'loading-hidden'
           }`}
         />
-        {COMMON_KEYS.CONFIRM}
+        {t(COMMON_KEYS.CONFIRM)}
       </button>
     </>
   );

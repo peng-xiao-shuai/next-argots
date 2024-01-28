@@ -1,9 +1,10 @@
 'use client';
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
 import { HOME_KEYS } from '@/locales/keys';
+import { LocaleContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
@@ -68,6 +69,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     formState: { errors },
   } = useForm<FormData>();
 
+  const { t } = useContext(LocaleContext);
   const { signin } = usePusher();
   const router = useRouter();
   const { setData } = useRoomStore();
@@ -136,7 +138,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
           </label>
           <input
             type={item.type}
-            placeholder={HOME_KEYS.PLEASE_INPUT + item.locale}
+            placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
             {...register(item.prop, item.validation)}
             className={`${
               index === formView.length - 1 ||
@@ -154,7 +156,11 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
                 : 'opacity-0'
             } pl-2 transition-all duration-300 text-xs absolute left-0 bottom-[0.5rem] text-error`}
           >
-            {errors[item.prop]?.message || errors.root?.[item.prop]?.message}
+            {t(
+              errors[item.prop]?.message ||
+                errors.root?.[item.prop]?.message ||
+                ''
+            )}
           </span>
         </div>
       ))}

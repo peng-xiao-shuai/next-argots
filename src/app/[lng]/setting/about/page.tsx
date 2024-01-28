@@ -1,6 +1,7 @@
 'use client';
 import './style.css';
-import { AppContext } from '@/context';
+import logo from '/public/logo4.png';
+import { AppContext, LocaleContext } from '@/context';
 import { COMMON_KEYS } from '@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -47,17 +48,18 @@ const aboutList: AboutList[] = [
 ];
 export default function About() {
   const setting = useContext(AppContext);
+  const { t } = useContext(LocaleContext);
   const router = useRouter();
   return (
     <>
       <div className="pt-12 flex justify-center flex-wrap">
         <Image
           className="w-32 h-32 mb-4 mask mask-squircle"
-          src={setting.logo || ''}
+          src={logo}
           alt=""
         />
 
-        <div className="w-full text-center text-xl">{setting.name}</div>
+        <div className="w-full text-center text-xl">{t(setting.name)}</div>
         <div className="text-sm">{pck.version}</div>
       </div>
 
@@ -75,7 +77,7 @@ export default function About() {
                 : item.click && item.click(item)
             }
           >
-            <span className="px-0 !bg-opacity-0">{item.locale}</span>
+            <span className="px-0 !bg-opacity-0">{t(item.locale)}</span>
             {item.path ? <AiOutlineRight className="w-3 h-3 p-0" /> : <></>}
           </li>
         ))}

@@ -3,6 +3,7 @@ import { SETTING_KEYS } from '../keys';
 export const SETTING = {
   [SETTING_KEYS.MODE_AUTO]: '跟隨系統',
   [SETTING_KEYS.CHOOSE_MANUALLY]: '手動選擇',
+  [SETTING_KEYS.DARK_MODE]: '深色模式',
   [SETTING_KEYS.LIGHT_MODE]: '淺色模式',
 
   [SETTING_KEYS.CHAT1]: '拖動下方滑塊，可改變字體大小',

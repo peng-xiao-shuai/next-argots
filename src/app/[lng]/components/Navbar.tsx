@@ -1,6 +1,6 @@
 'use client';
 import bus from '@/utils/bus';
-import { FC, useContext, useEffect } from 'react';
+import { FC, useContext } from 'react';
 import type { Meta } from '../meta';
 import meta from '../meta';
 import { LocaleContext } from '@/context';
@@ -17,12 +17,13 @@ const NavRight: FC<{
   const handleComplete = () => {
     bus.emit('complete');
   };
+  const { language } = useContext(LocaleContext);
   return (
     <>
       {metadata.rightOperateType === 'setting' ? (
         <AiOutlineSetting
           className="ml-3 svg-icon fill-base-content"
-          onClick={() => router.push('/setting')}
+          onClick={() => router.push(`/${language}/setting`)}
         />
       ) : (
         <></>
@@ -43,14 +44,14 @@ const NavRight: FC<{
 };
 
 export const Navbar = () => {
-  const localeContext = useContext(LocaleContext);
+  const { t, language } = useContext(LocaleContext);
   // path 路径携带 / 开头
   const path = usePathname();
   const router = useRouter();
 
   const metadata = languages.includes(path.replace('/', '') as Lng)
     ? meta['/']
-    : meta[path.replace('/' + localeContext?.language, '')] || {};
+    : meta[path.replace('/' + language, '')] || {};
   // console.log(metadata, path);
   // console.log(
   //   i18next,
@@ -79,7 +80,7 @@ export const Navbar = () => {
         </div>
         <div className="flex-1">
           <span className="font-sans _bold text-color pl-2 text-1rem normal-case">
-            {localeContext?.t(metadata.locale)}
+            {t(metadata.locale)}
           </span>
         </div>
         <div className="flex-none">

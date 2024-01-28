@@ -3,6 +3,7 @@ import { SETTING_KEYS } from '../keys';
 export const SETTING = {
   [SETTING_KEYS.MODE_AUTO]: '跟随系统',
   [SETTING_KEYS.CHOOSE_MANUALLY]: '手动选择',
+  [SETTING_KEYS.DARK_MODE]: '深色模式',
   [SETTING_KEYS.LIGHT_MODE]: '浅色模式',
   [SETTING_KEYS.FONT_PREVIEW]: '预览字体',
 
@@ -12,6 +13,7 @@ export const SETTING = {
   [SETTING_KEYS.MODE_SWITCH]: '开启后将跟随系统开启或关闭深色模式',
   [SETTING_KEYS.SIZE_DEFAULT]: '标准',
 
+  // TODO 对照 i18next 语法
   [SETTING_KEYS.E_MAIL]: `邮箱 {'('}@:${SETTING_KEYS.OPTIONAL}{')'}`,
   [SETTING_KEYS.OPTIONAL]: '可选',
   [SETTING_KEYS.FEEDBACK_TYPES]: '反馈类型',

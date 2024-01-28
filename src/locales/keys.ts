@@ -3,6 +3,7 @@ export enum SETTING_KEYS {
 
   CHOOSE_MANUALLY = 'Choose_manually',
   LIGHT_MODE = 'Light_Mode',
+  DARK_MODE = 'Dark_Mode',
   CHAT1 = 'chat1',
   CHAT2 = 'chat2',
   MODE_SWITCH = 'mode_switch',

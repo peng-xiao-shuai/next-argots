@@ -1,10 +1,10 @@
 'use client';
 import './style.css';
+import logo from '/public/logo4.png';
 import { useContext, useState } from 'react';
 import Image from 'next/image';
 import { useBusWatch } from '@/hooks/use-bus-watch';
-import { usePathname } from 'next/navigation';
-import { AppContext } from '@/context';
+import { AppContext, LocaleContext } from '@/context';
 import { SETTING_KEYS } from '@/locales/keys';
 
 const BASE_SIZE = 13;
@@ -37,7 +37,7 @@ const rangeData: Indexes<number> = {
 };
 
 export default function SizeChange() {
-  const path = usePathname();
+  const { t } = useContext(LocaleContext);
   const setting = useContext(AppContext);
 
   // range 长度
@@ -84,7 +84,7 @@ export default function SizeChange() {
                 src={
                   item.type === 'user'
                     ? 'https://avatars.githubusercontent.com/u/53845479?v=4'
-                    : setting.logo
+                    : logo
                 }
               />
             </div>
@@ -96,7 +96,7 @@ export default function SizeChange() {
                 : ''
             } chat-bubble rounded-lg min-h-[unset] bg-base-300"`}
           >
-            {item.locale}
+            {t(item.locale)}
           </div>
         </div>
       ))}
@@ -108,7 +108,7 @@ export default function SizeChange() {
             <div className="text-[14px] mr-[calc((100vw-32px)/7*3-32px)]">
               A
             </div>
-            <span className="text-[16px]">{'default'}</span>
+            <span className="text-[16px]">{t(SETTING_KEYS.SIZE_DEFAULT)}</span>
           </div>
 
           <span className="text-[24px]">A</span>

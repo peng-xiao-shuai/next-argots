@@ -49,6 +49,13 @@ const meta: Indexes<Meta> = {
     rightOperateType: 'none',
   },
 
+  '/setting/about/feedback': {
+    title: 'Feedback',
+    locale: COMMON_KEYS.FEEDBACK,
+    isPlaceholder: true,
+    rightOperateType: 'none',
+  },
+
   '/chat-room': {
     title: 'Chat Room',
     locale: COMMON_KEYS.CHAT,
