@@ -3,7 +3,7 @@ import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
-import { HOME_KEYS } from '@/locales/keys';
+import { HOME_KEYS } from '@@/locales/keys';
 import { LocaleContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';

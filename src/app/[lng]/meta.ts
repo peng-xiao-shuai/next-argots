@@ -1,4 +1,4 @@
-import { COMMON_KEYS } from '@/locales/keys';
+import { COMMON_KEYS } from '@@/locales/keys';
 import type { Metadata } from 'next';
 export interface Meta extends Metadata {
   title: string;

@@ -2,7 +2,7 @@
 import { createContext } from 'react';
 import { StaticImageData } from 'next/image';
 import { Lng } from '@/locales/i18n';
-import { COMMON_KEYS } from '@/locales/keys';
+import { COMMON_KEYS } from '@@/locales/keys';
 
 export interface DefaultData {
   language: Lng;

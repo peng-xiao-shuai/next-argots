@@ -4,7 +4,7 @@ import './style.scss';
 import { useContext, useState } from 'react';
 import { AppContext, LocaleContext } from '@/context';
 import { setDataTheme } from '@/utils/set-theme';
-import { SETTING_KEYS } from '@/locales/keys';
+import { SETTING_KEYS } from '@@/locales/keys';
 
 const patternList = [
   {

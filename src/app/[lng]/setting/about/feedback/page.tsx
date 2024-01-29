@@ -1,6 +1,6 @@
 'use client';
 import { LocaleContext } from '@/context';
-import { COMMON_KEYS, SETTING_KEYS } from '@/locales/keys';
+import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { useContext, useState } from 'react';
 
 const issueType = [

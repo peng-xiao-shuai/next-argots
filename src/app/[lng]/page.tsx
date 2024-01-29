@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { debounce } from '@/utils/debounce-throttle';
 import { Dialog, HomeForm } from './components';
+import Link from 'next/link';
 
 export default function Home({ params: { lng } }: CustomReactParams) {
   const [roomStatus, setRoomStatus] = useState<'ADD' | 'JOIN'>('ADD');
@@ -12,6 +13,7 @@ export default function Home({ params: { lng } }: CustomReactParams) {
   return (
     <>
       {/* <button onClick={signin}>连接</button> */}
+      <Link href="/sign-up">连接</Link>
 
       <button onClick={() => debounce(setVisible, 300, [true], true)}>
         连接欧易

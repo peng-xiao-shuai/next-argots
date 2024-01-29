@@ -3,7 +3,7 @@ import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
-import { COMMON_KEYS } from '@/locales/keys';
+import { COMMON_KEYS } from '@@/locales/keys';
 import { LocaleContext } from '@/context';
 
 export default function Setting() {

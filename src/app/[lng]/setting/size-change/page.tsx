@@ -5,7 +5,7 @@ import { useContext, useState } from 'react';
 import Image from 'next/image';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { AppContext, LocaleContext } from '@/context';
-import { SETTING_KEYS } from '@/locales/keys';
+import { SETTING_KEYS } from '@@/locales/keys';
 
 const BASE_SIZE = 13;
 const chat = [

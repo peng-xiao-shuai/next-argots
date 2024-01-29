@@ -1,7 +1,7 @@
 'use client';
 import './style.scss';
 import { useEffect, useState } from 'react';
-import { CHAT_ROOM_KEYS } from '@/locales/keys';
+import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.jpg';
 import Image from 'next/image';
@@ -62,7 +62,7 @@ export default function Chat() {
         pusher.disconnect();
       }
     };
-  }, [pathname]);
+  }, [pathname, pusher]);
 
   return (
     <>

@@ -1,6 +1,6 @@
-import { SettingData } from '@/app/components';
+import { DefaultData } from '@/context';
 
-export const setDataTheme = (dataTheme: SettingData['dataTheme']) => {
+export const setDataTheme = (dataTheme: DefaultData['dataTheme']) => {
   // 设置亮/暗模式
   if (dataTheme === 'auto') {
     const isDark =

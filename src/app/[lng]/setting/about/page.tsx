@@ -2,7 +2,7 @@
 import './style.css';
 import logo from '/public/logo4.png';
 import { AppContext, LocaleContext } from '@/context';
-import { COMMON_KEYS } from '@/locales/keys';
+import { COMMON_KEYS } from '@@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
