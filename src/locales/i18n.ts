@@ -1,11 +1,13 @@
-import { createInstance } from 'i18next';
+import { createInstance, i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next/initReactI18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
-import enUS from './en-US';
-import jaJP from './ja-JP';
-import zhTW from './zh-TW';
-import zhCN from './zh-CN';
+import enUS from '../../public/locales/en-US';
+import jaJP from '../../public/locales/ja-JP';
+import zhTW from '../../public/locales/zh-TW';
+import zhCN from '../../public/locales/zh-CN';
 import { getOptions, DEFAULT_NS } from './settings';
+
+let cacheI18n: i18n;
 
 export type Resources = {
   [key in keyof typeof resources]: (typeof resources)[key] & {
@@ -40,7 +42,10 @@ const initI18next = async (lng: Lng, ns: string = DEFAULT_NS) => {
 };
 
 export async function useTranslation(lng: Lng, options = { keyPrefix: '' }) {
-  const i18nextInstance = await initI18next(lng);
+  const i18nextInstance = cacheI18n ? cacheI18n : await initI18next(lng);
+  if (!cacheI18n) {
+    cacheI18n = i18nextInstance;
+  }
 
   return {
     t: i18nextInstance.getFixedT(lng, options?.keyPrefix || ''),
