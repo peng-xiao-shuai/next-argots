@@ -5,12 +5,7 @@ const cookieName = 'i18next';
 acceptLanguage.languages(languages);
 
 export const config = {
-  matcher: [
-    // Skip all internal paths (_next)
-    '/((?!_next).*)',
-    // Optional: only run on root (/) URL
-    '/',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)'],
 };
 
 export function middleware(req: NextRequest) {
@@ -31,7 +26,7 @@ export function middleware(req: NextRequest) {
   ) {
     console.log('重定向到', `/${lng}${req.nextUrl.pathname}`);
 
-    return NextResponse.rewrite(
+    return NextResponse.redirect(
       new URL(`/${lng}${req.nextUrl.pathname}`, req.url)
     );
   }

@@ -4,10 +4,19 @@ import { Navbar, Transition, AppProvider } from './components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
+import { languages } from '@/locales/i18n';
 // import meta from './meta';
 const inter = Inter({ subsets: ['latin'] });
 
 // export const metadata = meta['/'];
+
+export async function getStaticPaths() {
+  const paths = languages.map((lng) => ({
+    params: { lng },
+  }));
+
+  return { paths, fallback: 'blocking' };
+}
 
 export default function RootLayout({
   children,
