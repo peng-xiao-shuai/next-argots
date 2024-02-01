@@ -38,13 +38,13 @@ export const Dialog: FC<{
               const time = setTimeout(() => {
                 setVisible(!visible);
                 clearTimeout(time);
-                // 与 duration-300 时间相同
-              }, 300);
+                // 与 duration-200 时间相同
+              }, 200);
             })
           }
         >
           <div
-            className={`p-5 rounded-lg bg-base-300 max-w-[90vw] min-w-[8rem] transition-all duration-300 transform scale-50 ${
+            className={`p-5 rounded-lg bg-base-300 max-w-[90vw] min-w-[8rem] transition-all duration-200 transform scale-50 ${
               boxVisible ? '!scale-100 opacity-100' : 'scale-50 opacity-0'
             }`}
             onClick={(e) => e.stopPropagation()}
