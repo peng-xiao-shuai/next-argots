@@ -1,10 +1,11 @@
 'use client';
 import bus from '@/utils/bus';
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import type { Meta } from '../meta';
-import { LocaleContext } from '@/context';
+import { useTranslation } from '@/locales/client';
 import { AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';
+import { COMMON_KEYS } from '@@/locales/keys';
 
 export const NavRight: FC<{
   metadata: Meta;
@@ -13,11 +14,12 @@ export const NavRight: FC<{
   const handleComplete = () => {
     bus.emit('complete');
   };
-  const { language } = useContext(LocaleContext);
+  const { t, i18n } = useTranslation();
+
   return (
     <>
       {metadata.rightOperateType === 'setting' ? (
-        <Link href={`/${language}/setting`}>
+        <Link href={`/${i18n.language}/setting`}>
           <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
         </Link>
       ) : (
@@ -29,7 +31,7 @@ export const NavRight: FC<{
           className="btn btn-active btn-primary btn-sm"
           onClick={handleComplete}
         >
-          Complete
+          {t(COMMON_KEYS.COMPLETE)}
         </button>
       ) : (
         <></>

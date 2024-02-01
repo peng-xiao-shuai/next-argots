@@ -4,8 +4,9 @@ import logo from '/public/logo4.png';
 import { useContext, useState } from 'react';
 import Image from 'next/image';
 import { useBusWatch } from '@/hooks/use-bus-watch';
-import { AppContext, LocaleContext } from '@/context';
+import { AppContext } from '@/context';
 import { SETTING_KEYS } from '@@/locales/keys';
+import { useTranslation } from 'react-i18next';
 
 const BASE_SIZE = 13;
 const chat = [
@@ -37,7 +38,7 @@ const rangeData: Indexes<number> = {
 };
 
 export default function SizeChange() {
-  const { t } = useContext(LocaleContext);
+  const { t } = useTranslation();
   const setting = useContext(AppContext);
 
   // range 长度

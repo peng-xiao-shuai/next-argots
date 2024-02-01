@@ -26,7 +26,6 @@ const langs: { label: string; value: keyof Resources }[] = [
 export default function LangChange() {
   const setting = useContext(AppContext);
   const [locale, setLocale] = useState(setting.language);
-  // const { locale } = useI18n()
   const handleSwitchLang = (item: (typeof langs)[0]) => {
     if (item.value !== locale) {
       setLocale(item.value);

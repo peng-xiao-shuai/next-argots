@@ -1,13 +1,14 @@
 'use client';
 import './style.css';
 import logo from '/public/logo4.png';
-import { AppContext, LocaleContext } from '@/context';
+import { AppContext } from '@/context';
 import { COMMON_KEYS } from '@@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { AiOutlineRight } from 'react-icons/ai';
 import pck from '../../../../../package.json';
+import { useTranslation } from 'react-i18next';
 
 type AboutList = {
   label: string;
@@ -48,7 +49,7 @@ const aboutList: AboutList[] = [
 ];
 export default function About() {
   const setting = useContext(AppContext);
-  const { t } = useContext(LocaleContext);
+  const { t } = useTranslation();
   const router = useRouter();
   return (
     <>

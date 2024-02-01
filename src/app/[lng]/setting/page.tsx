@@ -2,13 +2,13 @@
 import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { COMMON_KEYS } from '@@/locales/keys';
-import { LocaleContext } from '@/context';
+import { useTranslation } from '@/locales/client';
 
 export default function Setting() {
   const router = useRouter();
-  const { t } = useContext(LocaleContext);
+  const { t } = useTranslation();
   const [lists, setLists] = useState([
     {
       label: '深色模式',

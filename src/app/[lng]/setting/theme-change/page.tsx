@@ -2,9 +2,10 @@
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import './style.scss';
 import { useContext, useState } from 'react';
-import { AppContext, LocaleContext } from '@/context';
+import { AppContext } from '@/context';
 import { setDataTheme } from '@/utils/set-theme';
 import { SETTING_KEYS } from '@@/locales/keys';
+import { useTranslation } from 'react-i18next';
 
 const patternList = [
   {
@@ -19,7 +20,7 @@ const patternList = [
   },
 ];
 export default function ThemeChange() {
-  const { t } = useContext(LocaleContext);
+  const { t } = useTranslation();
   const setting = useContext(AppContext);
   const [isAuto, setIsAuto] = useState(setting.dataTheme === 'auto');
   const [pattern, setPattern] = useState(

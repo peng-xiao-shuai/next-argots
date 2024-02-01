@@ -4,7 +4,7 @@ import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
 import { HOME_KEYS } from '@@/locales/keys';
-import { LocaleContext } from '@/context';
+import { useTranslation } from '@/locales/client';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
@@ -69,7 +69,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     formState: { errors },
   } = useForm<FormData>();
 
-  const { t } = useContext(LocaleContext);
+  const { t } = useTranslation();
   const { signin } = usePusher();
   const router = useRouter();
   const { setData } = useRoomStore();

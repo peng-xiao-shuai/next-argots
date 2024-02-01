@@ -1,15 +1,14 @@
 'use client';
-import { useContext } from 'react';
 import meta from '../meta';
-import { LocaleContext } from '@/context';
+import { useTranslation } from '@/locales/client';
 import { Lng, languages } from '@/locales/i18n';
 import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { NavRight } from './NavbarRight';
 import Link from 'next/link';
 
 export const Navbar = () => {
-  const { t, language } = useContext(LocaleContext);
+  const { t, i18n } = useTranslation();
   // path 路径携带 / 开头
   const path = usePathname();
   const pathArr = path.split('/');
@@ -17,7 +16,7 @@ export const Navbar = () => {
 
   const metadata = languages.includes(path.replace('/', '') as Lng)
     ? meta['/']
-    : meta[path.replace('/' + language, '')] || {};
+    : meta[path.replace('/' + i18n.language, '')] || {};
   // console.log(metadata, path);
   // console.log(
   //   i18next,

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import acceptLanguage from 'accept-language';
 import { languages, FALLBACK_LNG } from '@/locales/i18n';
-const cookieName = 'i18next';
+import { COOKIE_NAME } from './locales/settings';
+
 acceptLanguage.languages(languages);
 
 export const config = {
@@ -15,8 +16,8 @@ export function middleware(req: NextRequest) {
   )
     return NextResponse.next();
   let lng;
-  if (req.cookies.has(cookieName))
-    lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
+  if (req.cookies.has(COOKIE_NAME))
+    lng = acceptLanguage.get(req.cookies.get(COOKIE_NAME)?.value);
   if (!lng) lng = acceptLanguage.get(req.headers.get('Accept-Language'));
   if (!lng) lng = FALLBACK_LNG;
 
@@ -37,7 +38,7 @@ export function middleware(req: NextRequest) {
       refererUrl.pathname.startsWith(`/${l}`)
     );
     const response = NextResponse.next();
-    if (lngInReferer) response.cookies.set(cookieName, lngInReferer);
+    if (lngInReferer) response.cookies.set(COOKIE_NAME, lngInReferer);
     return response;
   }
 

@@ -1,7 +1,7 @@
 'use client';
-import { LocaleContext } from '@/context';
+import { useTranslation } from '@/locales/client';
 import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 const issueType = [
   {
@@ -22,7 +22,6 @@ const issueType = [
 ];
 
 export default function About() {
-  const { t } = useContext(LocaleContext);
   const [formData, setFormData] = useState({
     email: '',
     content: '',
@@ -30,6 +29,7 @@ export default function About() {
   });
 
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     setLoading(true);
