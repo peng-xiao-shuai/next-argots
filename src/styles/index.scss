@@ -50,3 +50,11 @@ body {
 .fade-in {
   animation: fadeIn 0.3s ease;
 }
+
+.home {
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(65, 37, 76, 1) 0%,
+    rgba(0, 0, 0, 1) 35%
+  );
+}
