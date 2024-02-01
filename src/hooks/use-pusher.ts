@@ -4,6 +4,8 @@ import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
+import { API_URL } from '@/enum';
+
 export enum MESSAGE_TYPE {
   INIT = 'init',
   PING = 'ping',
@@ -50,13 +52,13 @@ export const usePusher = () => {
         cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
         forceTLS: true,
         userAuthentication: {
-          endpoint: '/pusher/user-auth',
+          endpoint: API_URL.PUSHER_SIGNIN,
           transport: 'ajax',
           params: encryptData,
           headers: {},
         },
         channelAuthorization: {
-          endpoint: '/pusher/auth',
+          endpoint: API_URL.PUSHER_AUTH,
           transport: 'ajax',
           params: encryptData,
           headers: {},

@@ -10,6 +10,7 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
 import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
+import { API_URL } from '@/enum';
 
 const formDataRules = z.object({
   nickName: z.string().min(1, HOME_KEYS.EMPTY_NICKNAME).max(24),
@@ -84,7 +85,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     };
 
     try {
-      const data = await fetchReq('/pusher/getChannel', {
+      const data = await fetchReq(API_URL.GET_CHANNEL, {
         roomName: encryptData.roomName,
       });
       console.log(data);

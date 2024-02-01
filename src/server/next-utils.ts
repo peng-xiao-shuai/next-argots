@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import type { Express } from 'express';
 import type Pusher from 'pusher';
 import axios from 'axios';
+import { API_URL } from '../enum';
 
 const PORT = Number(process.env.PORT) || 3000;
 let pusherSignature: string;
@@ -17,7 +18,7 @@ export const nextApp = next({
 export const nextRequestHandler = nextApp.getRequestHandler();
 
 export const pusherAuth = (app: Express, pusher: Pusher) => {
-  app.post('/pusher/user-auth', (req, res) => {
+  app.post(API_URL.PUSHER_SIGNIN, (req, res) => {
     const { socket_id, nickName, passWord, roomName } = req.body;
 
     // Replace this with code to retrieve the actual user id and info
@@ -31,7 +32,7 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
     res.status(200).json(authResponse);
   });
 
-  app.post('/pusher/auth', async (req, res) => {
+  app.post(API_URL.PUSHER_AUTH, async (req, res) => {
     const { socket_id, nickName, passWord, roomName } = req.body;
 
     if (!roomName) {
@@ -79,7 +80,7 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
   /**
    * 判断是否存在房间号
    */
-  app.post('/pusher/getChannel', async (req, res) => {
+  app.post(API_URL.GET_CHANNEL, async (req, res) => {
     const { roomName } = req.body;
 
     if (!roomName) {
