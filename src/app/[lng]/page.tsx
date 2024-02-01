@@ -1,15 +1,22 @@
 'use client';
 import logo from '/public/logo4.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, HomeForm } from './components';
 import { useTranslation } from '@/locales/client';
 import { HOME_KEYS } from '@@/locales/keys';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Home({ params: { lng } }: CustomReactParams) {
   const [roomStatus, setRoomStatus] = useState<'ADD' | 'JOIN'>('ADD');
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(`/${lng}/setting`);
+    router.prefetch(`/${lng}/chat-room`);
+  }, [router, lng]);
 
   // 点击加入/创建房间按钮
   const handleRoom = (type: 'JOIN' | 'ADD') => {
@@ -19,7 +26,7 @@ export default function Home({ params: { lng } }: CustomReactParams) {
 
   return (
     <>
-      <div className="flex flex-wrap h-[82vh] items-center">
+      <div className="flex flex-wrap h-[80%] items-center">
         <Image
           className="w-32 h-32 m-auto mask mask-squircle"
           src={logo}
