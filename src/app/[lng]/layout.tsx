@@ -29,7 +29,10 @@ export default function RootLayout({
           <AppProvider language={lng}>
             <Navbar />
 
-            <Transition className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto">
+            <Transition
+              language={lng}
+              className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto"
+            >
               {children}
             </Transition>
           </AppProvider>
