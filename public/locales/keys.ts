@@ -12,6 +12,8 @@ export enum SETTING_KEYS {
   FONT_PREVIEW = 'Font_preview',
 
   E_MAIL = 'e-mail',
+  E_MAIL_OPTIONAL = 'e-mail_optional',
+  PLEASE_E_MAIL = 'please_e_mail',
   OPTIONAL = 'optional',
   FEEDBACK_TYPES = 'feedback_types',
   I_WANT_TO = 'i_want_to',

@@ -1,4 +1,4 @@
-import { SETTING_KEYS } from '../keys';
+import { HOME_KEYS, SETTING_KEYS } from '../keys';
 
 export const SETTING = {
   [SETTING_KEYS.MODE_AUTO]: '跟隨系統',
@@ -13,7 +13,9 @@ export const SETTING = {
   [SETTING_KEYS.SIZE_DEFAULT]: '標準',
   [SETTING_KEYS.FONT_PREVIEW]: '預覽字體',
 
-  [SETTING_KEYS.E_MAIL]: '郵箱',
+  [SETTING_KEYS.E_MAIL]: `郵箱`,
+  [SETTING_KEYS.E_MAIL_OPTIONAL]: `$t(${SETTING_KEYS.E_MAIL}) ($t(${SETTING_KEYS.OPTIONAL}))`,
+  [SETTING_KEYS.PLEASE_E_MAIL]: `$t(${HOME_KEYS.PLEASE_INPUT})$t(${SETTING_KEYS.E_MAIL})`,
   [SETTING_KEYS.OPTIONAL]: '可選',
   [SETTING_KEYS.FEEDBACK_TYPES]: '反餽類型',
   [SETTING_KEYS.I_WANT_TO]: '我想要',
