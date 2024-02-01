@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { Lng } from '@/locales/i18n';
 import { SettingContextData, AppContext, defaultData } from '@/context';
 import { setDataTheme } from '@/utils/set-theme';
-import { LocaleProvider } from './LocaleProvider';
 
 export function AppProvider({
   children,
@@ -32,9 +31,5 @@ export function AppProvider({
       setDataTheme(data.dataTheme);
     }
   }, [path]);
-  return (
-    <AppContext.Provider value={setting}>
-      <LocaleProvider language={language}>{children}</LocaleProvider>
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={setting}>{children}</AppContext.Provider>;
 }
