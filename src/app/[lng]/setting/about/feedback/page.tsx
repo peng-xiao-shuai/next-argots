@@ -48,11 +48,11 @@ export default function About() {
   return (
     <>
       <div className="text-neutral-content mb-2 opacity-50 _p-x">
-        {t(SETTING_KEYS.E_MAIL)}
+        {t(SETTING_KEYS.E_MAIL_OPTIONAL)}
       </div>
       <input
         v-model="formData.email"
-        placeholder={t(SETTING_KEYS.E_MAIL)}
+        placeholder={t(SETTING_KEYS.PLEASE_E_MAIL)}
         className={`mb-4 input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
       />
 
@@ -86,7 +86,7 @@ export default function About() {
             onClick={() => (formData.type = issue.value)}
           >
             <span className="text-xl inline-block mr-1">{issue.emo}</span>
-            <span>{t(issue.locale)}</span>
+            <span className="text-xs">{t(issue.locale)}</span>
           </div>
         ))}
       </div>
