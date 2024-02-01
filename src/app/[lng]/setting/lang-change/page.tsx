@@ -1,10 +1,13 @@
 'use client';
-import { AppContext } from '@/context';
 import { useBusWatch } from '@/hooks/use-bus-watch';
-import { useContext, useState } from 'react';
-import { Resources } from '@/locales/i18n';
+import { useState } from 'react';
+import { Lng } from '@/locales/i18n';
+import { useTranslation } from '@/locales/client';
+import { usePathname, useRouter } from 'next/navigation';
+import { COOKIE_NAME } from '@/locales/settings';
+import { useCookies } from 'react-cookie';
 
-const langs: { label: string; value: keyof Resources }[] = [
+const langs: { label: string; value: Lng }[] = [
   {
     label: '简体中文',
     value: 'zh-CN',
@@ -23,22 +26,22 @@ const langs: { label: string; value: keyof Resources }[] = [
   },
 ];
 
-export default function LangChange() {
-  const setting = useContext(AppContext);
-  const [locale, setLocale] = useState(setting.language);
+export default function LangChange({ params: { lng } }: CustomReactParams) {
+  const { i18n } = useTranslation();
+  const router = useRouter();
+  const path = usePathname();
+  const [, setCookie] = useCookies([COOKIE_NAME]);
+  const [locale, setLocale] = useState(i18n.language);
   const handleSwitchLang = (item: (typeof langs)[0]) => {
     if (item.value !== locale) {
       setLocale(item.value);
     }
   };
+
   const handleComplete = () => {
-    window.localStorage.setItem(
-      'settings',
-      JSON.stringify({
-        ...setting,
-        locale,
-      })
-    );
+    setCookie(COOKIE_NAME, locale);
+
+    router.replace(path.replace(lng, locale));
   };
   useBusWatch('complete', handleComplete);
 
@@ -55,7 +58,6 @@ export default function LangChange() {
         >
           <span className="label-text">{item.label}</span>
           <input
-            v-model="lang"
             type="radio"
             name="radio"
             className={`
@@ -64,6 +66,9 @@ export default function LangChange() {
             `}
             checked={locale === item.value}
             value={item.value}
+            onChange={({ target }) => {
+              setLocale(target.value as Lng);
+            }}
           />
         </label>
       ))}

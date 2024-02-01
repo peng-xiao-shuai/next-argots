@@ -5,7 +5,6 @@ import { Lng } from '@/locales/i18n';
 import { COMMON_KEYS } from '@@/locales/keys';
 
 export interface DefaultData {
-  language: Lng;
   size: number;
   name: string;
   dataTheme: 'dark' | 'light' | 'auto';
@@ -19,7 +18,6 @@ export interface SettingContextData extends DefaultData {
 }
 
 export const defaultData: DefaultData = {
-  language: 'zh-CN',
   size: 16,
   dataTheme: 'dark',
   name: COMMON_KEYS.PACKAGE_NAME,
