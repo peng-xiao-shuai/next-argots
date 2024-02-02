@@ -1,6 +1,6 @@
 // 保证layout为服务端组件
 import { Inter } from 'next/font/google';
-import { Navbar, Transition, AppProvider } from './components';
+import { Navbar, Transition, AppProvider, TrpcProviders } from './components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
@@ -26,17 +26,18 @@ export default function RootLayout({
     <html lang={lng} data-theme={'dark'} dir={dir(lng)}>
       <body>
         <main className="w-full h-[100vh] m-0 p-[var(--padding)] relative box-border  overflow-x-hidden">
-          <AppProvider language={lng}>
-            <Navbar />
+          <TrpcProviders>
+            <AppProvider language={lng}>
+              <Navbar />
 
-            <Transition
-              language={lng}
-              className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto"
-            >
-              {children}
-            </Transition>
-          </AppProvider>
-
+              <Transition
+                language={lng}
+                className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto"
+              >
+                {children}
+              </Transition>
+            </AppProvider>
+          </TrpcProviders>
           <Toaster />
         </main>
       </body>
