@@ -1,9 +1,22 @@
 'use client';
 import { useTranslation } from '@/locales/client';
+import { trpc } from '&/trpc/client';
 import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-const issueType = [
+type FormData = {
+  email: string;
+  content: string;
+  type: '1' | '2' | '3';
+};
+
+const issueType: {
+  emo: string;
+  locale: string;
+  value: FormData['type'];
+}[] = [
   {
     value: '1',
     locale: SETTING_KEYS.ISSUE,
@@ -22,23 +35,43 @@ const issueType = [
 ];
 
 export default function About() {
-  const [formData, setFormData] = useState({
+  const { mutate } = trpc.feedbackAdd.useMutation({
+    onSuccess: () => {
+      toast.success('反馈成功！');
+      setLoading(false);
+
+      setFormData({
+        ...formData,
+        content: '',
+      });
+    },
+    onError: (err, v, c) => {
+      // toast.success('反馈成功！');
+      console.log(err, v, c);
+
+      setLoading(false);
+    },
+  });
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     content: '',
     type: '1',
   });
 
+  const verifyEmail = z.string().email();
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
   const handleSubmit = () => {
+    if (formData.email && !verifyEmail.safeParse(formData.email).success) {
+      // TODO
+      toast.error('邮箱格式不正确！');
+      return;
+    }
     setLoading(true);
-    // addFeedback({
-    //   feedbackContent: formData.content,
-    //   feedbackEmail: formData.email,
-    //   feedbackType: formData.type,
-    // }).then((res) => {
-    //   console.log(res.data)
+
+    mutate(formData);
+
     setTimeout(() => {
       setLoading(false);
     }, 1000);
@@ -51,7 +84,14 @@ export default function About() {
         {t(SETTING_KEYS.E_MAIL_OPTIONAL)}
       </div>
       <input
-        v-model="formData.email"
+        value={formData.email}
+        onChange={({ target }) => {
+          setFormData((state) => ({
+            ...state,
+            email: target.value,
+          }));
+        }}
+        // 需要提示如果不传递邮箱则无法获得反馈信息
         placeholder={t(SETTING_KEYS.PLEASE_E_MAIL)}
         className={`mb-4 input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
       />
