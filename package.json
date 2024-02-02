@@ -4,14 +4,17 @@
   "private": true,
   "scripts": {
     "next:dev": "next",
-    "dev": "cross-env nodemon",
-    "generate:types": "cross-env payload generate:types",
+    "dev": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts nodemon",
+    "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload generate:types",
     "build": "rimraf dist .next & tsc -p tsconfig.server.json & next build",
     "start": "node dist/index.js",
     "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
+    "@payloadcms/bundler-webpack": "^1.0.6",
+    "@payloadcms/db-mongodb": "^1.4.0",
+    "@payloadcms/richtext-slate": "^1.4.0",
     "@tanstack/react-query": "4.36.1",
     "@trpc/client": "^10.43.1",
     "@trpc/next": "^10.43.1",
@@ -31,7 +34,7 @@
     "i18next-resources-to-backend": "^1.2.0",
     "mitt": "^3.0.1",
     "next": "^14.0.1",
-    "payload": "^2.0.15",
+    "payload": "^2.9.0",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0-rc2",
     "react": "^18",
