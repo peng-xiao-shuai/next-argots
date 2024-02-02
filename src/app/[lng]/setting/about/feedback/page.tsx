@@ -5,17 +5,17 @@ import { useState } from 'react';
 
 const issueType = [
   {
-    value: 0,
+    value: '1',
     locale: SETTING_KEYS.ISSUE,
     emo: `😒`,
   },
   {
-    value: 2,
+    value: '2',
     locale: SETTING_KEYS.OPINION,
     emo: `🤔`,
   },
   {
-    value: 3,
+    value: '3',
     locale: SETTING_KEYS.I_WANT_TO,
     emo: `😍`,
   },
@@ -25,7 +25,7 @@ export default function About() {
   const [formData, setFormData] = useState({
     email: '',
     content: '',
-    type: 0,
+    type: '1',
   });
 
   const [loading, setLoading] = useState(false);
@@ -63,6 +63,7 @@ export default function About() {
       <textarea
         value={formData.content}
         placeholder={t(SETTING_KEYS.CONTENT) + '...'}
+        maxLength={300}
         className="textarea resize-none h-56 mb-4 w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary"
         onChange={({ target }) => {
           setFormData((state) => ({
