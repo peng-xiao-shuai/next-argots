@@ -1,29 +1,38 @@
 /**
  * 反馈
  */
+import env from 'dotenv';
 import { CollectionBeforeChangeHook, CollectionConfig } from 'payload/types';
 import { FeedbackRecord } from '../payload/payload-types';
-import { getPayloadClient } from '../payload/get-payload';
+import { Resend } from 'resend';
+
+env.config({ path: '.env.local' });
+env.config({ path: '.env' });
+
+console.log(process.env.RESEND_API_KEY);
 
 const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
   data,
 }) => {
-  // const payload = await getPayloadClient();
-  // data.operateType = (data.count || 0) >= 0 ? 'added' : 'reduce';
+  if (data.email) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // const result = await payload.findByID({
-  //   collection: 'users', // required
-  //   id: data.userId as any, // required
-  // });
+    try {
+      await resend.emails.send({
+        from: 'Privacy Chat <reply@resend.dev>',
+        to: [data.email],
+        // TODO 更改
+        subject: '问题反馈回复',
+        // TODO 转string
+        html: data.replyContent,
+      });
+    } catch (error) {
+      return data;
+    }
+  }
 
-  // await payload.update({
-  //   collection: 'users', // required
-  //   id: data.userId as any, // required
-  //   data: {
-  //     ...result,
-  //     points: (result.points || 0) + data.count!,
-  //   },
-  // });
+  // 修改状态为已回复
+  data.status = '1';
 
   return data;
 };
