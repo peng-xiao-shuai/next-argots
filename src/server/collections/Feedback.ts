@@ -34,6 +34,9 @@ export const Feedback: CollectionConfig = {
     {
       name: 'email',
       type: 'text',
+      access: {
+        read: ({ req: { user } }) => user.role === 'admin',
+      },
       admin: {
         readOnly: true,
       },

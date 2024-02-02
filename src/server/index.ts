@@ -14,6 +14,7 @@ import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { inferAsyncReturnType } from '@trpc/server';
 import { config } from 'dotenv';
 import { appRouter } from './trpc/routers';
+import { getPayloadClient } from './payload/get-payload';
 config({ path: '.env.local' });
 config({ path: '.env' });
 
@@ -63,12 +64,48 @@ const start = async () => {
   //   }
   // });
 
+  await getPayloadClient({
+    initOptions: {
+      express: app,
+      onInit: async (cms) => {
+        console.log('\x1b[36m%s\x1b[0m', '✨✨Admin URL: ' + cms.getAdminURL());
+      },
+    },
+  });
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cors());
 
   pusherAuth(app, pusher);
 
+  app.use(
+    '/api/trpc',
+    trpcExpress.createExpressMiddleware({
+      router: appRouter,
+      /**
+       * @see https://trpc.io/docs/server/adapters/express#3-use-the-express-adapter
+       * @example
+        // 加了 返回了 req, res 之后可以在 trpc 路由中直接访问
+        import { createRouter } from '@trpc/server';
+        import { z } from 'zod';
+
+        const exampleRouter = createRouter<Context>()
+          .query('exampleQuery', {
+            input: z.string(),
+            resolve({ input, ctx }) {
+              // 直接访问 req 和 res
+              const userAgent = ctx.req.headers['user-agent'];
+              ctx.res.status(200).json({ message: 'Hello ' + input });
+
+              // 你的业务逻辑
+              ...
+            },
+          });
+       */
+      createContext,
+    })
+  );
   app.use((req, res) => nextRequestHandler(req, res));
 
   // 准备生成 .next 文件
