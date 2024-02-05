@@ -5,28 +5,31 @@ import env from 'dotenv';
 import { CollectionBeforeChangeHook, CollectionConfig } from 'payload/types';
 import { FeedbackRecord } from '../payload/payload-types';
 import { Resend } from 'resend';
+import { slateToHtml } from '../payload/payload-utils';
 
 env.config({ path: '.env.local' });
 env.config({ path: '.env' });
 
-console.log(process.env.RESEND_API_KEY);
-
 const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
   data,
 }) => {
-  if (data.email) {
+  if (data.email && data.replyContent && data.replyContent.length) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
-      await resend.emails.send({
+      const response = await resend.emails.send({
         from: 'Privacy Chat <reply@resend.dev>',
         to: [data.email],
-        // TODO 更改
-        subject: '问题反馈回复',
-        // TODO 转string
-        html: data.replyContent,
+        subject: '[Feed Back] ' + data.content?.substring(0, 10) + '...',
+        html: slateToHtml(data.replyContent),
       });
+
+      if (response.error) {
+        throw response.error;
+      }
     } catch (error) {
+      console.log('send Error', error);
+
       return data;
     }
   }
