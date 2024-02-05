@@ -106,7 +106,6 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
         throw new Error(data.message);
       }
 
-      console.log('校验');
       setData(encryptData);
 
       signin()
