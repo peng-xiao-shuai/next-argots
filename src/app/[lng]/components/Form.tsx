@@ -85,10 +85,9 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     };
 
     try {
-      const data = await fetchReq(API_URL.GET_CHANNEL, {
+      const { data } = await fetchReq(API_URL.GET_CHANNEL, {
         roomName: encryptData.roomName,
       });
-      console.log(data);
 
       if (roomStatus === 'JOIN' && !data.isRoom) {
         setError('root.roomName', {
@@ -135,7 +134,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
       {formView.map((item, index) => (
         <div key={item.prop} className="w-full relative">
           <label className="inline-block text-accent-content mb-2 text-opacity-80 pl-2">
-            {item.locale}
+            {t(item.locale)}
           </label>
           <input
             type={item.type}

@@ -36,9 +36,11 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
     const { socket_id, nickName, passWord, roomName } = req.body;
 
     if (!roomName) {
-      res
-        .status(400)
-        .json({ code: '400', message: 'roomName 参数缺失', data: {} });
+      res.status(400).json({
+        code: '400',
+        message: '`roomName` Parameter missing',
+        data: {},
+      });
       return;
     }
 
@@ -51,9 +53,11 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
         data &&
         data.users?.find((item: { id: string }) => item.id === nickName)
       ) {
-        res
-          .status(200)
-          .json({ code: '50001', message: '用户名已存在', data: {} });
+        res.status(403).json({
+          code: '403',
+          message: 'The user name already exists',
+          data: {},
+        });
         return;
       }
 
@@ -71,9 +75,11 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
       );
       res.status(200).json(auth);
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ code: '500', message: error?.message || '未知错误', data: {} });
+      res.status(500).json({
+        code: '500',
+        message: error?.message || 'UNKNOWN ERROR',
+        data: {},
+      });
     }
   });
 
@@ -84,9 +90,11 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
     const { roomName } = req.body;
 
     if (!roomName) {
-      res
-        .status(400)
-        .json({ code: '400', message: 'roomName 参数缺失', data: {} });
+      res.status(400).json({
+        code: '400',
+        message: '`roomName` Parameter missing',
+        data: {},
+      });
       return;
     }
 
@@ -96,12 +104,10 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
         `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
       );
 
-      console.log(data, 'datadatadatadatadata');
-
       if (data && data.occupied) {
         res.status(200).json({
           code: '200',
-          message: '房间号已经存在',
+          message: 'The room number already exists',
           data: {
             isRoom: true,
           },
@@ -117,9 +123,11 @@ export const pusherAuth = (app: Express, pusher: Pusher) => {
         },
       });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ code: '500', message: error?.message || '未知错误', data: {} });
+      res.status(500).json({
+        code: '500',
+        message: error?.message || 'UNKNOWN ERROR',
+        data: {},
+      });
     }
   });
 };
@@ -160,15 +168,15 @@ export async function requestPusherApi(
     auth_version: '1.0',
   };
 
-  if (!pusherSignature) {
-    // 生成签名
-    pusherSignature = createPusherSignature({
-      method,
-      path,
-      params,
-      secret: process.env.PUSHER_APP_SECRET!,
-    });
-  }
+  // if (!pusherSignature) {
+  // 生成签名
+  pusherSignature = createPusherSignature({
+    method,
+    path,
+    params,
+    secret: process.env.PUSHER_APP_SECRET!,
+  });
+  // }
 
   // 构建完整的URL
   const queryString = Object.keys(params)
@@ -180,7 +188,7 @@ export async function requestPusherApi(
     const response = await axios.get(url);
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching channel users:', error.message);
-    return null;
+    console.error('Error fetching:', error.message);
+    throw new Error(error.message);
   }
 }

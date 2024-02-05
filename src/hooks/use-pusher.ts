@@ -82,13 +82,18 @@ export const usePusher = () => {
         'pusher:subscription_error',
         ({ status }: { status: number }) => {
           if (status == 403) {
+            // TODO
             toast('用户已存在');
 
             channel.unbind('pusher:subscription_error');
 
+            // TODO
             reject(new Error('用户已存在'));
             return;
           }
+
+          // TODO
+          reject(new Error());
         }
       );
       channel.bind('pusher:subscription_succeeded', (data: any) => {
