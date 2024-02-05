@@ -1,16 +1,18 @@
 import AES from '@/utils/aes';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
-import { API_URL } from '@/enum';
+import { API_URL, CustomEvent } from '@/enum';
+import { unicodeToString } from '@/utils/string-transform';
 
 export enum MESSAGE_TYPE {
-  INIT = 'init',
   PING = 'ping',
   PONG = 'pong',
   MSG = 'msg',
+  MEB_ADD = 'member_added',
+  MEB_RF = 'member_removed',
 }
 
 export type ChatObj = {
@@ -21,29 +23,44 @@ export type Chat = ChatObj & {
   isMy?: boolean;
 };
 
+export type MemberInfo = {
+  id: string;
+  info: {
+    name: string;
+  };
+};
+
 let channel: Channel;
 let cachePusher: Pusher;
 Pusher.logToConsole = true;
-export const usePusher = () => {
-  const [chat, setChat] = useState<Chat[]>([]);
+export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const [aes, setAes] = useState<AES>();
   const [pusher, setPusher] = useState<Pusher>(cachePusher);
   // 设置加密
   // const aes = ;
   // 3vS+Hi2uerOSnnOH49Epqw==
 
-  // useEffect(() => {
-  //   console.log('开始');
+  useEffect(() => {
+    console.log(setChat, 'setChat');
 
-  //   // 特别注意执行 Aes 是一个昂贵的过程
-  //   // setAes(
-  //   //   new AES({
-  //   //     passphrase: 'ccc',
-  //   //     salt: 'cccc',
-  //   //   })
-  //   // );
-  // }, []);
+    if (channel) {
+      removeObserve();
 
+      ObserveEntryOrExit();
+      receiveInformation();
+    }
+    // 特别注意执行 Aes 是一个昂贵的过程
+    // setAes(
+    //   new AES({
+    //     passphrase: 'ccc',
+    //     salt: 'cccc',
+    //   })
+    // );
+  }, []);
+
+  /**
+   * 校验
+   */
   const signin = () => {
     return new Promise((resolve, reject) => {
       const { encryptData } = useRoomStore.getState();
@@ -66,7 +83,6 @@ export const usePusher = () => {
       });
 
       // cachePusher.disconnect();
-      console.log(encryptData);
 
       setPusher(cachePusher);
 
@@ -103,9 +119,64 @@ export const usePusher = () => {
     });
   };
 
+  /**
+   * 观察用户进入房间或者离开房间
+   */
+  const ObserveEntryOrExit = () => {
+    console.log('开启监听');
+
+    channel.bind('pusher:member_added', ({ info: { name } }: MemberInfo) => {
+      setChatValue({
+        type: MESSAGE_TYPE.MEB_ADD,
+        // TODO i18n
+        msg: `🎉🎉 欢迎 ${unicodeToString(name)} 加入`,
+      });
+    });
+
+    channel.bind('pusher:member_removed', ({ info: { name } }: MemberInfo) => {
+      setChatValue({
+        type: MESSAGE_TYPE.MEB_RF,
+        // TODO i18n
+        msg: `🔌🔌 ${unicodeToString(name)} 已退出`,
+      });
+    });
+  };
+
+  /**
+   * 绑定自定义接受信息事件
+   */
+  const receiveInformation = () => {
+    console.log(setChat, 'setChat');
+
+    channel.bind(CustomEvent.RECEIVE_INFORMATION, ({ msg }: ChatObj) => {
+      setChatValue({
+        type: MESSAGE_TYPE.MSG,
+        msg,
+      });
+    });
+  };
+
+  /**
+   * 清除更改chat的监听
+   */
+  const removeObserve = () => {
+    channel.unbind('pusher:member_removed');
+    channel.unbind('pusher:member_added');
+    channel.unbind(CustomEvent.RECEIVE_INFORMATION);
+  };
+
+  /**
+   *修改数据
+   */
+  const setChatValue = (value: Chat) => {
+    console.log(setChat, 'setChat');
+
+    setChat?.((c) => c.concat(value));
+  };
+
   return {
-    chat,
     pusher,
     signin,
+    ObserveEntryOrExit,
   };
 };

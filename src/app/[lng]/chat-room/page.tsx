@@ -2,7 +2,7 @@
 import './style.scss';
 import { useEffect, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
-import { usePusher } from '@/hooks/use-pusher';
+import { Chat, usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.jpg';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -47,8 +47,9 @@ const ChatRecords = (
 export default function Chat() {
   const pathname = usePathname();
   const [content, setContent] = useState('');
+  const [chat, setChat] = useState<Chat[]>([]);
   const [height, setHeight] = useState('');
-  const { chat, pusher } = usePusher();
+  const { pusher } = usePusher(setChat);
 
   // 自动增长高度
   const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -59,7 +60,7 @@ export default function Chat() {
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
-        pusher.disconnect();
+        pusher?.disconnect?.();
       }
     };
   }, [pathname, pusher]);
@@ -70,7 +71,7 @@ export default function Chat() {
         {chat.map((item, index) => (
           <div key={index}>
             {/* 文字类型 */}
-            <ChatRecords isMy={item.isMy} msg={item.msg}></ChatRecords>
+            <ChatRecords msg={item.msg}></ChatRecords>
           </div>
         ))}
       </div>
