@@ -26,9 +26,13 @@ export const Navbar = () => {
   const [navTitle, setNavTitle] = useState(t(metadata.locale));
 
   useEffect(() => {
+    // 处理navbar 显示文字
     if (metadata.locale === COMMON_KEYS.CHAT) {
       setNavTitle(unicodeToString(encryptData.roomName));
+    } else {
+      setNavTitle(t(metadata.locale));
     }
+
     const beforeunload = (event: BeforeUnloadEvent) => {
       // Cancel the event as stated by the standard.
       event.preventDefault();
@@ -43,9 +47,8 @@ export const Navbar = () => {
 
     return () => {
       window.removeEventListener('beforeunload', beforeunload);
-      console.log('xiaohui1', 'beforeunload');
     };
-  }, [encryptData, metadata.locale]);
+  }, [encryptData, metadata.locale, t]);
 
   return (
     <>
