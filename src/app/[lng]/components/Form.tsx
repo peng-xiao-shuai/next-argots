@@ -3,7 +3,7 @@ import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
-import { HOME_KEYS } from '@@/locales/keys';
+import { COMMON_KEYS, HOME_KEYS } from '@@/locales/keys';
 import { useTranslation } from '@/locales/client';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
@@ -172,10 +172,10 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
       >
         <span
           className={`loading loading-spinner ${
-            loading ? 'opacity-0' : 'loading-hidden'
+            loading ? 'opacity-1' : 'loading-hidden'
           }`}
         />
-        {'Confirm'}
+        {t(COMMON_KEYS.COMPLETE)}
       </button>
     </form>
   );

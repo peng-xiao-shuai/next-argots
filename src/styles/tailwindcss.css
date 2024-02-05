@@ -32,7 +32,7 @@
 
   .btn,
   .loading {
-    @apply transition-all duration-300;
+    @apply flex items-center transition-all duration-300;
   }
 
   .loading-hidden {

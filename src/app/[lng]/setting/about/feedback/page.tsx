@@ -139,7 +139,7 @@ export default function About() {
       >
         <span
           className={`loading loading-spinner ${
-            loading ? 'opacity-0' : 'loading-hidden'
+            loading ? 'opacity-1' : 'loading-hidden'
           }`}
         />
         {t(COMMON_KEYS.CONFIRM)}
