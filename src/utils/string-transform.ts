@@ -14,13 +14,6 @@ export function parseCookies(cookieString: string) {
 }
 
 /**
- * @author: peng-xiao-shuai
- * @date: 2023-09-09 01:04:33
- * @last Modified by: peng-xiao-shuai
- * @last Modified time: 2023-09-09 01:04:33
- */
-
-/**
  * 字符串转unicode
  * @author peng-xiao-shuai
  * @param {string} str
@@ -40,7 +33,7 @@ export const stringToUnicode = (str: string) => {
  */
 export const unicodeToString = (unicodeStr: string) => {
   return unicodeStr
-    .replace(/[_]/g, '/')
+    .replace(/[_]/g, '\\')
     .split('\\u')
     .filter(Boolean)
     .map((uni) => String.fromCharCode(Number.parseInt(uni, 16)))
