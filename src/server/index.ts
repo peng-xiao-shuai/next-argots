@@ -12,6 +12,7 @@ import * as trpcExpress from '@trpc/server/adapters/express';
 import type { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { inferAsyncReturnType } from '@trpc/server';
+import nextBuild from 'next/dist/build';
 import { config } from 'dotenv';
 import { appRouter } from './trpc/routers';
 import { getPayloadClient } from './payload/get-payload';
