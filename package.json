@@ -6,8 +6,12 @@
     "next:dev": "next",
     "dev": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts nodemon",
     "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload generate:types",
-    "build": "rimraf dist .next & tsc -p tsconfig.server.json & next build",
-    "start": "node dist/index.js",
+    "build:payload": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build:next": "cross-env PAYLOAD_CONFIG_PATH=dist/server/payload/payload.config.js NEXT_BUILD=true node dist/server/index.js",
+    "build": "cross-env NODE_ENV=production yarn build:payload && yarn build:server && yarn copyfiles && yarn build:next",
+    "start": "cross-env PAYLOAD_CONFIG_PATH=dist/payload/payload.config.js NODE_ENV=production node dist/index.js",
+    "copyfiles": "copyfiles -u 1 \"src/**/*.{html,css,scss,ttf,woff,woff2,eot,svg,jpg,png}\" dist/",
     "lint": "next lint"
   },
   "dependencies": {
@@ -22,6 +26,7 @@
     "@trpc/server": "^10.43.1",
     "accept-language": "^3.0.18",
     "axios": "^1.6.6",
+    "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "crypto": "^1.0.1",

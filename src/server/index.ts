@@ -63,8 +63,8 @@ const start = async () => {
   //     console.log('\x1b[36m%s\x1b[0m', error.message);
   //   }
   // });
-
-  await getPayloadClient({
+  // 获取 payload
+  const payload = await getPayloadClient({
     initOptions: {
       express: app,
       onInit: async (cms) => {
@@ -72,6 +72,18 @@ const start = async () => {
       },
     },
   });
+  if (process.env.NEXT_BUILD) {
+    app.listen(port, async () => {
+      payload.logger.info('Next.js is building for production');
+
+      // @ts-expect-error
+      await nextBuild(path.join(__dirname, '../'));
+
+      process.exit();
+    });
+
+    return;
+  }
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
