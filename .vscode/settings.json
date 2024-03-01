@@ -71,19 +71,20 @@
     "source.fixAll.stylelint": true
   },
   "cSpell.words": [
-    "tailwindcss",
-    "peng-xiao-shuai",
-    "esnext",
-    "pnpm",
-    "esno",
+    "copyfiles",
     "daisyui",
-    "payloadcms",
-    "trpc",
-    "tanstack",
-    "sonner",
+    "esnext",
+    "esno",
     "okxwallet",
+    "payloadcms",
+    "peng-xiao-shuai",
+    "pnpm",
+    "signin",
+    "sonner",
     "SUPABASE",
-    "signin"
+    "tailwindcss",
+    "tanstack",
+    "trpc"
   ],
   // 控制相关文件嵌套展示
   "explorer.fileNesting.enabled": true,
