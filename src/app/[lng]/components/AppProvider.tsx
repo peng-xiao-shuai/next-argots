@@ -13,7 +13,7 @@ export function AppProvider({
   language: Lng;
 }) {
   const path = usePathname();
-  const [setting, setSetting] = useState({
+  const [setting, setSetting] = useState<SettingContextData>({
     ...defaultData,
     language: language,
   });
