@@ -10,7 +10,7 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
 import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
-import { API_URL } from '@/enum';
+import { API_URL } from '&/enum';
 
 const formDataRules = z.object({
   nickName: z.string().min(1, HOME_KEYS.EMPTY_NICKNAME).max(24),

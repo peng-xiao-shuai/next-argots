@@ -4,7 +4,7 @@ import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
-import { API_URL, CustomEvent } from '@/enum';
+import { API_URL, CustomEvent } from '@/server/enum';
 import { unicodeToString } from '@/utils/string-transform';
 
 export enum MESSAGE_TYPE {
@@ -56,6 +56,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     //     salt: 'cccc',
     //   })
     // );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
