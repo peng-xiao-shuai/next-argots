@@ -128,7 +128,7 @@ const start = async () => {
     app.listen(port, () => {
       console.log(
         '\x1b[36m%s\x1b[0m',
-        `🎉🎉> Ready on http://localhost:${port}`
+        `🎉🎉> Ready on ${process.env.NEXT_PUBLIC_SERVER_URL}. Port: ${port}`
       );
     });
   });

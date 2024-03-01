@@ -22,6 +22,7 @@
     "@hookform/resolvers": "^3.3.4",
     "@payloadcms/bundler-webpack": "^1.0.6",
     "@payloadcms/db-mongodb": "^1.4.0",
+    "@payloadcms/next-payload": "^0.1.11",
     "@payloadcms/richtext-slate": "^1.4.0",
     "@tanstack/react-query": "4.36.1",
     "@trpc/client": "^10.43.1",
