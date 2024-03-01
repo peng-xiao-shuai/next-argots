@@ -6,17 +6,12 @@ import { COOKIE_NAME } from './locales/settings';
 acceptLanguage.languages(languages);
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)'],
+  matcher: '/',
 };
 
 export function middleware(req: NextRequest) {
   console.log(req.nextUrl.pathname, 'req.nextUrl.pathname');
 
-  if (
-    req.nextUrl.pathname.indexOf('icon') > -1 ||
-    req.nextUrl.pathname.indexOf('chrome') > -1
-  )
-    return NextResponse.next();
   let lng;
   if (req.cookies.has(COOKIE_NAME))
     lng = acceptLanguage.get(req.cookies.get(COOKIE_NAME)?.value);
@@ -29,7 +24,7 @@ export function middleware(req: NextRequest) {
   ) {
     console.log('重定向到', `/${lng}${req.nextUrl.pathname}`);
 
-    return NextResponse.redirect(
+    return NextResponse.rewrite(
       new URL(`/${lng}${req.nextUrl.pathname}`, req.url)
     );
   }
@@ -44,5 +39,7 @@ export function middleware(req: NextRequest) {
     return response;
   }
 
-  return NextResponse.next();
+  return NextResponse.rewrite(
+    new URL(`/${lng || 'en-US'}${req.nextUrl.pathname}`, req.url)
+  );
 }
