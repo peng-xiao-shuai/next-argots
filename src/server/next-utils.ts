@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import type { Express } from 'express';
 import type Pusher from 'pusher';
 import axios from 'axios';
-import { API_URL } from '../enum';
+import { API_URL } from './enum';
 
 const PORT = Number(process.env.PORT) || 3000;
 let pusherSignature: string;
