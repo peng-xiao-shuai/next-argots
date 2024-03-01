@@ -7,6 +7,7 @@
 import Pusher from 'pusher';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { nextApp, nextRequestHandler, pusherAuth } from './next-utils';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import type { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone';
@@ -16,6 +17,7 @@ import nextBuild from 'next/dist/build';
 import { config } from 'dotenv';
 import { appRouter } from './trpc/routers';
 import { getPayloadClient } from './payload/get-payload';
+
 config({ path: '.env.local' });
 config({ path: '.env' });
 
