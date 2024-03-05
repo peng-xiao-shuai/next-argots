@@ -1,7 +1,7 @@
 import { COMMON_KEYS } from '../keys';
 
 export const COMMON = {
-  [COMMON_KEYS.PACKAGE_NAME]: '隱談',
+  [COMMON_KEYS.PACKAGE_NAME]: '隱語',
 
   [COMMON_KEYS.HOME]: '主頁',
   [COMMON_KEYS.CHAT]: '聊天',
