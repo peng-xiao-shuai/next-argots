@@ -6,9 +6,10 @@ import { useTranslation } from '@/locales/client';
 import { HOME_KEYS } from '@@/locales/keys';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { RoomStatus } from '@/server/enum';
 
 export default function Home({ params: { lng } }: CustomReactParams) {
-  const [roomStatus, setRoomStatus] = useState<'ADD' | 'JOIN'>('ADD');
+  const [roomStatus, setRoomStatus] = useState<RoomStatus>(RoomStatus.ADD);
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function Home({ params: { lng } }: CustomReactParams) {
   }, [router, lng]);
 
   // 点击加入/创建房间按钮
-  const handleRoom = (type: 'JOIN' | 'ADD') => {
+  const handleRoom = (type: RoomStatus) => {
     setRoomStatus(type);
     setVisible(true);
   };
@@ -36,13 +37,13 @@ export default function Home({ params: { lng } }: CustomReactParams) {
         <div className="flex my-auto m-t w-[100%] justify-around">
           <button
             className="w-[43%] btn btn-outline border-base-content text-base-content"
-            onClick={() => handleRoom('JOIN')}
+            onClick={() => handleRoom(RoomStatus.JOIN)}
           >
             {t(HOME_KEYS.SELECT_ROOM)}
           </button>
           <button
             className="w-[43%] btn btn-primary btn-active"
-            onClick={() => handleRoom('ADD')}
+            onClick={() => handleRoom(RoomStatus.ADD)}
           >
             {t(HOME_KEYS.CREATE_ROOM)}
           </button>

@@ -10,7 +10,7 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
 import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
-import { API_URL } from '&/enum';
+import { API_URL, RoomStatus } from '&/enum';
 
 const formDataRules = z.object({
   nickName: z.string().min(1, HOME_KEYS.EMPTY_NICKNAME).max(24),
@@ -28,7 +28,7 @@ type FormView = {
 };
 
 type HomeForm = FC<{
-  roomStatus: 'ADD' | 'JOIN';
+  roomStatus: RoomStatus;
 }>;
 export const HomeForm: HomeForm = ({ roomStatus }) => {
   const formView: FormView[] = [
@@ -89,7 +89,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
         roomName: encryptData.roomName,
       });
 
-      if (roomStatus === 'JOIN' && !data.isRoom) {
+      if (roomStatus === RoomStatus.JOIN && !data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
           message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.NO_ROOM_NAME}`,
@@ -97,7 +97,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
         throw new Error('');
       }
 
-      if (roomStatus === 'ADD' && data.isRoom) {
+      if (roomStatus === RoomStatus.ADD && data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
           message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.ROOM_NAME}`,
@@ -108,7 +108,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
 
       setData(encryptData);
 
-      signin()
+      signin(roomStatus)
         .then((res) => {
           router.push('/chat-room');
         })
@@ -139,6 +139,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
             type={item.type}
             placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
             {...register(item.prop, item.validation)}
+            maxLength={item.validation.maxLength as number}
             className={`${
               index === formView.length - 1 ||
               errors[item.prop] ||
