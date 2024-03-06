@@ -4,11 +4,11 @@
  * @last Modified by: peng-xiao-shuai
  * @last Modified time: 2024-01-We 06:58:00
  */
-import Pusher from 'pusher';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { nextApp, nextRequestHandler, pusherAuth } from './next-utils';
+import { nextApp, nextRequestHandler } from './next-utils';
+import { pusherAuthApi } from './pusher/pusher-auth';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import type { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
@@ -30,14 +30,6 @@ export const createContext = ({
 }: CreateHTTPContextOptions | CreateWSSContextFnOptions) => ({ req, res });
 
 export type ExpressContext = inferAsyncReturnType<typeof createContext>;
-
-export const pusher = new Pusher({
-  appId: process.env.PUSHER_APP_ID!,
-  key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
-  secret: process.env.PUSHER_APP_SECRET!,
-  cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
-  useTLS: true,
-});
 
 const start = async () => {
   // @see https://github.com/vercel/next.js/issues/54977
@@ -92,7 +84,7 @@ const start = async () => {
   app.use(express.urlencoded({ extended: false }));
   app.use(cors());
 
-  pusherAuth(app, pusher);
+  pusherAuthApi(app);
 
   app.use(
     '/api/trpc',
