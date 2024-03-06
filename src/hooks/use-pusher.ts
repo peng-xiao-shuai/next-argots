@@ -4,8 +4,10 @@ import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
-import { API_URL, CustomEvent } from '@/server/enum';
+import { API_URL, CustomEvent, RoomStatus } from '@/server/enum';
 import { unicodeToString } from '@/utils/string-transform';
+import { debounce } from '@/utils/debounce-throttle';
+import { hashSync, genSaltSync } from 'bcryptjs';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -41,82 +43,95 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   // 3vS+Hi2uerOSnnOH49Epqw==
 
   useEffect(() => {
-    console.log(setChat, 'setChat');
+    debounce(() => {
+      if (channel) {
+        removeObserve();
 
-    if (channel) {
-      removeObserve();
-
-      ObserveEntryOrExit();
-      receiveInformation();
-    }
-    // 特别注意执行 Aes 是一个昂贵的过程
-    // setAes(
-    //   new AES({
-    //     passphrase: 'ccc',
-    //     salt: 'cccc',
-    //   })
-    // );
+        ObserveEntryOrExit();
+        receiveInformation();
+      }
+      // 特别注意执行 Aes 是一个昂贵的过程
+      // setAes(
+      //   new AES({
+      //     passphrase: 'ccc',
+      //     salt: 'cccc',
+      //   })
+      // );
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
    * 校验
    */
-  const signin = () => {
+  const signin = (roomStatus: RoomStatus) => {
     return new Promise((resolve, reject) => {
       const { encryptData } = useRoomStore.getState();
+      const hash = hashSync(
+        encryptData.password,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
 
-      cachePusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
-        cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
-        forceTLS: true,
-        userAuthentication: {
-          endpoint: API_URL.PUSHER_SIGNIN,
-          transport: 'ajax',
-          params: encryptData,
-          headers: {},
-        },
-        channelAuthorization: {
-          endpoint: API_URL.PUSHER_AUTH,
-          transport: 'ajax',
-          params: encryptData,
-          headers: {},
-        },
-      });
+      if (!cachePusher) {
+        cachePusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+          cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
+          forceTLS: true,
+          userAuthentication: {
+            endpoint: API_URL.PUSHER_SIGNIN,
+            transport: 'ajax',
+            params: {
+              roomStatus,
+              ...encryptData,
+            },
+            headers: {
+              hash,
+            },
+          },
+          channelAuthorization: {
+            endpoint: API_URL.PUSHER_AUTH,
+            transport: 'ajax',
+            params: {
+              roomStatus,
+              ...encryptData,
+            },
+            headers: {
+              hash,
+            },
+          },
+        });
 
-      // cachePusher.disconnect();
+        setPusher(cachePusher);
 
-      setPusher(cachePusher);
-
-      cachePusher?.bind_global((...arg: any) => {
-        // 订阅成功
-        console.log('全局监听', arg);
-      });
+        cachePusher?.bind_global((...arg: any) => {
+          // 订阅成功
+          console.log('全局监听', arg);
+        });
+      }
 
       cachePusher!.signin();
-      channel = cachePusher!.subscribe('presence-' + encryptData.roomName);
-
-      channel.bind(
-        'pusher:subscription_error',
-        ({ status }: { status: number }) => {
-          if (status == 403) {
-            // TODO
-            toast('用户已存在');
-
-            channel.unbind('pusher:subscription_error');
-
-            // TODO
-            reject(new Error('用户已存在'));
-            return;
-          }
-
-          // TODO
-          reject(new Error());
+      // channel = cachePusher!.subscribe('presence-' + encryptData.roomName);
+      cachePusher.bind(
+        CustomEvent.SIGN_ERROR,
+        ({ message }: { message: string }) => {
+          toast(message);
+          cachePusher.unbind(CustomEvent.SIGN_ERROR);
+          cachePusher.disconnect();
+          reject(new Error(message));
         }
       );
-      channel.bind('pusher:subscription_succeeded', (data: any) => {
-        channel.unbind('pusher:subscription_succeeded');
-        resolve('');
-      });
+
+      // channel.bind(
+      //   'pusher:subscription_error',
+      //   ({ status, message }: { status: number; message: string }) => {
+      //     toast(message);
+      //     channel.unbind('pusher:subscription_error');
+      //     reject(new Error(message));
+      //   }
+      // );
+      // channel.bind('pusher:subscription_succeeded', (data: any) => {
+      //   channel.unbind('pusher:subscription_succeeded');
+      //   resolve('');
+      // });
     });
   };
 
