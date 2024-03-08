@@ -53,7 +53,7 @@ export const Navbar = () => {
   return (
     <>
       <div className="navbar rounded-lg min-h-12 fixed z-10 bg-base-300 box-border w-[calc(100%-var(--padding)*2)]">
-        <Link href={metadata.title === 'Home' ? '' : pathArr.join('/')}>
+        <Link href={metadata.title === 'Home' ? '' : pathArr.join('/')} replace>
           <div className="flex-none leading-none">
             <label
               className={`swap swap-rotate items-center ${

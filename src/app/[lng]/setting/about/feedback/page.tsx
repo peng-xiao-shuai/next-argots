@@ -64,8 +64,7 @@ export default function About() {
 
   const handleSubmit = () => {
     if (formData.email && !verifyEmail.safeParse(formData.email).success) {
-      // TODO
-      toast.error('邮箱格式不正确！');
+      toast.error(t(SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT));
       return;
     }
     setLoading(true);

@@ -15,8 +15,9 @@ import {
   SubscriptionSuccessMember,
 } from '@/server/pusher/type';
 import { useTranslation } from '@/locales/client';
-import { API_KEYS } from '@@/locales/keys';
+import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -45,7 +46,8 @@ let channel: Channel;
 let cachePusher: Pusher | null;
 Pusher.logToConsole = true;
 export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { replace } = useRouter();
   const [aes, setAes] = useState<AES>();
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
   // 设置加密
@@ -140,7 +142,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
            * 判断状态码
            */
           if (user_info.code !== '200') {
-            toast(user_info.message);
+            toast.error(user_info.message);
             cachePusher!.unbind('pusher:signin_success');
             // 断开连接并且清除缓存的pusher 否则会导致无法重新签名
             cachePusher!.disconnect();
@@ -159,19 +161,19 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
               switch (status) {
                 case 400:
-                  toast(t(API_KEYS.PUSHER_AUTH_400));
+                  toast.error(t(API_KEYS.PUSHER_AUTH_400));
                   break;
                 case 500:
-                  toast(t(API_KEYS.PUSHER_AUTH_500));
+                  toast.error(t(API_KEYS.PUSHER_AUTH_500));
                   break;
                 case 403:
-                  toast(t(API_KEYS.PUSHER_AUTH_403));
+                  toast.error(t(API_KEYS.PUSHER_AUTH_403));
                   break;
                 case 401:
-                  toast(t(API_KEYS.PUSHER_AUTH_401));
+                  toast.error(t(API_KEYS.PUSHER_AUTH_401));
                   break;
                 case 423:
-                  toast(t(API_KEYS.PUSHER_AUTH_423));
+                  toast.error(t(API_KEYS.PUSHER_AUTH_423));
                   break;
               }
 
@@ -206,8 +208,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
         setChatValue({
           type: MESSAGE_TYPE.MEB_ADD,
-          // TODO i18n
-          msg: `🎉🎉 欢迎 ${unicodeToString(info.name)} 加入`,
+          msg: `🎉🎉 ${t(CHAT_ROOM_KEYS.MEMBER_ADDED, {
+            name: unicodeToString(info.name),
+          })}`,
         });
       }
     );
@@ -215,16 +218,27 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     channel.bind(
       'pusher:member_removed',
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
+        console.log(info);
+
         setChatValue({
           type: MESSAGE_TYPE.MEB_RF,
-          // TODO i18n
           msg: `🔌🔌 ${
-            info.role === UserRole.HOUSE_OWNER ? '房主 ' : ''
-          }${unicodeToString(info.name)} 已退出`,
+            info.role !== UserRole.HOUSE_OWNER
+              ? t(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
+                  name: unicodeToString(info.name),
+                })
+              : t(CHAT_ROOM_KEYS.OWNER_MEMBER_REMOVED, {
+                  name: unicodeToString(info.name),
+                })
+          }`,
         });
 
         if (info.role === UserRole.HOUSE_OWNER) {
           unsubscribe();
+          const timeID = setTimeout(() => {
+            clearTimeout(timeID);
+            replace('/' + i18n.language);
+          }, 1000);
         }
       }
     );
@@ -248,9 +262,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 清除更改chat的监听
    */
   const removeObserve = () => {
-    channel.unbind('pusher:member_removed');
-    channel.unbind('pusher:member_added');
-    channel.unbind(CustomEvent.RECEIVE_INFORMATION);
+    channel?.unbind('pusher:member_removed');
+    channel?.unbind('pusher:member_added');
+    channel?.unbind(CustomEvent.RECEIVE_INFORMATION);
   };
 
   /**
@@ -296,9 +310,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    */
   const unsubscribe = () => {
     const { encryptData } = useRoomStore.getState();
-    cachePusher?.unsubscribe('presence-' + encryptData.roomName);
     removeObserve();
-    cachePusher!.disconnect();
+    cachePusher?.unsubscribe('presence-' + encryptData.roomName);
+    cachePusher?.disconnect();
     cachePusher = null;
   };
 

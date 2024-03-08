@@ -20,6 +20,7 @@ export enum SETTING_KEYS {
   ISSUE = 'issue',
   OPINION = 'opinion',
   CONTENT = 'content_feedback',
+  E_MAIL_FORMAT_IS_INCORRECT = 'e-mail_format_is_incorrect',
 }
 
 export enum HOME_KEYS {
@@ -41,6 +42,10 @@ export enum HOME_KEYS {
 
 export enum CHAT_ROOM_KEYS {
   SEND = 'Send',
+  MEMBER_ADDED = 'Member_added',
+  MEMBER_REMOVED = 'Member_removed',
+  OWNER_MEMBER_REMOVED = 'Owner_member_removed',
+  HOUSE_OWNER = 'House_owner',
 }
 
 export enum COMMON_KEYS {

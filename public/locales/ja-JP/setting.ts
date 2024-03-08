@@ -20,4 +20,5 @@ export const SETTING = {
   [SETTING_KEYS.ISSUE]: 'もんだい',
   [SETTING_KEYS.OPINION]: '意見',
   [SETTING_KEYS.CONTENT]: 'フィードバックの内容です',
+  [SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT]: `$t(${SETTING_KEYS.E_MAIL})フォーマットが正しくありません。`,
 };
