@@ -16,12 +16,12 @@
   .svg-icon {
     @apply h-6 fill-accent-content w-6;
   }
-
+  /* 
   svg {
     width: inherit;
     height: inherit;
     fill: inherit;
-  }
+  } */
 
   .chat-end .chat-bubble::before {
     left: 99% !important;

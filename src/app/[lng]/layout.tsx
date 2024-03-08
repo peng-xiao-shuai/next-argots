@@ -38,7 +38,7 @@ export default function RootLayout({
               </Transition>
             </AppProvider>
           </TrpcProviders>
-          <Toaster />
+          <Toaster richColors />
         </main>
       </body>
     </html>
