@@ -63,3 +63,11 @@ export enum COMMON_KEYS {
   CONFIRM = 'Confirm',
   COMPLETE = 'Complete',
 }
+
+export enum API_KEYS {
+  PUSHER_AUTH_401 = 'Incorrect_password',
+  PUSHER_AUTH_400 = 'Parameter_missing',
+  PUSHER_AUTH_403 = 'Access_denied',
+  PUSHER_AUTH_423 = 'Room_already_exists,_please_try_another',
+  PUSHER_AUTH_500 = 'Unknown_error',
+}
