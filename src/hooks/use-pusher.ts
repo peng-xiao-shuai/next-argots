@@ -4,10 +4,19 @@ import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
-import { API_URL, CustomEvent, RoomStatus } from '@/server/enum';
+import { API_URL, CustomEvent, RoomStatus, UserRole } from '@/server/enum';
 import { unicodeToString } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
-import { hashSync, genSaltSync } from 'bcryptjs';
+import { hashSync } from 'bcryptjs';
+import { UserAuthenticationData } from 'pusher-js/types/src/core/auth/options';
+import {
+  AuthSuccessUserData,
+  SigninSuccessUserData,
+  SubscriptionSuccessMember,
+} from '@/server/pusher/type';
+import { useTranslation } from '@/locales/client';
+import { API_KEYS } from '@@/locales/keys';
+import { UseMutateFunction } from '@tanstack/react-query';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -33,11 +42,12 @@ export type MemberInfo = {
 };
 
 let channel: Channel;
-let cachePusher: Pusher;
+let cachePusher: Pusher | null;
 Pusher.logToConsole = true;
 export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
+  const { t } = useTranslation();
   const [aes, setAes] = useState<AES>();
-  const [pusher, setPusher] = useState<Pusher>(cachePusher);
+  const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
   // 设置加密
   // const aes = ;
   // 3vS+Hi2uerOSnnOH49Epqw==
@@ -66,7 +76,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    */
   const signin = (roomStatus: RoomStatus) => {
     return new Promise((resolve, reject) => {
-      const { encryptData } = useRoomStore.getState();
+      const { encryptData, setUserInfoData } = useRoomStore.getState();
       const hash = hashSync(
         encryptData.password,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
@@ -102,36 +112,86 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
         setPusher(cachePusher);
 
-        cachePusher?.bind_global((...arg: any) => {
+        cachePusher.bind_global((...arg: any) => {
           // 订阅成功
           console.log('全局监听', arg);
         });
+        // cachePusher?.connection.bind('state_change', (error: any) => {
+        //   console.error('state_change', error);
+        // });
+        // cachePusher?.connection.bind('connecting', (error: any) => {
+        //   console.error('connection', error);
+        // });
+        // cachePusher?.connection.bind('connected', (error: any) => {
+        //   console.error('connected', error);
+        // });
       }
 
-      cachePusher!.signin();
-      // channel = cachePusher!.subscribe('presence-' + encryptData.roomName);
+      cachePusher.signin();
+      /**
+       * 签名成功
+       */
       cachePusher.bind(
-        CustomEvent.SIGN_ERROR,
-        ({ message }: { message: string }) => {
-          toast(message);
-          cachePusher.unbind(CustomEvent.SIGN_ERROR);
-          cachePusher.disconnect();
-          reject(new Error(message));
+        'pusher:signin_success',
+        ({ user_data }: UserAuthenticationData) => {
+          const { user_info } = JSON.parse(user_data) as SigninSuccessUserData;
+
+          /**
+           * 判断状态码
+           */
+          if (user_info.code !== '200') {
+            toast(user_info.message);
+            cachePusher!.unbind('pusher:signin_success');
+            // 断开连接并且清除缓存的pusher 否则会导致无法重新签名
+            cachePusher!.disconnect();
+            cachePusher = null;
+            reject(new Error(user_info.message));
+            return;
+          }
+          /**
+           * 开始订阅频道会发起 API_URL.PUSHER_AUTH 请求
+           */
+          channel = cachePusher!.subscribe('presence-' + encryptData.roomName);
+          channel.bind(
+            'pusher:subscription_error',
+            ({ status }: { type: string; status: number; error: string }) => {
+              console.log(status);
+
+              switch (status) {
+                case 400:
+                  toast(t(API_KEYS.PUSHER_AUTH_400));
+                  break;
+                case 500:
+                  toast(t(API_KEYS.PUSHER_AUTH_500));
+                  break;
+                case 403:
+                  toast(t(API_KEYS.PUSHER_AUTH_403));
+                  break;
+                case 401:
+                  toast(t(API_KEYS.PUSHER_AUTH_401));
+                  break;
+                case 423:
+                  toast(t(API_KEYS.PUSHER_AUTH_423));
+                  break;
+              }
+
+              channel.unbind('pusher:subscription_error');
+              // 断开连接并且清除缓存的pusher 否则会导致无法重新签名
+              cachePusher!.disconnect();
+              cachePusher = null;
+              reject(new Error());
+            }
+          );
+          channel.bind(
+            'pusher:subscription_succeeded',
+            ({ me: { info } }: SubscriptionSuccessMember) => {
+              setUserInfoData(info);
+              channel.unbind('pusher:subscription_succeeded');
+              resolve('');
+            }
+          );
         }
       );
-
-      // channel.bind(
-      //   'pusher:subscription_error',
-      //   ({ status, message }: { status: number; message: string }) => {
-      //     toast(message);
-      //     channel.unbind('pusher:subscription_error');
-      //     reject(new Error(message));
-      //   }
-      // );
-      // channel.bind('pusher:subscription_succeeded', (data: any) => {
-      //   channel.unbind('pusher:subscription_succeeded');
-      //   resolve('');
-      // });
     });
   };
 
@@ -141,21 +201,33 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const ObserveEntryOrExit = () => {
     console.log('开启监听');
 
-    channel.bind('pusher:member_added', ({ info: { name } }: MemberInfo) => {
-      setChatValue({
-        type: MESSAGE_TYPE.MEB_ADD,
-        // TODO i18n
-        msg: `🎉🎉 欢迎 ${unicodeToString(name)} 加入`,
-      });
-    });
+    channel.bind(
+      'pusher:member_added',
+      ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
+        setChatValue({
+          type: MESSAGE_TYPE.MEB_ADD,
+          // TODO i18n
+          msg: `🎉🎉 欢迎 ${unicodeToString(info.name)} 加入`,
+        });
+      }
+    );
 
-    channel.bind('pusher:member_removed', ({ info: { name } }: MemberInfo) => {
-      setChatValue({
-        type: MESSAGE_TYPE.MEB_RF,
-        // TODO i18n
-        msg: `🔌🔌 ${unicodeToString(name)} 已退出`,
-      });
-    });
+    channel.bind(
+      'pusher:member_removed',
+      ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
+        setChatValue({
+          type: MESSAGE_TYPE.MEB_RF,
+          // TODO i18n
+          msg: `🔌🔌 ${
+            info.role === UserRole.HOUSE_OWNER ? '房主 ' : ''
+          }${unicodeToString(info.name)} 已退出`,
+        });
+
+        if (info.role === UserRole.HOUSE_OWNER) {
+          unsubscribe();
+        }
+      }
+    );
   };
 
   /**
@@ -190,9 +262,51 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     setChat?.((c) => c.concat(value));
   };
 
+  /**
+   * 房主退出清除房间人员以及删除数据
+   */
+  const exitRoom = <
+    T extends UseMutateFunction<
+      never,
+      any,
+      {
+        roomName: string;
+        nickName: string;
+        recordId: string;
+      }
+    >
+  >(
+    mutate: T
+  ) => {
+    const { userInfo, encryptData } = useRoomStore.getState();
+
+    if (userInfo.role === UserRole.HOUSE_OWNER) {
+      mutate({
+        roomName: encryptData.roomName,
+        nickName: encryptData.nickName,
+        recordId: userInfo.roomRecordId || '',
+      });
+    } else {
+      unsubscribe();
+    }
+  };
+
+  /**
+   * 退订
+   */
+  const unsubscribe = () => {
+    const { encryptData } = useRoomStore.getState();
+    cachePusher?.unsubscribe('presence-' + encryptData.roomName);
+    removeObserve();
+    cachePusher!.disconnect();
+    cachePusher = null;
+  };
+
   return {
     pusher,
     signin,
     ObserveEntryOrExit,
+    exitRoom,
+    unsubscribe,
   };
 };

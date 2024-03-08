@@ -6,6 +6,7 @@ import { Chat, usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.jpg';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { trpc } from '@/server/trpc/client';
 
 const ChatRecords = (
   {
@@ -49,8 +50,15 @@ export default function Chat() {
   const [content, setContent] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
   const [height, setHeight] = useState('');
-  const { pusher } = usePusher(setChat);
-
+  const { pusher, exitRoom, unsubscribe } = usePusher(setChat);
+  const { mutate } = trpc.removeRoom.useMutation({
+    onSuccess: () => {
+      unsubscribe();
+    },
+    onError: (err, v) => {
+      console.log(err, v);
+    },
+  });
   // 自动增长高度
   const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHeight(`${target.scrollHeight}px`);
@@ -60,10 +68,11 @@ export default function Chat() {
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
-        pusher?.disconnect?.();
+        // pusher?.disconnect?.();
+        exitRoom<typeof mutate>(mutate);
       }
     };
-  }, [pathname, pusher]);
+  }, [pathname, pusher, exitRoom, mutate]);
 
   return (
     <>

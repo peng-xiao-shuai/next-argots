@@ -46,11 +46,10 @@ export interface FeedbackRecord {
 }
 export interface Room {
   id: string;
-  roomName?: string | null;
-  houseOwnerId?: string | null;
-  hash?: string | null;
-  salt?: string | null;
-  iv?: string | null;
+  roomId: string;
+  houseOwnerId: string;
+  hash: string;
+  iv: string;
   updatedAt: string;
   createdAt: string;
 }

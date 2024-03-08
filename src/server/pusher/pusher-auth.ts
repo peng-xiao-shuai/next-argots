@@ -5,12 +5,15 @@ import { API_URL, CustomEvent, RoomStatus, UserRole } from '../enum';
 import getPayloadClient from '../payload/get-payload';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
+import { AuthSuccessUserData, SigninSuccessUserData } from './type';
+import { Room } from '../payload/payload-types';
 
 let pusherSignature: string;
 
 export const pusherAuthApi = (app: Express) => {
   /**
-   * 身份验证 校验加密信息以及同房间是否存在用户名称
+   * 身份验证 校验加密信息以及同房间是否存在用户名称, 标准做法应该是直接返回成功签名数据，逻辑在
+   * 授权接口 API_URL.PUSHER_AUTH 中去判断
    */
   app.post(API_URL.PUSHER_SIGNIN, async (req, res) => {
     const { socket_id, nickName, roomStatus, password, roomName } = req.body;
@@ -24,20 +27,21 @@ export const pusherAuthApi = (app: Express) => {
       ])
     )
       return;
-    const user = {
+    const user: SigninSuccessUserData = {
       id: socket_id,
       user_info: {
         name: nickName,
+        code: '',
+        message: '',
       },
     };
-    const authResponse = pusher.authenticateUser(socket_id, user);
 
     try {
       /**
        * 加入房间判断是否存在同名用户
        */
       if (roomStatus === RoomStatus.JOIN) {
-        const data = await requestPusherApi(
+        const data = await requestPusherApi<{ users: { id: string }[] }>(
           `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
         );
 
@@ -45,11 +49,11 @@ export const pusherAuthApi = (app: Express) => {
           data &&
           data.users?.find((item: { id: string }) => item.id === nickName)
         ) {
+          user.user_info.code = '403';
+          user.user_info.message = 'The user name already exists';
+          const authResponse = pusher.authenticateUser(socket_id, user);
+
           res.status(200).json(authResponse);
-          pusher.sendToUser(socket_id, CustomEvent.SIGN_ERROR, {
-            code: '403',
-            message: 'The user name already exists',
-          });
           return;
         }
       }
@@ -57,13 +61,17 @@ export const pusherAuthApi = (app: Express) => {
        * 校验
        */
       if (!diffHash(password, req.headers['hash'] as string)) {
+        user.user_info.code = '403';
+        user.user_info.message = 'decryption failure';
+        const authResponse = pusher.authenticateUser(socket_id, user);
         res.status(200).json(authResponse);
-        pusher.sendToUser(socket_id, CustomEvent.SIGN_ERROR, {
-          code: '403',
-          message: 'decryption failure',
-        });
         return;
       }
+
+      user.user_info.code = '200';
+      user.user_info.message = '';
+      const authResponse = pusher.authenticateUser(socket_id, user);
+      res.status(200).json(authResponse);
     } catch (error: any) {
       console.log(error);
 
@@ -80,7 +88,8 @@ export const pusherAuthApi = (app: Express) => {
    */
   app.post(API_URL.PUSHER_AUTH, async (req, res) => {
     const { socket_id, nickName, password, roomStatus, roomName } = req.body;
-
+    const role =
+      roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
     if (
       !isPresence(res, req.body, [
         'nickName',
@@ -104,34 +113,81 @@ export const pusherAuthApi = (app: Express) => {
     }
 
     try {
+      const payload = await getPayloadClient();
+      const roomId = hashSync(
+        roomName,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
+      let iv = crypto.randomBytes(128 / 8).toString('hex');
+      let room: Room;
+
+      /**
+       * 判断是否存在房间，避免非浏览器发起请求时，没有走 API_URL.GET_CHANNEL
+       */
+      const { docs: roomList } = await payload.find({
+        collection: 'room',
+        context: {
+          role,
+        },
+        where: {
+          roomId: { equals: roomId },
+          hash: { equals: req.headers['hash'] },
+        },
+      });
+
       if (roomStatus === RoomStatus.ADD) {
-        const payload = await getPayloadClient();
-        payload.create({
+        // 房间号添加缺已经存在房间号
+        if (roomList.length) {
+          res.status(423).json({
+            code: '423',
+            message: 'Do not create rooms',
+            data: {},
+          });
+          return;
+        }
+
+        room = await payload.create({
           collection: 'room',
+          context: {
+            role,
+          },
           data: {
-            iv: password,
-            roomName: roomName,
-            houseOwnerId: nickName,
+            roomId: roomId,
+            iv,
+            houseOwnerId: hashSync(
+              nickName,
+              '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+            ),
             hash: req.headers['hash'] as string,
           },
         });
+      } else {
+        /**
+         * 这里只能有一个数据
+         */
+        if (!roomList.length) {
+          res.status(401).json({
+            code: '401',
+            message: 'Incorrect password',
+            data: {},
+          });
+          return;
+        } else {
+          room = roomList[0];
+        }
       }
 
-      if (roomStatus === RoomStatus.JOIN) {
-        // TODO 校验用户密码hash比对数据库
-      }
-
-      const presenceData = {
+      const presenceData: AuthSuccessUserData = {
         user_id: nickName,
         user_info: {
-          role:
-            roomStatus === RoomStatus.ADD
-              ? UserRole.HOUSE_OWNER
-              : UserRole.MEMBER,
-          pwd: roomStatus === RoomStatus.ADD ? password : '',
+          iv: room!.iv,
+          role,
+          roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
+          userId: nickName,
           name: nickName,
         },
       };
+
       const auth = pusher.authorizeChannel(
         socket_id,
         `presence-${roomName}`,
@@ -139,6 +195,8 @@ export const pusherAuthApi = (app: Express) => {
       );
       res.status(200).json(auth);
     } catch (error: any) {
+      console.log(error);
+
       res.status(500).json({
         code: '500',
         message: error?.message || 'UNKNOWN ERROR',
@@ -222,7 +280,7 @@ function createPusherSignature({ method, path, params, secret }: Body) {
 /**
  * 发起 pusher http 请求
  */
-export async function requestPusherApi(
+export async function requestPusherApi<T = any>(
   path: string,
   method: 'POST' | 'GET' = 'GET'
 ) {
@@ -250,7 +308,7 @@ export async function requestPusherApi(
 
   try {
     const response = await axios.get(url);
-    return response.data;
+    return response.data as T;
   } catch (error: any) {
     console.error('Error fetching:', error.message);
     throw new Error(error.message);
