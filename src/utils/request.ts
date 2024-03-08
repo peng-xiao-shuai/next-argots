@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 export const fetchReq = async (
   url: string,
   body: object,
@@ -21,6 +23,9 @@ export const fetchReq = async (
     return data;
   } catch (err: any) {
     console.log(url, '报错：', err);
+    if (err.message) {
+      toast.error(err.message);
+    }
     throw new Error(err.message);
   }
 };
