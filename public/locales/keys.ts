@@ -49,7 +49,7 @@ export enum CHAT_ROOM_KEYS {
 }
 
 export enum COMMON_KEYS {
-  PACKAGE_NAME = 'Privacy_Chat',
+  PACKAGE_NAME = 'argots',
 
   HOME = 'Home',
   CHAT = 'Chat',
