@@ -18,6 +18,9 @@ import { config } from 'dotenv';
 import { appRouter } from './trpc/routers';
 import { getPayloadClient } from './payload/get-payload';
 
+if (process.env.NODE_ENV === 'development') {
+  config({ path: '.env.development.local' });
+}
 config({ path: '.env.local' });
 config({ path: '.env' });
 

@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "next:dev": "next",
-    "dev": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts nodemon",
+    "dev": "cross-env NODE_ENV=development PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts nodemon",
     "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload generate:types",
     "build:payload": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload build",
     "build:server": "tsc -p tsconfig.server.json",

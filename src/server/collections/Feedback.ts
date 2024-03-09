@@ -1,14 +1,10 @@
 /**
  * 反馈
  */
-import env from 'dotenv';
 import { CollectionBeforeChangeHook, CollectionConfig } from 'payload/types';
 import { FeedbackRecord } from '../payload/payload-types';
 import { Resend } from 'resend';
 import { slateToHtml } from '../payload/payload-utils';
-
-env.config({ path: '.env.local' });
-env.config({ path: '.env' });
 
 const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
   data,
