@@ -1,3 +1,4 @@
+import { Lng, useTranslation } from '@/locales/i18n';
 import { COMMON_KEYS } from '@@/locales/keys';
 import type { Metadata } from 'next';
 export interface Meta extends Metadata {
@@ -6,7 +7,8 @@ export interface Meta extends Metadata {
   isPlaceholder?: boolean;
   rightOperateType?: 'setting' | 'complete' | 'none';
 }
-const meta: Indexes<Meta> = {
+
+const pathMetaData = {
   '/': {
     title: 'Home',
     locale: COMMON_KEYS.HOME,
@@ -62,6 +64,21 @@ const meta: Indexes<Meta> = {
     isPlaceholder: true,
     rightOperateType: 'none',
   },
+};
+
+const meta: {
+  [key: string]: Meta;
+} = pathMetaData as any;
+
+export const GenerateMetadata = async (
+  lng: Lng,
+  path: keyof typeof pathMetaData
+) => {
+  const metadata = { ...meta[path] };
+  const { t } = await useTranslation(lng);
+  metadata.title = t(metadata.locale);
+
+  return metadata;
 };
 
 export default meta;
