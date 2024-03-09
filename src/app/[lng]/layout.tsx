@@ -25,17 +25,19 @@ export default function RootLayout({
   return (
     <html lang={lng} data-theme={'dark'} dir={dir(lng)}>
       <body>
-        <main className="w-full h-[100vh] m-0 p-[var(--padding)] relative box-border  overflow-x-hidden">
+        <main className="w-full h-[100vh] m-0 relative box-border overflow-x-hidden">
           <TrpcProviders>
             <AppProvider language={lng}>
-              <Navbar />
+              <div className="flex flex-col h-full">
+                <Navbar />
 
-              <Transition
-                language={lng}
-                className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto"
-              >
-                {children}
-              </Transition>
+                <Transition
+                  language={lng}
+                  className="flex-1 page-content w-full px-[var(--padding)]"
+                >
+                  {children}
+                </Transition>
+              </div>
             </AppProvider>
           </TrpcProviders>
           <Toaster richColors />

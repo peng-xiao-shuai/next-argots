@@ -52,31 +52,35 @@ export const Navbar = () => {
 
   return (
     <>
-      <div className="navbar rounded-lg min-h-12 fixed z-10 bg-base-300 box-border w-[calc(100%-var(--padding)*2)]">
-        <Link href={metadata.title === 'Home' ? '' : pathArr.join('/')} replace>
-          <div className="flex-none leading-none">
-            <label
-              className={`swap swap-rotate items-center ${
-                metadata.title === 'Home' ? 'swap-active' : ''
-              }`}
-            >
-              <AiOutlineHome className="svg-icon !w-[1.3rem] !h-[1.3rem] mx-auto swap-on" />
-              <AiOutlineLeft className="svg-icon swap-off" />
-            </label>
-          </div>
-        </Link>
+      <div
+        className={`p-[var(--padding)] w-full${
+          metadata.isPlaceholder ? '' : ' pb-0 fixed z-10 '
+        }`}
+      >
+        <div className={`navbar rounded-lg bg-base-300 min-h-12`}>
+          <Link href={metadata.title === 'Home' ? '' : pathArr.join('/')}>
+            <div className="flex-none leading-none">
+              <label
+                className={`swap swap-rotate items-center ${
+                  metadata.title === 'Home' ? 'swap-active' : ''
+                }`}
+              >
+                <AiOutlineHome className="svg-icon !w-[1.3rem] !h-[1.3rem] mx-auto swap-on" />
+                <AiOutlineLeft className="svg-icon swap-off" />
+              </label>
+            </div>
+          </Link>
 
-        <div className="flex-1">
-          <span className="font-sans _bold text-color pl-2 text-1rem normal-case">
-            {navTitle}
-          </span>
-        </div>
-        <div className="flex-none">
-          <NavRight metadata={metadata}></NavRight>
+          <div className="flex-1">
+            <span className="font-sans _bold text-color pl-2 text-1rem normal-case">
+              {navTitle}
+            </span>
+          </div>
+          <div className="flex-none">
+            <NavRight metadata={metadata}></NavRight>
+          </div>
         </div>
       </div>
-
-      {metadata.isPlaceholder ? <div className="min-h-12 mb-4" /> : <></>}
     </>
   );
 };
