@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 
 export const fetchReq = async (
   url: string,
-  body: object,
+  body?: object,
   options: RequestInit = {}
 ) => {
   try {
