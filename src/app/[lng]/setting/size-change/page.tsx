@@ -1,14 +1,11 @@
-'use client';
 import './style.css';
 import logo from '/public/logo4.png';
-import { useContext, useState } from 'react';
 import Image from 'next/image';
-import { useBusWatch } from '@/hooks/use-bus-watch';
-import { AppContext } from '@/context';
 import { SETTING_KEYS } from '@@/locales/keys';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/locales/i18n';
+import { GenerateMetadata } from '../../meta';
+import { ClientRangeInput } from '../_components/ClientSizeChange';
 
-const BASE_SIZE = 13;
 const chat = [
   {
     type: 'user',
@@ -26,46 +23,15 @@ const chat = [
     msg: '设置后，会改变聊天以及设置中字体大小，如果在使用中存在什么问题或意见，可以反馈给我们',
   },
 ];
-const rangeData: Indexes<number> = {
-  [BASE_SIZE]: 0,
-  14: 10,
-  15: 20,
-  16: 30,
-  17: 40,
-  18: 50,
-  19: 60,
-  20: 70,
-};
 
-export default function SizeChange() {
-  const { t } = useTranslation();
-  const setting = useContext(AppContext);
+export const generateMetadata = async ({
+  params: { lng },
+}: CustomReactParams) => await GenerateMetadata(lng, '/setting/size-change');
 
-  // range 长度
-  const [rangeValue, setRangeValue] = useState(rangeData[setting.size]);
-
-  /**
-   * 修改字体，在没有点击完成时，退出会将字体改回原样
-   */
-  const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setRangeValue(Number(target.value));
-
-    document.documentElement.style.fontSize = `${
-      Number(target.value) / 10 + BASE_SIZE
-    }px`;
-  };
-
-  const handleComplete = () => {
-    window.localStorage.setItem(
-      'settings',
-      JSON.stringify({
-        ...setting,
-        size: rangeValue / 10 + BASE_SIZE,
-      })
-    );
-  };
-
-  useBusWatch('complete', handleComplete);
+export default async function SizeChange({
+  params: { lng },
+}: CustomReactParams) {
+  const { t } = await useTranslation(lng);
 
   return (
     <>
@@ -95,7 +61,7 @@ export default function SizeChange() {
               item.type === 'user'
                 ? '!chat-bubble-primary !bg-primary-focus text-primary-content'
                 : ''
-            } chat-bubble rounded-lg min-h-[unset] bg-base-300"`}
+            } chat-bubble rounded-lg min-h-[unset] bg-base-300 w-4/5`}
           >
             {t(item.locale)}
           </div>
@@ -103,7 +69,7 @@ export default function SizeChange() {
       ))}
 
       {/* 底部滑块 */}
-      <div className="fixed w-[100vw] -left-[var(--padding)] -bottom-[var(--padding)] bg-base-300 p-[16px]">
+      <div className="fixed w-[100vw] left-0 bottom-0 bg-base-300 p-[16px] leading-none">
         <div className="flex justify-between items-end mb-[8px] pl-[4px]">
           <div className="flex items-end">
             <div className="text-[14px] mr-[calc((100vw-32px)/7*3-32px)]">
@@ -115,21 +81,7 @@ export default function SizeChange() {
           <span className="text-[24px]">A</span>
         </div>
 
-        <div className="relative leading-[24px] h-[30px] overflow-y-hidden">
-          <div className="w-full flex justify-between absolute top-[6px] pointer-events-none px-[8px]">
-            {Object.keys(rangeData).map((_item, i) => (
-              <div key={i} className="w-[1px] h-[16px] bg-base-content" />
-            ))}
-          </div>
-          <input
-            value={rangeValue}
-            type="range"
-            min="0"
-            max="70"
-            step={70 / 7}
-            onChange={handleChange}
-          />
-        </div>
+        <ClientRangeInput></ClientRangeInput>
       </div>
     </>
   );
