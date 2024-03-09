@@ -51,10 +51,10 @@ export const ClientRangeInput: FC = () => {
     <div className="relative leading-[24px] h-[30px] overflow-y-hidden">
       <div className="w-full flex justify-between absolute top-[6px] pointer-events-none px-[8px]">
         {Object.keys(rangeData).map((_item, i) => (
-          <div key={i} className="w-[1px] h-[16px] bg-base-content" />
+          <div key={i} className="w-[1px] h-[16px] bg-base-content z-[-1]" />
         ))}
 
-        <div className="absolute w-[calc(100%-16px)] border-b border-base-content top-2/4 left-[8px] -translate-y-2/4"></div>
+        <div className="absolute z-[-1] w-[calc(100%-16px)] border-b border-base-content top-2/4 left-[8px] -translate-y-2/4"></div>
       </div>
 
       <input

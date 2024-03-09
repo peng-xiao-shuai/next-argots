@@ -10,9 +10,10 @@ import { debounce } from '@/utils/debounce-throttle';
 
 export const Dialog: FC<{
   visible: boolean;
-  setVisible: Dispatch<SetStateAction<boolean>>;
+  setVisible: Dispatch<SetStateAction<boolean>> | ((data: boolean) => void);
   children: React.ReactNode;
-}> = ({ visible, setVisible, children }) => {
+  contentClassName?: string;
+}> = ({ visible, setVisible, children, contentClassName }) => {
   const [boxVisible, setBoxVisible] = useState(false);
 
   useEffect(() => {
@@ -21,6 +22,17 @@ export const Dialog: FC<{
       clearTimeout(time);
     }, 300);
   }, [visible]);
+
+  const handleClose = () =>
+    debounce(() => {
+      setBoxVisible(false);
+
+      const time = setTimeout(() => {
+        setVisible(!visible);
+        clearTimeout(time);
+        // 与 duration-200 时间相同
+      }, 200);
+    });
 
   return (
     <>
@@ -31,22 +43,12 @@ export const Dialog: FC<{
       >
         <div
           className={`flex justify-center items-center w-full h-[100vh] bg-black/60`}
-          onClick={() =>
-            debounce(() => {
-              setBoxVisible(false);
-
-              const time = setTimeout(() => {
-                setVisible(!visible);
-                clearTimeout(time);
-                // 与 duration-200 时间相同
-              }, 200);
-            })
-          }
+          onClick={handleClose}
         >
           <div
-            className={`p-5 rounded-lg bg-base-300 max-w-[90vw] min-w-[8rem] transition-all duration-200 transform scale-50 ${
-              boxVisible ? '!scale-100 opacity-100' : 'scale-50 opacity-0'
-            }`}
+            className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-200 transform scale-50 ${
+              boxVisible ? '!scale-100 opacity-100' : 'opacity-0'
+            } ${contentClassName || 'bg-base-300 bg-opacity-95'}`}
             onClick={(e) => e.stopPropagation()}
           >
             {children}

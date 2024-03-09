@@ -79,7 +79,7 @@ export function ClientFeedBack() {
 
   return (
     <>
-      <div className="text-neutral-content mb-2 opacity-50 _p-x">
+      <div className="mb-2 desc-color _p-x">
         {t(SETTING_KEYS.E_MAIL_OPTIONAL)}
       </div>
       <input
@@ -95,9 +95,7 @@ export function ClientFeedBack() {
         className={`mb-4 input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
       />
 
-      <div className="text-neutral-content mb-2 opacity-50 _p-x">
-        {t(SETTING_KEYS.CONTENT)}
-      </div>
+      <div className="mb-2 desc-color _p-x">{t(SETTING_KEYS.CONTENT)}</div>
 
       <textarea
         value={formData.content}
@@ -112,7 +110,7 @@ export function ClientFeedBack() {
         }}
       />
 
-      <div className="text-neutral-content mb-2 opacity-50 _p-x">
+      <div className="mb-2 desc-color _p-x">
         {t(SETTING_KEYS.FEEDBACK_TYPES)}
       </div>
 

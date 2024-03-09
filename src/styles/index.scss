@@ -17,7 +17,7 @@
 
 [data-theme='dark'] {
   background-color: #000;
-  color: #fff;
+  color: var(--fallback-bc, oklch(var(--bc) / 1));
   svg path {
     fill: inherit;
   }

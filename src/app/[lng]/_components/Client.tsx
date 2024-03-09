@@ -43,7 +43,7 @@ export const ClientOperate: FC<{
       </div>
 
       <Dialog visible={visible} setVisible={setVisible}>
-        <div className="bg-base-300 flex flex-wrap justify-center">
+        <div className="flex flex-wrap justify-center">
           <HomeForm roomStatus={roomStatus}></HomeForm>
         </div>
       </Dialog>

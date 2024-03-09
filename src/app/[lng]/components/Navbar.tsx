@@ -72,7 +72,7 @@ export const Navbar = () => {
           </Link>
 
           <div className="flex-1">
-            <span className="font-sans _bold text-color pl-2 text-1rem normal-case">
+            <span className="font-sans _bold text-base-content pl-2 text-1rem normal-case">
               {navTitle}
             </span>
           </div>

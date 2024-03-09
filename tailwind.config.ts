@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-
+import daisyTheme from 'daisyui/src/theming/themes';
 const config: Config = {
   content: [
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -11,27 +11,21 @@ const config: Config = {
     themes: [
       {
         dark: {
-          ...require('daisyui/src/theming/themes')['dark'],
-          '.text-color': {
-            color: 'white',
-          },
-          'accent-content': '#FFFFFF',
-
+          ...daisyTheme.dark,
           error: '#aa0b56',
-
           primary: '#8A13A4',
-
-          'primary-content': '#FFFFFF',
+          'accent-content': '#FFFFFF',
+          'base-content': '#dddddd',
+          'primary-content': '#dddddd',
         },
         light: {
           ...require('daisyui/src/theming/themes')['light'],
-          '.text-color': {
-            color: 'black',
-          },
-
+          primary: '#8A13A4',
           error: '#aa0b56',
 
           'accent-content': '#000000',
+
+          'primary-content': daisyTheme.dark['base-content'],
         },
       },
     ],

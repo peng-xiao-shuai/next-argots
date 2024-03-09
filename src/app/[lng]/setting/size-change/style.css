@@ -17,7 +17,7 @@
   width: 17px;
   height: 17px;
   border-radius: 50%;
-  background-color: oklch(var(--nc) / 1);
+  background-color: oklch(var(--ac) / 1);
   /* border: 0.5px solid transparent; */
   margin-top: -8px;
   line-height: 1;

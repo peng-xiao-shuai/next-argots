@@ -50,7 +50,7 @@ export const ClientAboutMenu: FC = () => {
       {aboutList.map((item, index) => (
         <li
           key={item.label}
-          className="first-of-type:border-transparent border-t-neutral-content border-t flex-row h-12 items-center justify-between row-active"
+          className="row-active"
           onClick={() =>
             item.path ? router.push(item.path) : item.click && item.click(item)
           }

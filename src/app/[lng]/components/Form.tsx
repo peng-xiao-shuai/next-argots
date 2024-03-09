@@ -132,7 +132,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       {formView.map((item, index) => (
         <div key={item.prop} className="w-full relative">
-          <label className="inline-block text-accent-content mb-2 text-opacity-80 pl-2">
+          <label className="inline-block text-base mb-2 desc-color _p-x">
             {t(item.locale)}
           </label>
           <input

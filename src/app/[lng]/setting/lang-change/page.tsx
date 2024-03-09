@@ -27,10 +27,10 @@ export const generateMetadata = async ({
 
 export default function LangChange({ params: { lng } }: CustomReactParams) {
   return (
-    <div className="lang-list bg-base-300 rounded-lg">
+    <ul className="menu">
       {langs.map((item) => (
         <ClientLang key={item.label} item={item} lng={lng}></ClientLang>
       ))}
-    </div>
+    </ul>
   );
 }
