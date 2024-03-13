@@ -32,7 +32,7 @@ export const Transition = ({
   return (
     <div
       className={`w-full h-full${show ? ' fade-in' : ''} ${className} ${
-        pageClassName == language ? 'home' : pageClassName
+        pageClassName == language ? 'home' : pageClassName || 'home'
       }`}
     >
       {children}

@@ -12,6 +12,18 @@ const nextConfig = {
       },
     ],
   },
+  compress: true,
+  async rewrites() {
+    return {
+      afterFiles: [
+        // 重写所有不包含 `admin` 的路由
+        {
+          source: '/:path((?!admin))', // 正则表达式排除包含 `admin` 的路径
+          destination: '/en-US/:path', // 重写到 `/en/xx`
+        },
+      ]
+    }
+  },
   webpack: (config) => {
     // 设置别名
     config.resolve.alias['@'] = path.join(__dirname, 'src')
