@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { FC, useContext } from 'react';
 import { AiOutlineRight } from 'react-icons/ai';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/locales/client';
 import { COMMON_KEYS } from '@@/locales/keys';
 
 type AboutList = {

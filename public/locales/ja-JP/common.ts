@@ -1,4 +1,4 @@
-import { COMMON_KEYS } from '../keys';
+import { COMMON_KEYS, META } from '../keys';
 
 export const COMMON = {
   [COMMON_KEYS.HOME]: 'しょおもて',
@@ -17,4 +17,9 @@ export const COMMON = {
   [COMMON_KEYS.OPEN]: 'だかい ',
   [COMMON_KEYS.CONFIRM]: 'かくにん',
   [COMMON_KEYS.COMPLETE]: '完了',
+
+  [META.DESC]:
+    '自由なチャットプラットフォームで、すべての会話を暗号化して、あなたの安全なプライバシーを保護します。あなたの情報を収集することはなく、あなたの権限を必要としません。',
+  [META.KEYWORDS]:
+    'おしゃべりをします 部屋 暗号化されています 権限がありません オープンチャットです えんどつーえんど',
 };

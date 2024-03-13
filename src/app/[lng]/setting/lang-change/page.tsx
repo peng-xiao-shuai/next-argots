@@ -1,8 +1,8 @@
-import { Lng } from '@/locales/i18n';
-import { ClientLang } from '../_components/ClientLangChange';
+import { ClientLang, LangType } from '../_components/ClientLangChange';
 import { GenerateMetadata } from '../../meta';
+import { COMMON_KEYS } from '@@/locales/keys';
 
-const langs: { label: string; value: Lng }[] = [
+const langs: LangType[] = [
   {
     label: '简体中文',
     value: 'zh-CN',
@@ -14,10 +14,12 @@ const langs: { label: string; value: Lng }[] = [
   {
     label: 'English',
     value: 'en-US',
+    desc: 'machine translation',
   },
   {
     label: '日本語',
     value: 'ja-JP',
+    desc: 'じどうほんやく',
   },
 ];
 

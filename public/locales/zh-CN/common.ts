@@ -1,4 +1,4 @@
-import { COMMON_KEYS } from '../keys';
+import { COMMON_KEYS, META } from '../keys';
 
 export const COMMON = {
   [COMMON_KEYS.PACKAGE_NAME]: '隐语',
@@ -19,4 +19,8 @@ export const COMMON = {
   [COMMON_KEYS.OPEN]: '打开',
   [COMMON_KEYS.CONFIRM]: '确认',
   [COMMON_KEYS.COMPLETE]: '完成',
+
+  [META.DESC]:
+    '自由的聊天平台，全程加密对话信息，保护您的安全隐私。不会收集您的任何信息，不需要您的任何权限。',
+  [META.KEYWORDS]: '交流聊天 房间 信息加密 无权限 开放聊天 端对端',
 };

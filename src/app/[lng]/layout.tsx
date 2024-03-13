@@ -4,7 +4,9 @@ import { Navbar, Transition, AppProvider, TrpcProviders } from './components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
-import { languages } from '@/locales/i18n';
+import { languages, useTranslation } from '@/locales/i18n';
+import Head from 'next/head';
+import { META } from '@@/locales/keys';
 // import meta from './meta';
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,12 +20,18 @@ export async function getStaticPaths() {
   return { paths, fallback: 'blocking' };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: { lng },
 }: CustomReactLayout) {
+  const { t } = await useTranslation(lng);
   return (
     <html lang={lng} data-theme={'dark'} dir={dir(lng)}>
+      <Head>
+        <meta name="description" content={t(META.DESC)} />
+        <meta name="keywords" content={t(META.KEYWORDS)} />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <body>
         <main className="w-full h-[100vh] m-0 relative box-border overflow-x-hidden">
           <TrpcProviders>

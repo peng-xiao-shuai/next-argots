@@ -13,7 +13,10 @@ import { Users } from '../collections/Users';
 import { Feedback } from '../collections/Feedback';
 import { Room } from '../collections/Room';
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL?.replace('$PORT', '3000');
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(
+  '$PORT',
+  process.env.PORT || '3000'
+);
 
 export default buildConfig({
   // 设置服务器的 URL，从环境变量 NEXT_PUBLIC_SERVER_URL 获取。

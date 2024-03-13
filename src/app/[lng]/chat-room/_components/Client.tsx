@@ -3,7 +3,7 @@ import '../style.css';
 import { useEffect, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { Chat, usePusher } from '@/hooks/use-pusher';
-import logo from '/public/logo.jpg';
+import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';

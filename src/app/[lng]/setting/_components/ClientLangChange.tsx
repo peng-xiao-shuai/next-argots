@@ -7,12 +7,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { COOKIE_NAME } from '@/locales/settings';
 import { useCookies } from 'react-cookie';
 import { toast } from 'sonner';
-export type LangType = { label: string; value: Lng };
+export type LangType = { label: string; value: Lng; desc?: string };
 export const ClientLang: FC<{
   item: LangType;
   lng: Lng;
 }> = ({ lng, item }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const path = usePathname();
   const [, setCookie] = useCookies([COOKIE_NAME]);
@@ -37,7 +37,13 @@ export const ClientLang: FC<{
         className="w-full label p-0 h-full flex items-center justify-between"
         onClick={() => handleSwitchLang(item)}
       >
-        <span className="label-text">{item.label}</span>
+        <div>
+          <span className="label-text">{item.label}</span>
+          {item.desc && (
+            <span className="text-xs opacity-70"> ({t(item.desc)})</span>
+          )}
+        </div>
+
         <input
           type="radio"
           name="radio"

@@ -76,7 +76,7 @@ export const GenerateMetadata = async (
 ) => {
   const metadata = { ...meta[path] };
   const { t } = await useTranslation(lng);
-  metadata.title = t(metadata.locale);
+  metadata.title = `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`;
 
   return metadata;
 };

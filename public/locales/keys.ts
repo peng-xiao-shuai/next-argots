@@ -76,3 +76,8 @@ export enum API_KEYS {
   PUSHER_AUTH_423 = 'Room_already_exists,_please_try_another',
   PUSHER_AUTH_500 = 'Unknown_error',
 }
+
+export enum META {
+  DESC = 'meta_desc',
+  KEYWORDS = 'meta_keywords',
+}

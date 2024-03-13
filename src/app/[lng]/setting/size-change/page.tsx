@@ -1,5 +1,5 @@
 import './style.css';
-import logo from '/public/logo4.png';
+import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { SETTING_KEYS } from '@@/locales/keys';
 import { useTranslation } from '@/locales/i18n';

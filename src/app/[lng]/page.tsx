@@ -1,4 +1,4 @@
-import logo from '/public/logo4.png';
+import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { ClientOperate } from './_components/Client';
 import { GenerateMetadata } from './meta';
@@ -11,11 +11,7 @@ export default function Home({ params: { lng } }: CustomReactParams) {
   return (
     <>
       <div className="flex flex-wrap h-[80%] items-center">
-        <Image
-          className="w-32 h-32 m-auto mask mask-squircle"
-          src={logo}
-          alt="Logo"
-        />
+        <Image className="w-24 h-24 m-auto rounded-box" src={logo} alt="Logo" />
 
         <ClientOperate lng={lng}></ClientOperate>
       </div>

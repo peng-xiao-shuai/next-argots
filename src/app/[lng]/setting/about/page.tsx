@@ -1,6 +1,6 @@
 'use server';
 import './style.css';
-import logo from '/public/logo4.png';
+import logo from '/public/logo.svg';
 import Image from 'next/image';
 import pck from '../../../../../package.json';
 import { useTranslation } from '@/locales/i18n';

@@ -4,7 +4,7 @@ import { useContext, useState } from 'react';
 import { AppContext } from '@/context';
 import { setDataTheme } from '@/utils/set-theme';
 import { SETTING_KEYS } from '@@/locales/keys';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/locales/client';
 import { FC } from 'react';
 import { toast } from 'sonner';
 
