@@ -23,17 +23,27 @@ export enum MESSAGE_TYPE {
   PING = 'ping',
   PONG = 'pong',
   MSG = 'msg',
-  MEB_ADD = 'member_added',
-  MEB_RF = 'member_removed',
+  SYSTEM = 'system',
 }
 
-export type ChatObj = {
+export interface ChatBase {
   type: MESSAGE_TYPE;
   msg: string;
-};
-export type Chat = ChatObj & {
-  isMy?: boolean;
-};
+}
+
+export interface ChatMsg extends ChatBase {
+  type: MESSAGE_TYPE.MSG;
+  isMy: boolean;
+  timestamp: number;
+  status: 'loading' | 'success' | 'error';
+}
+export interface ChatSystem extends ChatBase {
+  type: MESSAGE_TYPE.SYSTEM;
+  timestamp?: number;
+  status?: 'success';
+}
+
+export type Chat = ChatMsg | ChatSystem;
 
 export type MemberInfo = {
   id: string;
@@ -207,7 +217,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       'pusher:member_added',
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
         setChatValue({
-          type: MESSAGE_TYPE.MEB_ADD,
+          type: MESSAGE_TYPE.SYSTEM,
           msg: `🎉🎉 ${t(CHAT_ROOM_KEYS.MEMBER_ADDED, {
             name: unicodeToString(info.name),
           })}`,
@@ -221,7 +231,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
         console.log(info);
 
         setChatValue({
-          type: MESSAGE_TYPE.MEB_RF,
+          type: MESSAGE_TYPE.SYSTEM,
           msg: `🔌🔌 ${
             info.role !== UserRole.HOUSE_OWNER
               ? t(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
@@ -248,13 +258,47 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 绑定自定义接受信息事件
    */
   const receiveInformation = () => {
-    console.log(setChat, 'setChat');
+    channel.bind(
+      CustomEvent.RECEIVE_INFORMATION,
+      ({ msg, timestamp }: ChatMsg) => {
+        setChatValue({
+          type: MESSAGE_TYPE.MSG,
+          isMy: false,
+          timestamp,
+          msg,
+          status: 'success',
+        });
+      }
+    );
+  };
 
-    channel.bind(CustomEvent.RECEIVE_INFORMATION, ({ msg }: ChatObj) => {
-      setChatValue({
-        type: MESSAGE_TYPE.MSG,
-        msg,
-      });
+  /**
+   * 客户端发送
+   */
+  const ClientSendMessage = (content: string) => {
+    const timestamp = Date.now();
+    setChatValue({
+      type: MESSAGE_TYPE.MSG,
+      msg: content,
+      timestamp,
+      isMy: true,
+      status: 'loading',
+    });
+
+    const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
+      type: MESSAGE_TYPE.MSG,
+      msg: content,
+      timestamp,
+    });
+
+    setChatValue((state) => {
+      const copyState = [...state];
+      const index = copyState.findIndex((item) => item.timestamp == timestamp);
+      if (index >= 0) {
+        copyState[index].status = triggered ? 'success' : 'error';
+      }
+
+      return copyState;
     });
   };
 
@@ -270,10 +314,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   /**
    *修改数据
    */
-  const setChatValue = (value: Chat) => {
-    console.log(setChat, 'setChat');
-
-    setChat?.((c) => c.concat(value));
+  const setChatValue = (value: Chat | ((state: Chat[]) => Chat[])) => {
+    setChat?.(typeof value === 'function' ? value : (c) => c.concat(value));
   };
 
   /**
@@ -319,6 +361,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   return {
     pusher,
     signin,
+    ClientSendMessage,
     ObserveEntryOrExit,
     exitRoom,
     unsubscribe,

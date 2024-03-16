@@ -2,11 +2,12 @@
 import '../style.css';
 import { useEffect, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
-import { Chat, usePusher } from '@/hooks/use-pusher';
+import { Chat, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
+import { debounce } from '@/utils/debounce-throttle';
 
 const ChatRecords = (
   {
@@ -26,6 +27,8 @@ const ChatRecords = (
         <div className="w-10 rounded-lg">
           <Image
             alt="profile photo"
+            width={40}
+            height={40}
             src={
               isMy
                 ? 'https://avatars.githubusercontent.com/u/53845479?v=4'
@@ -50,7 +53,8 @@ export function ClientChat() {
   const [content, setContent] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
   const [height, setHeight] = useState('');
-  const { pusher, exitRoom, unsubscribe } = usePusher(setChat);
+  const { pusher, ClientSendMessage, exitRoom, unsubscribe } =
+    usePusher(setChat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
       unsubscribe();
@@ -79,8 +83,21 @@ export function ClientChat() {
       <div className="overflow-y-auto w-full flex-1 mb-4">
         {chat.map((item, index) => (
           <div key={index}>
-            {/* 文字类型 */}
-            <ChatRecords msg={item.msg}></ChatRecords>
+            {
+              // 文字类型
+              item.type === MESSAGE_TYPE.MSG && (
+                <ChatRecords msg={item.msg} isMy={item.isMy}></ChatRecords>
+              )
+            }
+
+            {
+              // 系统通知
+              item.type === MESSAGE_TYPE.SYSTEM && (
+                <div className="py-2 text-center text-base-content text-opacity-60 text-sm w-full">
+                  {item.msg}
+                </div>
+              )
+            }
           </div>
         ))}
       </div>
@@ -107,7 +124,10 @@ export function ClientChat() {
           <button
             className="btn btn-primary min-h-[2.5rem] h-10"
             onClick={() => {
-              setContent('');
+              debounce(() => {
+                ClientSendMessage(content);
+                setContent('');
+              });
             }}
           >
             {CHAT_ROOM_KEYS.SEND}
