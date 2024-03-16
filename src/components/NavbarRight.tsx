@@ -1,7 +1,7 @@
 'use client';
 import bus from '@/utils/bus';
 import { FC } from 'react';
-import type { Meta } from '../meta';
+import type { Meta } from '../app/[lng]/meta';
 import { useTranslation } from '@/locales/client';
 import { AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';

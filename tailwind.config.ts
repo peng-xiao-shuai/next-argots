@@ -3,6 +3,7 @@ import daisyTheme from 'daisyui/src/theming/themes';
 const config: Config = {
   content: [
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/*.{js,ts,jsx,tsx,mdx}',
     './src/server/payload/components/*.{js,ts,jsx,tsx,mdx}',
   ],
   safelist: ['chat-end', 'chat-start'],

@@ -1,5 +1,5 @@
 'use client';
-import meta from '../meta';
+import meta from '../app/[lng]/meta';
 import { useTranslation } from '@/locales/client';
 import { Lng, languages } from '@/locales/i18n';
 import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai';
