@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { RoomStatus } from '@/server/enum';
 import { FC, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
-import { Dialog, HomeForm } from '../components';
+import { Dialog, HomeForm } from '../../../components';
 
 export const ClientOperate: FC<{
   lng: Lng;

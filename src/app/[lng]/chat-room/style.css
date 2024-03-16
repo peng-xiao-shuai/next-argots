@@ -3,4 +3,5 @@
   justify-content: space-between;
   flex-direction: column;
   overflow: hidden;
+  padding-bottom: var(--padding);
 }

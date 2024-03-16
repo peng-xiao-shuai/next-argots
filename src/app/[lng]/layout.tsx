@@ -1,6 +1,11 @@
 // 保证layout为服务端组件
 import { Inter } from 'next/font/google';
-import { Navbar, Transition, AppProvider, TrpcProviders } from './components';
+import {
+  Navbar,
+  Transition,
+  AppProvider,
+  TrpcProviders,
+} from '../../components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
