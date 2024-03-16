@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import type { Express, Response } from 'express';
 import axios from 'axios';
-import { API_URL, CustomEvent, RoomStatus, UserRole } from '../enum';
+import { API_URL, RoomStatus, UserRole } from '../enum';
 import getPayloadClient from '../payload/get-payload';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
