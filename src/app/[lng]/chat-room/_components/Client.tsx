@@ -42,7 +42,7 @@ const ChatRecords = (
           isMy ? 'chat-bubble-primary' : ''
         } chat-bubble rounded-lg min-h-[unset]`}
       >
-        <div className="whitespace-break-spaces">{msg}</div>
+        <div className="whitespace-break-spaces break-words">{msg}</div>
       </div>
     </div>
   );
@@ -53,8 +53,7 @@ export function ClientChat() {
   const [content, setContent] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
   const [height, setHeight] = useState('');
-  const { pusher, ClientSendMessage, exitRoom, unsubscribe } =
-    usePusher(setChat);
+  const { ClientSendMessage, exitRoom, unsubscribe } = usePusher(setChat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
       unsubscribe();
@@ -72,11 +71,10 @@ export function ClientChat() {
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
-        // pusher?.disconnect?.();
         exitRoom<typeof mutate>(mutate);
       }
     };
-  }, [pathname, pusher, exitRoom, mutate]);
+  }, [pathname, exitRoom, mutate]);
 
   return (
     <>

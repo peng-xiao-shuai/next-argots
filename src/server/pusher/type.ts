@@ -19,7 +19,10 @@ export type AuthSuccessUserData = {
   user_id: string;
   user_info: {
     userId: string;
-    roomRecordId: string;
+    /**
+     * 房主才会有
+     */
+    roomRecordId?: string;
     role: UserRole;
     iv: string;
     name: string;

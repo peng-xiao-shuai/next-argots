@@ -1,7 +1,8 @@
 import AES from '@/utils/aes';
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
+import Metadata from 'pusher-js/types/src/core/channels/metadata';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
 import { API_URL, CustomEvent, RoomStatus, UserRole } from '@/server/enum';
@@ -54,31 +55,21 @@ export type MemberInfo = {
 
 let channel: Channel;
 let cachePusher: Pusher | null;
-Pusher.logToConsole = true;
+let Aes: AES | null;
+Pusher.logToConsole = process.env.NODE_ENV === 'development';
 export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const { t, i18n } = useTranslation();
   const { replace } = useRouter();
-  const [aes, setAes] = useState<AES>();
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
-  // 设置加密
-  // const aes = ;
-  // 3vS+Hi2uerOSnnOH49Epqw==
 
   useEffect(() => {
     debounce(() => {
-      if (channel) {
+      if (channel && window.location.pathname.includes('/chat-room')) {
         removeObserve();
 
         ObserveEntryOrExit();
         receiveInformation();
       }
-      // 特别注意执行 Aes 是一个昂贵的过程
-      // setAes(
-      //   new AES({
-      //     passphrase: 'ccc',
-      //     salt: 'cccc',
-      //   })
-      // );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -88,7 +79,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    */
   const signin = (roomStatus: RoomStatus) => {
     return new Promise((resolve, reject) => {
-      const { encryptData, setUserInfoData } = useRoomStore.getState();
+      const { encryptData } = useRoomStore.getState();
       const hash = hashSync(
         encryptData.password,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
@@ -197,7 +188,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           channel.bind(
             'pusher:subscription_succeeded',
             ({ me: { info } }: SubscriptionSuccessMember) => {
-              setUserInfoData(info);
+              Aes = new AES({
+                passphrase: hash,
+                ivHexString: info.iv,
+              });
+
               channel.unbind('pusher:subscription_succeeded');
               resolve('');
             }
@@ -260,12 +255,17 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const receiveInformation = () => {
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
-      ({ msg, timestamp }: ChatMsg) => {
+      ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
         setChatValue({
           type: MESSAGE_TYPE.MSG,
           isMy: false,
           timestamp,
-          msg,
+          msg:
+            Aes?.decrypted(msg) ||
+            t(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
+              origin:
+                process.env.NEXT_PUBLIC_SERVER_URL + '/setting/about/feedback',
+            }).replace(/&#x2F;/g, '/'),
           status: 'success',
         });
       }
@@ -287,7 +287,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
     const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
       type: MESSAGE_TYPE.MSG,
-      msg: content,
+      msg: Aes?.encrypted(content),
       timestamp,
     });
 
@@ -306,6 +306,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 清除更改chat的监听
    */
   const removeObserve = () => {
+    console.log('removeObserve');
+
     channel?.unbind('pusher:member_removed');
     channel?.unbind('pusher:member_added');
     channel?.unbind(CustomEvent.RECEIVE_INFORMATION);
@@ -334,13 +336,15 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   >(
     mutate: T
   ) => {
-    const { userInfo, encryptData } = useRoomStore.getState();
+    const { encryptData } = useRoomStore.getState();
+    // @ts-ignore
+    const user_info = channel?.members.get(encryptData.nickName).info;
 
-    if (userInfo.role === UserRole.HOUSE_OWNER) {
+    if (user_info.role === UserRole.HOUSE_OWNER) {
       mutate({
         roomName: encryptData.roomName,
         nickName: encryptData.nickName,
-        recordId: userInfo.roomRecordId || '',
+        recordId: user_info.roomRecordId || '',
       });
     } else {
       unsubscribe();
@@ -352,10 +356,13 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    */
   const unsubscribe = () => {
     const { encryptData } = useRoomStore.getState();
+    console.log('unsubscribe');
+
     removeObserve();
     cachePusher?.unsubscribe('presence-' + encryptData.roomName);
     cachePusher?.disconnect();
     cachePusher = null;
+    Aes = null;
   };
 
   return {

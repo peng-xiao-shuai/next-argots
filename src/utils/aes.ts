@@ -1,13 +1,16 @@
-import CryptoJS from 'crypto-js'
+import CryptoJS from 'crypto-js';
 
 export default class AES {
-  private iv: CryptoJS.lib.WordArray
-  private key: string | CryptoJS.lib.WordArray
-  constructor(options: { passphrase: string; salt: string }) {
-    this.iv = CryptoJS.lib.WordArray.random(128 / 8)
+  private key: string | CryptoJS.lib.WordArray;
+  private iv: CryptoJS.lib.WordArray;
+  constructor(options: { passphrase: string; ivHexString: string }) {
+    this.iv = CryptoJS.enc.Hex.parse(options.ivHexString);
 
     // 使用 PBKDF2 派生一个密钥
-    this.key = CryptoJS.PBKDF2(options.passphrase, options.salt)
+    this.key = CryptoJS.PBKDF2(
+      options.passphrase,
+      process.env.NEXT_PUBLIC_SALT!
+    );
   }
 
   encrypted(value: string) {
@@ -15,7 +18,7 @@ export default class AES {
       iv: this.iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
-    }).toString()
+    }).toString();
   }
 
   decrypted(value: string) {
@@ -23,6 +26,6 @@ export default class AES {
       iv: this.iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
-    }).toString(CryptoJS.enc.Utf8)
+    }).toString(CryptoJS.enc.Utf8);
   }
 }
