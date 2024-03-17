@@ -46,6 +46,8 @@ export enum CHAT_ROOM_KEYS {
   MEMBER_REMOVED = 'Member_removed',
   OWNER_MEMBER_REMOVED = 'Owner_member_removed',
   HOUSE_OWNER = 'House_owner',
+
+  DECRYPTION_FAILURE = 'Decryption_failure',
 }
 
 export enum COMMON_KEYS {
