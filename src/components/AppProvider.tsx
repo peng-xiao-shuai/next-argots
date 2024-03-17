@@ -19,6 +19,12 @@ export function AppProvider({
   });
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      window.console.log = () => {};
+    }
+  }, []);
+
+  useEffect(() => {
     const data = JSON.parse(
       localStorage.getItem('settings') || '{}'
     ) as SettingContextData;
