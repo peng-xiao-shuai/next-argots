@@ -35,9 +35,10 @@ const issueType: {
 ];
 
 export function ClientFeedBack() {
+  const { t } = useTranslation();
   const { mutate } = trpc.feedbackAdd.useMutation({
     onSuccess: () => {
-      toast.success('反馈成功！');
+      toast.success(t(SETTING_KEYS.FEEDBACK_SUCCESS));
       setLoading(false);
 
       setFormData({
@@ -60,7 +61,6 @@ export function ClientFeedBack() {
 
   const verifyEmail = z.string().email();
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation();
 
   const handleSubmit = () => {
     if (formData.email && !verifyEmail.safeParse(formData.email).success) {

@@ -21,6 +21,7 @@ export enum SETTING_KEYS {
   OPINION = 'opinion',
   CONTENT = 'content_feedback',
   E_MAIL_FORMAT_IS_INCORRECT = 'e-mail_format_is_incorrect',
+  FEEDBACK_SUCCESS = 'Feedback_Success',
 }
 
 export enum HOME_KEYS {
