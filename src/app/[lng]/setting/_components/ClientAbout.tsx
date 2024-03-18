@@ -56,7 +56,8 @@ export const ClientAboutMenu: FC = () => {
     }));
 
     setAboutList(copyLists);
-  }, [aboutList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       {aboutList.map((item, index) => (
