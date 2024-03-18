@@ -25,7 +25,7 @@ export const ClientAboutMenu: FC = () => {
     {
       label: '意见反馈',
       locale: COMMON_KEYS.FEEDBACK,
-      path: '/setting/about/feedback',
+      path: '/feedback',
     },
     // {
     //   label: '隐私政策',
