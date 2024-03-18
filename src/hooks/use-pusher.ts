@@ -19,6 +19,7 @@ import { useTranslation } from '@/locales/client';
 import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { AvatarName } from '@/components/ImageSvg';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -35,6 +36,13 @@ export interface ChatBase {
 export interface ChatMsg extends ChatBase {
   type: MESSAGE_TYPE.MSG;
   isMy: boolean;
+  /**
+   * 发送消息则没有 user 直接去 useRoomStore 获取
+   */
+  user?: {
+    avatar: AvatarName;
+    nickname: string;
+  };
   timestamp: number;
   status: 'loading' | 'success' | 'error';
 }
@@ -256,9 +264,17 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
       ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
+        // @ts-ignore
+        const user_info = channel?.members.get(metadata.user_id)
+          .info as AuthSuccessUserData['user_info'];
+
         setChatValue({
           type: MESSAGE_TYPE.MSG,
           isMy: false,
+          user: {
+            nickname: user_info.name,
+            avatar: user_info.avatar as AvatarName,
+          },
           timestamp,
           msg:
             Aes?.decrypted(msg) ||

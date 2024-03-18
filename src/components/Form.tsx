@@ -11,8 +11,10 @@ import { fetchReq } from '@/utils/request';
 import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
+import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 
 const formDataRules = z.object({
+  avatar: z.string(),
   nickName: z.string().min(1, HOME_KEYS.EMPTY_NICKNAME).max(24),
   roomName: z.string().min(1, HOME_KEYS.EMPTY_ROOM_NUMBER).max(24),
   password: z.string().min(1, HOME_KEYS.EMPTY_PASSWORD).max(24),
@@ -24,7 +26,7 @@ type FormView = {
   type: React.HTMLInputTypeAttribute;
   locale: string;
   prop: 'roomName' | 'nickName' | 'password';
-  validation: RegisterOptions<FormData>;
+  validation?: RegisterOptions<FormData>;
 };
 
 type HomeForm = FC<{
@@ -106,7 +108,10 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
         throw new Error(data.message);
       }
 
-      setData(encryptData);
+      setData({
+        ...encryptData,
+        avatar: avatar,
+      });
 
       signin(roomStatus)
         .then((res) => {
@@ -123,30 +128,68 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
     }
   };
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarName>('');
+  const [avatarVisible, setAvatarVisible] = useState(false);
 
   useEffect(() => {
     setFocus('nickName');
   }, [setFocus, errors]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      onClick={() => {
+        setAvatarVisible(false);
+      }}
+    >
+      <ItemLabel label={t(HOME_KEYS.AVATAR)}>
+        <div
+          className={`dropdown ${
+            avatarVisible ? 'dropdown-open' : 'dropdown-close'
+          } w-full mb-4`}
+        >
+          <div
+            role="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setAvatarVisible(true);
+            }}
+            className={`${InputClassName} flex items-center gap-2`}
+          >
+            <ImageSvg
+              name={avatar}
+              className="w-8 h-8 opacity-70 !bg-transparent"
+            ></ImageSvg>
+
+            <input
+              type="text"
+              className="grow bg-transparent"
+              placeholder={t(HOME_KEYS.AVATAR)}
+              value={avatar}
+              readOnly
+            />
+          </div>
+          <GridAvatar
+            setAvatar={setAvatar}
+            setAvatarVisible={setAvatarVisible}
+          ></GridAvatar>
+        </div>
+      </ItemLabel>
+
       {formView.map((item, index) => (
-        <div key={item.prop} className="w-full relative">
-          <label className="inline-block text-base mb-2 desc-color _p-x">
-            {t(item.locale)}
-          </label>
+        <ItemLabel key={item.prop} label={t(item.locale)}>
           <input
             type={item.type}
             placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
             {...register(item.prop, item.validation)}
-            maxLength={item.validation.maxLength as number}
+            maxLength={item.validation?.maxLength as number}
             className={`${
               index === formView.length - 1 ||
               errors[item.prop] ||
               errors.root?.[item.prop]
                 ? 'mb-7'
                 : 'mb-4'
-            } input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
+            } ${InputClassName}`}
           />
 
           <span
@@ -162,7 +205,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
                 ''
             )}
           </span>
-        </div>
+        </ItemLabel>
       ))}
 
       <button
@@ -178,5 +221,22 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
         {t(COMMON_KEYS.COMPLETE)}
       </button>
     </form>
+  );
+};
+
+const InputClassName =
+  'input w-full transition-all duration-300 outline-none focus-within:outline-none focus-within:border-primary focus-within:shadow-sm focus-within:shadow-primary focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary';
+
+export const ItemLabel: FC<{
+  label: string;
+  children: React.ReactNode;
+}> = ({ label, children }) => {
+  return (
+    <div className="w-full relative">
+      <label className="inline-block text-base mb-2 desc-color _p-x">
+        {label}
+      </label>
+      {children}
+    </div>
   );
 };

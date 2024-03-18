@@ -1,8 +1,10 @@
+import { AvatarName } from '@/components/ImageSvg';
 import { AuthSuccessUserData } from '@/server/pusher/type';
 import { create } from 'zustand';
 
 interface RoomStore {
   encryptData: {
+    avatar: AvatarName;
     roomName: string;
     nickName: string;
     password: string;
@@ -14,6 +16,7 @@ interface RoomStore {
 
 export const useRoomStore = create<RoomStore>()((set) => ({
   encryptData: {
+    avatar: '',
     roomName: '',
     nickName: '',
     password: '',

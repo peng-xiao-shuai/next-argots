@@ -87,7 +87,8 @@ export const pusherAuthApi = (app: Express) => {
    * 授权连接
    */
   app.post(API_URL.PUSHER_AUTH, async (req, res) => {
-    const { socket_id, nickName, password, roomStatus, roomName } = req.body;
+    const { socket_id, nickName, password, roomStatus, roomName, avatar } =
+      req.body;
     const role =
       roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
     if (
@@ -182,6 +183,7 @@ export const pusherAuthApi = (app: Express) => {
         user_info: {
           iv: room!.iv,
           role,
+          avatar,
           roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
           userId: nickName,
           name: nickName,

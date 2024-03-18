@@ -20,6 +20,10 @@ export type AuthSuccessUserData = {
   user_info: {
     userId: string;
     /**
+     * 头像
+     */
+    avatar: string;
+    /**
      * 房主才会有
      */
     roomRecordId?: string;
