@@ -1,40 +1,26 @@
 'use client';
 import '../style.css';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
-import { Chat, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
+import { Chat, ChatMsg, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
 import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { debounce } from '@/utils/debounce-throttle';
+import { useRoomStore } from '@/hooks/use-room-data';
+import { unicodeToString } from '@/utils/string-transform';
+import { ImageSvg } from '@/components/ImageSvg';
 
-const ChatRecords = (
-  {
-    isMy,
-    msg,
-  }: {
-    isMy?: boolean;
-    msg: string;
-  } = {
-    isMy: false,
-    msg: '',
-  }
-) => {
+const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
   return (
     <div className={`chat chat-${isMy ? 'end' : 'start'}`}>
+      <div className="chat-header leading-6">
+        {unicodeToString(user!.nickname)}
+      </div>
       <div className="chat-image avatar">
         <div className="w-10 rounded-lg">
-          <Image
-            alt="profile photo"
-            width={40}
-            height={40}
-            src={
-              isMy
-                ? 'https://avatars.githubusercontent.com/u/53845479?v=4'
-                : logo
-            }
-          />
+          <ImageSvg className="w-10 h-10" name={user?.avatar}></ImageSvg>
         </div>
       </div>
       <div
@@ -53,6 +39,7 @@ export function ClientChat() {
   const [content, setContent] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
   const [height, setHeight] = useState('');
+  const { encryptData } = useRoomStore();
   const { ClientSendMessage, exitRoom, unsubscribe } = usePusher(setChat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
@@ -84,7 +71,17 @@ export function ClientChat() {
             {
               // 文字类型
               item.type === MESSAGE_TYPE.MSG && (
-                <ChatRecords msg={item.msg} isMy={item.isMy}></ChatRecords>
+                <ChatRecords
+                  {...item}
+                  user={
+                    item.isMy
+                      ? {
+                          avatar: encryptData.avatar,
+                          nickname: encryptData.nickName,
+                        }
+                      : item.user
+                  }
+                ></ChatRecords>
               )
             }
 
