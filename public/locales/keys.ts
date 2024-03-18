@@ -38,6 +38,7 @@ export enum HOME_KEYS {
   EMPTY_NICKNAME = 'Please_input_nickname_as_your_room_nickname',
   EMPTY_PASSWORD = 'Please_input_room_password_enter_the_room',
   EMPTY_ROOM_NUMBER = 'Please_input_room_number_nickname_enter_the_room',
+  AVATAR = 'avatar',
 }
 
 export enum CHAT_ROOM_KEYS {

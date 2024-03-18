@@ -6,4 +6,6 @@ export const HOME = {
     [HOME_KEYS.NO_ROOM_NAME]: 'Sorry ~ Room name not exists!',
     [HOME_KEYS.PASSWORD_ERROR]: 'Password error',
   },
+
+  [HOME_KEYS.AVATAR]: 'Avatar',
 };
