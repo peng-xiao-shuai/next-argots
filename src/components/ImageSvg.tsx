@@ -6,7 +6,7 @@ export type AvatarName =
   | 'Aries'
   | 'Bat'
   | 'Butterfly'
-  | 'cheetah'
+  | 'Cheetah'
   | 'Dog'
   | 'Eagle-'
   | 'Fox'
@@ -25,7 +25,7 @@ const avatars: AvatarName[] = [
   'Aries',
   'Bat',
   'Butterfly',
-  'cheetah',
+  'Cheetah',
   'Dog',
   'Eagle-',
   'Fox',
