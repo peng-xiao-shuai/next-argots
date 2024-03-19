@@ -1,3 +1,4 @@
+import { getOptions } from './settings';
 import { createInstance, i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next/initReactI18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
@@ -5,10 +6,10 @@ import enUS from '../../public/locales/en-US';
 import jaJP from '../../public/locales/ja-JP';
 import zhTW from '../../public/locales/zh-TW';
 import zhCN from '../../public/locales/zh-CN';
-import { getOptions, DEFAULT_NS } from './settings';
 
 let cacheI18n: i18n;
 
+export const DEFAULT_NS = 'translation';
 export type Resources = {
   [key in keyof typeof resources]: (typeof resources)[key] & {
     [DEFAULT_NS]: Indexes;
