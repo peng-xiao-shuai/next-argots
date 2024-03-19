@@ -132,8 +132,9 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
   const [avatarVisible, setAvatarVisible] = useState(false);
 
   useEffect(() => {
-    setFocus('nickName');
-  }, [setFocus, errors]);
+    setFocus('roomName');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <form
