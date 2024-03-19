@@ -6,20 +6,23 @@ import { useTranslation } from '@/locales/client';
 import { AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';
 import { COMMON_KEYS } from '@@/locales/keys';
+import { Lng } from '@/locales/i18n';
+import { TFunction } from 'i18next';
 
 export const NavRight: FC<{
   metadata: Meta;
-}> = ({ metadata }) => {
+  t: TFunction<'translation', undefined>;
+  language: Lng;
+}> = ({ metadata, t, language }) => {
   // 完成事件，点击触发全局通信
   const handleComplete = () => {
     bus.emit('complete');
   };
-  const { t, i18n } = useTranslation();
 
   return (
     <>
       {metadata.rightOperateType === 'setting' ? (
-        <Link href={`/${i18n.language}/setting`}>
+        <Link href={`/${language}/setting`}>
           <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
         </Link>
       ) : (

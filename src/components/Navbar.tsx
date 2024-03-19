@@ -3,41 +3,41 @@ import meta from '../app/[lng]/meta';
 import { useTranslation } from '@/locales/client';
 import { Lng, languages } from '@/locales/i18n';
 import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { NavRight } from './NavbarRight';
-import Link from 'next/link';
 import { useRoomStore } from '@/hooks/use-room-data';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { unicodeToString } from '@/utils/string-transform';
 
-export const Navbar = () => {
-  const { t, i18n } = useTranslation();
+export const Navbar: FC<{
+  language: Lng;
+}> = ({ language }) => {
+  const { t } = useTranslation();
   const { encryptData } = useRoomStore();
   // path 路径携带 / 开头
   const path = usePathname();
-  const pathArr = path.split('/');
-  pathArr.splice(pathArr.length - 1, 1);
+  const router = useRouter();
+  const metadata = useMemo(() => {
+    const pathArr = path.split('/');
+    pathArr.splice(pathArr.length - 1, 1);
 
-  const metadata = languages.includes(path.replace('/', '') as Lng)
-    ? meta['/']
-    : meta[path.replace('/' + i18n.language, '')] || {};
-
-  const [navTitle, setNavTitle] = useState(t(metadata.locale));
-
-  useEffect(() => {
+    if (languages.includes(path.replace('/', '') as Lng)) return meta['/'];
+    else return meta[path.replace('/' + language, '')] || {};
+  }, [language, path]);
+  const navTitle = useMemo(() => {
     // 处理navbar 显示文字
     if (metadata.locale === COMMON_KEYS.CHAT) {
-      setNavTitle(unicodeToString(encryptData.roomName));
+      return unicodeToString(encryptData.roomName);
     } else {
-      setNavTitle(t(metadata.locale));
+      return t(metadata.locale);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [encryptData.roomName, metadata.locale]);
 
+  useEffect(() => {
     const beforeunload = (event: BeforeUnloadEvent) => {
-      // Cancel the event as stated by the standard.
       event.preventDefault();
-      // Chrome requires returnValue to be set.
-
       event.returnValue = 'tip';
     };
 
@@ -48,7 +48,8 @@ export const Navbar = () => {
     return () => {
       window.removeEventListener('beforeunload', beforeunload);
     };
-  }, [encryptData, metadata.locale, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [encryptData, metadata.locale]);
 
   return (
     <>
@@ -58,7 +59,13 @@ export const Navbar = () => {
         }`}
       >
         <div className={`navbar rounded-lg bg-base-300 min-h-12`}>
-          <Link href={metadata.title === 'Home' ? '' : pathArr.join('/')}>
+          <div
+            onClick={() => {
+              if (metadata.title !== 'Home') {
+                router.back();
+              }
+            }}
+          >
             <div className="flex-none leading-none">
               <label
                 className={`swap swap-rotate items-center ${
@@ -69,7 +76,7 @@ export const Navbar = () => {
                 <AiOutlineLeft className="svg-icon swap-off" />
               </label>
             </div>
-          </Link>
+          </div>
 
           <div className="flex-1">
             <span className="font-sans _bold text-base-content pl-2 text-1rem normal-case">
@@ -77,10 +84,11 @@ export const Navbar = () => {
             </span>
           </div>
           <div className="flex-none">
-            <NavRight metadata={metadata}></NavRight>
+            <NavRight metadata={metadata} t={t} language={language}></NavRight>
           </div>
         </div>
       </div>
     </>
   );
 };
+export default Navbar;
