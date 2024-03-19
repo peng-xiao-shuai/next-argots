@@ -1,21 +1,15 @@
 // 保证layout为服务端组件
 import { Inter } from 'next/font/google';
-import {
-  Navbar,
-  Transition,
-  AppProvider,
-  TrpcProviders,
-} from '../../components';
+import { Transition, AppProvider, TrpcProviders } from '../../components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
 import Head from 'next/head';
 import { META } from '@@/locales/keys';
-// import meta from './meta';
+import dynamic from 'next/dynamic';
 const inter = Inter({ subsets: ['latin'] });
-
-// export const metadata = meta['/'];
+const Navbar = dynamic(() => import('@/components/Navbar'));
 
 export async function getStaticPaths() {
   const paths = languages.map((lng) => ({
@@ -42,7 +36,7 @@ export default async function RootLayout({
           <TrpcProviders>
             <AppProvider language={lng}>
               <div className="flex flex-col h-full">
-                <Navbar />
+                <Navbar language={lng} />
 
                 <Transition
                   language={lng}
