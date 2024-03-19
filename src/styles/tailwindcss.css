@@ -46,9 +46,11 @@
 
   .chat-end .chat-bubble::before {
     left: 99% !important;
+    transform: translateX(-1px);
   }
   .chat-start .chat-bubble::before {
     right: 99% !important;
+    transform: translateX(1px);
   }
 
   .btn,

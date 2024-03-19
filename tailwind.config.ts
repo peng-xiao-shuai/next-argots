@@ -19,15 +19,24 @@ const config: Config = {
           'accent-content': '#FFFFFF',
           'base-content': '#dddddd',
           'primary-content': '#dddddd',
+
+          '.home': {
+            background:
+              'radial-gradient( circle at 50% 26%, rgba(65, 37, 76, 1) 0%, rgba(0, 0, 0, 0.7) 35%)',
+          },
         },
         light: {
           ...require('daisyui/src/theming/themes')['light'],
           primary: '#8A13A4',
           error: '#aa0b56',
-
           'accent-content': '#000000',
+          'neutral-content': daisyTheme.light['base-content'],
+          'primary-content': daisyTheme.light['base-200'],
 
-          'primary-content': daisyTheme.dark['base-content'],
+          '.home': {
+            background:
+              'radial-gradient( circle at -50% 5%, rgba(119, 15, 142, 1) 0%, rgba(255, 255, 255, 0.7) 55%)',
+          },
         },
       },
     ],

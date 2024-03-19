@@ -46,13 +46,10 @@ export default async function SizeChange({
             <div className="w-10 rounded-lg">
               <Image
                 alt="logo"
+                className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
                 width={40}
                 height={40}
-                src={
-                  item.type === 'user'
-                    ? 'https://avatars.githubusercontent.com/u/53845479?v=4'
-                    : logo
-                }
+                src={item.type === 'user' ? logo : logo}
               />
             </div>
           </div>
@@ -61,7 +58,7 @@ export default async function SizeChange({
               item.type === 'user'
                 ? '!chat-bubble-primary !bg-primary-focus text-primary-content'
                 : ''
-            } chat-bubble rounded-lg min-h-[unset] bg-base-300 w-4/5`}
+            } chat-bubble rounded-lg min-h-[unset] bg-base-300 text-base-content w-4/5`}
           >
             {t(item.locale)}
           </div>

@@ -5,3 +5,11 @@
     rgba(0, 0, 0, 1) 200px
   );
 }
+
+[data-theme='light'] .about {
+  background: radial-gradient(
+    circle at -50% 5%,
+    rgba(119, 15, 142, 1) 0%,
+    rgba(255, 255, 255, 0.7) 55%
+  );
+}

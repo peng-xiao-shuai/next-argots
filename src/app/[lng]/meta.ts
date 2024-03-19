@@ -12,7 +12,7 @@ const pathMetaData = {
   '/': {
     title: 'Home',
     locale: COMMON_KEYS.HOME,
-    isPlaceholder: true,
+    isPlaceholder: false,
     rightOperateType: 'setting',
   },
 
@@ -47,7 +47,7 @@ const pathMetaData = {
   '/setting/about': {
     title: 'About',
     locale: COMMON_KEYS.ABOUT,
-    isPlaceholder: true,
+    isPlaceholder: false,
     rightOperateType: 'none',
   },
 

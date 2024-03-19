@@ -3,8 +3,6 @@ import '../style.css';
 import { FC, useEffect, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { Chat, ChatMsg, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
-import logo from '/public/logo.svg';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { debounce } from '@/utils/debounce-throttle';
@@ -25,7 +23,7 @@ const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
       </div>
       <div
         className={`${
-          isMy ? 'chat-bubble-primary' : ''
+          isMy ? 'chat-bubble-primary' : 'bg-base-300 text-base-content'
         } chat-bubble rounded-lg min-h-[unset]`}
       >
         <div className="whitespace-break-spaces break-words">{msg}</div>

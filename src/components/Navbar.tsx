@@ -58,7 +58,9 @@ export const Navbar: FC<{
           metadata.isPlaceholder ? '' : ' pb-0 fixed z-10 '
         }`}
       >
-        <div className={`navbar rounded-lg bg-base-300 min-h-12`}>
+        <div
+          className={`navbar rounded-lg bg-base-300 bg-opacity-60 dark:bg-opacity-100 min-h-12`}
+        >
           <div
             onClick={() => {
               if (metadata.title !== 'Home') {

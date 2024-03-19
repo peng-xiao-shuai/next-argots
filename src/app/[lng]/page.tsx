@@ -11,7 +11,13 @@ export default function Home({ params: { lng } }: CustomReactParams) {
   return (
     <>
       <div className="flex flex-wrap h-[80%] items-center">
-        <Image className="w-24 h-24 m-auto rounded-box" src={logo} alt="Logo" />
+        <div className="w-24 h-24 m-auto rounded-box bg-base-300 dark:bg-black bg-opacity-50 flex justify-center items-center">
+          <Image
+            className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
+            src={logo}
+            alt="Logo"
+          />
+        </div>
 
         <ClientOperate lng={lng}></ClientOperate>
       </div>

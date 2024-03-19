@@ -56,8 +56,8 @@ export const ImageSvg: FC<{
         height={30}
         className={`filter ${
           name
-            ? 'dark:invert-[80%] dark:brightness-200 dark:contrast-100 w-[60%] h-[60%]'
-            : 'rounded-full'
+            ? 'dark:invert-[90%] dark:brightness-200 dark:contrast-100 dark:opacity-100 opacity-70 !w-[65%] !h-[65%]'
+            : 'rounded-full dark:invert-[5%] invert-[80%] brightness-200 contrast-100'
         }`}
       ></Image>
     </div>

@@ -41,10 +41,9 @@ export const ClientOperate: FC<{
           {t(HOME_KEYS.CREATE_ROOM)}
         </button>
       </div>
-
       <Dialog visible={visible} setVisible={setVisible}>
         <div className="flex flex-wrap justify-center">
-          <HomeForm roomStatus={roomStatus}></HomeForm>
+          {visible && <HomeForm roomStatus={roomStatus}></HomeForm>}
         </div>
       </Dialog>
     </>
