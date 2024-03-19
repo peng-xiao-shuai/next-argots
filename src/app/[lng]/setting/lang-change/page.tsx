@@ -1,6 +1,5 @@
 import { ClientLang, LangType } from '../_components/ClientLangChange';
 import { GenerateMetadata } from '../../meta';
-import { COMMON_KEYS } from '@@/locales/keys';
 
 const langs: LangType[] = [
   {
@@ -30,9 +29,7 @@ export const generateMetadata = async ({
 export default function LangChange({ params: { lng } }: CustomReactParams) {
   return (
     <ul className="menu">
-      {langs.map((item) => (
-        <ClientLang key={item.label} item={item} lng={lng}></ClientLang>
-      ))}
+      <ClientLang langs={langs} lng={lng}></ClientLang>
     </ul>
   );
 }
