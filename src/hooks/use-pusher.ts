@@ -1,5 +1,12 @@
 import AES from '@/utils/aes';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+} from 'react';
 import Pusher from 'pusher-js';
 import type { Channel } from 'pusher-js';
 import Metadata from 'pusher-js/types/src/core/channels/metadata';
@@ -15,11 +22,13 @@ import {
   SigninSuccessUserData,
   SubscriptionSuccessMember,
 } from '@/server/pusher/type';
-import { useTranslation } from '@/locales/client';
 import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
+import { AppContext } from '@/context';
+import { TFunction } from 'i18next';
+import { Lng } from '@/locales/i18n';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -66,8 +75,8 @@ let cachePusher: Pusher | null;
 let Aes: AES | null;
 Pusher.logToConsole = process.env.NODE_ENV === 'development';
 export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
-  const { t, i18n } = useTranslation();
   const { replace } = useRouter();
+  const { t, language } = useContext(AppContext);
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
 
   useEffect(() => {
@@ -170,19 +179,19 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
               switch (status) {
                 case 400:
-                  toast.error(t(API_KEYS.PUSHER_AUTH_400));
+                  toast.error(t!(API_KEYS.PUSHER_AUTH_400));
                   break;
                 case 500:
-                  toast.error(t(API_KEYS.PUSHER_AUTH_500));
+                  toast.error(t!(API_KEYS.PUSHER_AUTH_500));
                   break;
                 case 403:
-                  toast.error(t(API_KEYS.PUSHER_AUTH_403));
+                  toast.error(t!(API_KEYS.PUSHER_AUTH_403));
                   break;
                 case 401:
-                  toast.error(t(API_KEYS.PUSHER_AUTH_401));
+                  toast.error(t!(API_KEYS.PUSHER_AUTH_401));
                   break;
                 case 423:
-                  toast.error(t(API_KEYS.PUSHER_AUTH_423));
+                  toast.error(t!(API_KEYS.PUSHER_AUTH_423));
                   break;
               }
 
@@ -221,7 +230,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
         setChatValue({
           type: MESSAGE_TYPE.SYSTEM,
-          msg: `🎉🎉 ${t(CHAT_ROOM_KEYS.MEMBER_ADDED, {
+          msg: `🎉🎉 ${t!(CHAT_ROOM_KEYS.MEMBER_ADDED, {
             name: unicodeToString(info.name),
           })}`,
         });
@@ -237,10 +246,10 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           type: MESSAGE_TYPE.SYSTEM,
           msg: `🔌🔌 ${
             info.role !== UserRole.HOUSE_OWNER
-              ? t(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
+              ? t!(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
                   name: unicodeToString(info.name),
                 })
-              : t(CHAT_ROOM_KEYS.OWNER_MEMBER_REMOVED, {
+              : t!(CHAT_ROOM_KEYS.OWNER_MEMBER_REMOVED, {
                   name: unicodeToString(info.name),
                 })
           }`,
@@ -250,7 +259,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           unsubscribe();
           const timeID = setTimeout(() => {
             clearTimeout(timeID);
-            replace('/' + i18n.language);
+            replace('/' + language);
           }, 1000);
         }
       }
@@ -277,10 +286,13 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           },
           timestamp,
           msg:
-            Aes?.decrypted(msg) ||
-            t(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
+            Aes?.decrypted('2222') ||
+            t!(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
               origin:
-                process.env.NEXT_PUBLIC_SERVER_URL + '/setting/about/feedback',
+                process.env.NEXT_PUBLIC_SERVER_URL +
+                '/' +
+                language +
+                '/setting/about/feedback',
             }).replace(/&#x2F;/g, '/'),
           status: 'success',
         });
@@ -291,7 +303,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   /**
    * 客户端发送
    */
-  const ClientSendMessage = (content: string) => {
+  const ClientSendMessage = (content: string, cb?: () => void) => {
     const timestamp = Date.now();
     setChatValue({
       type: MESSAGE_TYPE.MSG,
@@ -300,6 +312,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       isMy: true,
       status: 'loading',
     });
+
+    cb?.();
 
     const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
       type: MESSAGE_TYPE.MSG,
@@ -356,7 +370,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     // @ts-ignore
     const user_info = channel?.members.get(encryptData.nickName).info;
 
-    if (user_info.role === UserRole.HOUSE_OWNER) {
+    if (user_info?.role === UserRole.HOUSE_OWNER) {
       mutate({
         roomName: encryptData.roomName,
         nickName: encryptData.nickName,

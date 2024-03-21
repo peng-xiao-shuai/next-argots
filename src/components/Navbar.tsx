@@ -6,14 +6,15 @@ import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai';
 import { usePathname, useRouter } from 'next/navigation';
 import { NavRight } from './NavbarRight';
 import { useRoomStore } from '@/hooks/use-room-data';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useContext, useEffect, useMemo } from 'react';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { unicodeToString } from '@/utils/string-transform';
+import { AppContext } from '@/context';
 
 export const Navbar: FC<{
   language: Lng;
 }> = ({ language }) => {
-  const { t } = useTranslation();
+  const { t } = useContext(AppContext);
   const { encryptData } = useRoomStore();
   // path 路径携带 / 开头
   const path = usePathname();
@@ -30,7 +31,7 @@ export const Navbar: FC<{
     if (metadata.locale === COMMON_KEYS.CHAT) {
       return unicodeToString(encryptData.roomName);
     } else {
-      return t(metadata.locale);
+      return t!(metadata.locale);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [encryptData.roomName, metadata.locale]);
@@ -86,7 +87,7 @@ export const Navbar: FC<{
             </span>
           </div>
           <div className="flex-none">
-            <NavRight metadata={metadata} t={t} language={language}></NavRight>
+            <NavRight metadata={metadata} t={t!} language={language}></NavRight>
           </div>
         </div>
       </div>

@@ -1,14 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { COMMON_KEYS } from '@@/locales/keys';
-import { useTranslation } from '@/locales/client';
 import { debounce } from '@/utils/debounce-throttle';
 import { AiOutlineRight } from 'react-icons/ai';
+import { AppContext } from '@/context';
 
 export const ClientMenu: FC = () => {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t } = useContext(AppContext);
   const [lists, setLists] = useState([
     {
       label: '深色模式',
@@ -52,7 +52,7 @@ export const ClientMenu: FC = () => {
       `}
           onClick={() => debounce(() => router.push(item.path))}
         >
-          <span className="px-0">{t(item.locale)}</span>
+          <span className="px-0">{t!(item.locale)}</span>
           <AiOutlineRight className="w-3 h-3 p-0 fill-base-content" />
         </li>
       ))}

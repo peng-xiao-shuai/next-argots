@@ -4,7 +4,7 @@ import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
 import { COMMON_KEYS, HOME_KEYS } from '@@/locales/keys';
-import { useTranslation } from '@/locales/client';
+import { AppContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
@@ -73,8 +73,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
     setFocus,
     formState: { errors },
   } = useForm<FormData>();
-
-  const { t } = useTranslation();
+  const { t } = useContext(AppContext);
   const { signin } = usePusher();
   const router = useRouter();
   const { setData } = useRoomStore();
@@ -145,7 +144,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
         setAvatarVisible(false);
       }}
     >
-      <ItemLabel label={t(HOME_KEYS.AVATAR)}>
+      <ItemLabel label={t!(HOME_KEYS.AVATAR)}>
         <div
           className={`dropdown ${
             avatarVisible ? 'dropdown-open' : 'dropdown-close'
@@ -167,7 +166,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
             <input
               type="text"
               className="grow bg-transparent"
-              placeholder={t(HOME_KEYS.AVATAR)}
+              placeholder={t!(HOME_KEYS.AVATAR)}
               value={avatar}
               readOnly
             />
@@ -180,10 +179,10 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
       </ItemLabel>
 
       {formView.map((item, index) => (
-        <ItemLabel key={item.prop} label={t(item.locale)}>
+        <ItemLabel key={item.prop} label={t!(item.locale)}>
           <input
             type={item.type}
-            placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
+            placeholder={t!(HOME_KEYS.PLEASE_INPUT) + t!(item.locale)}
             {...register(item.prop, item.validation)}
             maxLength={item.validation?.maxLength as number}
             className={`${
@@ -202,7 +201,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
                 : 'opacity-0'
             } pl-2 transition-all duration-300 text-xs absolute left-0 bottom-[0.5rem] text-error`}
           >
-            {t(
+            {t!(
               errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
                 ''
@@ -221,7 +220,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
             loading ? 'opacity-1' : 'loading-hidden'
           }`}
         />
-        {t(COMMON_KEYS.COMPLETE)}
+        {t!(COMMON_KEYS.COMPLETE)}
       </button>
     </form>
   );
