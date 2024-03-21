@@ -1,6 +1,13 @@
 'use client';
 import '../style.css';
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import {
+  FC,
+  KeyboardEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { Chat, ChatMsg, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
@@ -35,6 +42,9 @@ const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
 };
 
 export function ClientChat() {
+  const { current: isMobile } = useRef(
+    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent)
+  );
   const pathname = usePathname();
   const { t } = useContext(AppContext);
   const [content, setContent] = useState('');
@@ -54,9 +64,14 @@ export function ClientChat() {
   // 自动增长高度
   const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHeight(`${target.scrollHeight}px`);
+
+    if (content.length === 0 && target.value.trim().length === 0) return;
     setContent(target.value);
   };
 
+  /**
+   * 发送信息或者接受信息滚动到底部
+   */
   const handleScrollBottom = (duration: number = 200) => {
     const element = ChatScroll.current;
     if (!element) return;
@@ -78,6 +93,35 @@ export function ClientChat() {
     };
 
     requestAnimationFrame(animateScroll);
+  };
+
+  /**
+   * send message
+   */
+  const handleSendMessage = () => {
+    debounce(() => {
+      if (content.trim() === '') {
+        toast.warning(t!(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
+        return;
+      }
+
+      ClientSendMessage(content.trim());
+      setContent('');
+    });
+  };
+
+  /**
+   * 聚焦按键事件
+   */
+  const handleKeyDown = ({
+    key,
+    shiftKey,
+  }: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (key === 'Enter' && !shiftKey && !isMobile) {
+      handleSendMessage();
+    } else if (key === 'Enter' && isMobile) {
+      handleSendMessage();
+    }
   };
 
   useEffect(() => {
@@ -140,6 +184,7 @@ export function ClientChat() {
               }}
               className="w-full leading-6 text-base block caret-primary overflow-hidden resize-none outline-none bg-[rgba(0,0,0,0)]"
               onInput={autoResize}
+              onKeyDown={handleKeyDown}
             />
           </div>
         </div>
@@ -148,17 +193,7 @@ export function ClientChat() {
         <div className="ml-4">
           <button
             className="btn btn-primary min-h-[2.5rem] h-10"
-            onClick={() => {
-              debounce(() => {
-                if (content.trim() === '') {
-                  toast.warning(t!(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
-                  return;
-                }
-
-                ClientSendMessage(content.trim());
-                setContent('');
-              });
-            }}
+            onClick={handleSendMessage}
           >
             {CHAT_ROOM_KEYS.SEND}
           </button>
