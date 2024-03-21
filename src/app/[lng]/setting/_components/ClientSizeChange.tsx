@@ -3,6 +3,8 @@ import { FC, useContext, useState } from 'react';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { AppContext } from '@/context';
 import { toast } from 'sonner';
+import { COMMON_KEYS } from '@@/locales/keys';
+import { setSize } from '@/utils/set-app';
 
 const BASE_SIZE = 13;
 const rangeData: Indexes<number> = {
@@ -17,10 +19,10 @@ const rangeData: Indexes<number> = {
 };
 
 export const ClientRangeInput: FC = () => {
-  const setting = useContext(AppContext);
+  const { size, t } = useContext(AppContext);
 
   // range 长度
-  const [rangeValue, setRangeValue] = useState(rangeData[setting.size]);
+  const [rangeValue, setRangeValue] = useState(rangeData[size]);
 
   /**
    * 修改字体，在没有点击完成时，退出会将字体改回原样
@@ -34,15 +36,8 @@ export const ClientRangeInput: FC = () => {
   };
 
   const handleComplete = () => {
-    window.localStorage.setItem(
-      'settings',
-      JSON.stringify({
-        ...setting,
-        size: rangeValue / 10 + BASE_SIZE,
-      })
-    );
-
-    toast.success('successfully set');
+    setSize(Number(rangeValue) / 10 + BASE_SIZE);
+    toast.success(t!(COMMON_KEYS.SUCCESSFULLY_SET));
   };
 
   useBusWatch('complete', handleComplete);

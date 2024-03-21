@@ -1,21 +1,15 @@
 'use client';
 import { useBusWatch } from '@/hooks/use-bus-watch';
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
-import { useTranslation } from '@/locales/client';
-import { usePathname, useRouter } from 'next/navigation';
-import { COOKIE_NAME } from '@/locales/settings';
-import { useCookies } from 'react-cookie';
-import { toast } from 'sonner';
+import { AppContext } from '@/context';
+import { setLanguage } from '@/utils/set-app';
 export type LangType = { label: string; value: Lng; desc?: string };
 export const ClientLang: FC<{
   langs: LangType[];
   lng: Lng;
 }> = ({ lng, langs }) => {
-  const { t } = useTranslation();
-  const router = useRouter();
-  const path = usePathname();
-  const [, setCookie] = useCookies<typeof COOKIE_NAME>();
+  const { t } = useContext(AppContext);
   const [locale, setLocale] = useState<Lng>();
   const handleSwitchLang = (item: LangType) => {
     if (item.value !== locale) {
@@ -24,10 +18,7 @@ export const ClientLang: FC<{
   };
 
   const handleComplete = () => {
-    setCookie(COOKIE_NAME, locale);
-
-    router.replace(path.replace(lng, locale!));
-    toast.success('successfully set');
+    setLanguage(locale!);
   };
   useBusWatch('complete', handleComplete);
 
@@ -46,7 +37,7 @@ export const ClientLang: FC<{
             <div>
               <span className="label-text">{item.label}</span>
               {item.desc && (
-                <span className="text-xs opacity-70"> ({t(item.desc)})</span>
+                <span className="text-xs opacity-70"> ({t!(item.desc)})</span>
               )}
             </div>
 

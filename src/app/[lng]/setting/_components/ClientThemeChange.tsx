@@ -2,9 +2,8 @@
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { useContext, useState } from 'react';
 import { AppContext } from '@/context';
-import { setDataTheme } from '@/utils/set-theme';
-import { SETTING_KEYS } from '@@/locales/keys';
-import { useTranslation } from '@/locales/client';
+import { setDataTheme } from '@/utils/set-app';
+import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { FC } from 'react';
 import { toast } from 'sonner';
 
@@ -22,26 +21,15 @@ const patternList = [
 ];
 
 export const ClientThemeChange: FC = () => {
-  const { t } = useTranslation();
-  const setting = useContext(AppContext);
-  const [isAuto, setIsAuto] = useState(setting.dataTheme === 'auto');
+  const { t, dataTheme } = useContext(AppContext);
+  const [isAuto, setIsAuto] = useState(dataTheme === 'auto');
   const [pattern, setPattern] = useState(
-    setting.dataTheme === 'auto' ? 'dark' : setting.dataTheme
+    dataTheme === 'auto' ? 'dark' : dataTheme
   );
   const handleComplete = () => {
     const dataTheme = isAuto ? 'auto' : pattern;
     setDataTheme(dataTheme);
-
-    window.localStorage.setItem(
-      'settings',
-      JSON.stringify({
-        ...setting,
-        dataTheme,
-      })
-    );
-
-    // TODO i18n
-    toast.success('successfully set');
+    toast.success(t!(COMMON_KEYS.SUCCESSFULLY_SET));
   };
 
   useBusWatch('complete', handleComplete);
@@ -50,9 +38,9 @@ export const ClientThemeChange: FC = () => {
     <>
       <div className="flex justify-between items-center">
         <div>
-          <div>{t(SETTING_KEYS.MODE_AUTO)}</div>
+          <div>{t!(SETTING_KEYS.MODE_AUTO)}</div>
           <span className="text-xs desc-color">
-            {t(SETTING_KEYS.MODE_SWITCH)}
+            {t!(SETTING_KEYS.MODE_SWITCH)}
           </span>
         </div>
 
@@ -69,7 +57,7 @@ export const ClientThemeChange: FC = () => {
       {!isAuto ? (
         <>
           <div className="_p desc-color text-left text-sm">
-            {t(SETTING_KEYS.CHOOSE_MANUALLY)}
+            {t!(SETTING_KEYS.CHOOSE_MANUALLY)}
           </div>
 
           <ul className="menu">
@@ -79,7 +67,7 @@ export const ClientThemeChange: FC = () => {
                 key={item.label}
               >
                 <label className="w-full label p-0 h-full flex items-center justify-between">
-                  <span className="label-text">{t(item.locale)}</span>
+                  <span className="label-text">{t!(item.locale)}</span>
                   <input
                     v-model="pattern"
                     type="radio"
@@ -89,10 +77,7 @@ export const ClientThemeChange: FC = () => {
                     value={item.value}
                     onChange={({ target }) =>
                       setPattern(
-                        target.value as Exclude<
-                          typeof setting.dataTheme,
-                          'auto'
-                        >
+                        target.value as Exclude<typeof dataTheme, 'auto'>
                       )
                     }
                   />
