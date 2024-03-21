@@ -29,10 +29,7 @@ export const NavRight: FC<{
       )}
 
       {metadata.rightOperateType === 'complete' ? (
-        <button
-          className="btn btn-active btn-primary btn-sm"
-          onClick={handleComplete}
-        >
+        <button className="btn btn-primary btn-sm" onClick={handleComplete}>
           {t(COMMON_KEYS.COMPLETE)}
         </button>
       ) : (

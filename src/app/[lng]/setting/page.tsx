@@ -7,7 +7,7 @@ export const generateMetadata = async ({
 
 export default function Setting() {
   return (
-    <ul className="menu rounded-lg overflow-hidden bg-base-300">
+    <ul className="menu rounded-lg overflow-hidden">
       <ClientMenu></ClientMenu>
     </ul>
   );

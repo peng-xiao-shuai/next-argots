@@ -56,9 +56,9 @@ export default async function SizeChange({
           <div
             className={`${
               item.type === 'user'
-                ? '!chat-bubble-primary !bg-primary-focus text-primary-content'
-                : ''
-            } chat-bubble rounded-lg min-h-[unset] bg-base-300 text-base-content w-4/5`}
+                ? 'chat-bubble-primary bg-primary-focus text-primary-content'
+                : 'bg-base-300'
+            } chat-bubble rounded-lg min-h-[unset] text-base-content w-4/5`}
           >
             {t(item.locale)}
           </div>
@@ -66,7 +66,7 @@ export default async function SizeChange({
       ))}
 
       {/* 底部滑块 */}
-      <div className="fixed w-[100vw] left-0 bottom-0 bg-base-300 p-[16px] leading-none">
+      <div className="fixed w-[100vw] left-0 bottom-0 b3-opacity-6 p-[16px] leading-none">
         <div className="flex justify-between items-end mb-[8px] pl-[4px]">
           <div className="flex items-end">
             <div className="text-[14px] mr-[calc((100vw-32px)/7*3-32px)]">

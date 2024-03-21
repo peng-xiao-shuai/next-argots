@@ -156,7 +156,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
               e.preventDefault();
               setAvatarVisible(true);
             }}
-            className={`${InputClassName} flex items-center gap-2`}
+            className={`${InputClassName} flex items-center gap-2 b3-opacity-6`}
           >
             <ImageSvg
               name={avatar}
@@ -165,7 +165,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
 
             <input
               type="text"
-              className="grow bg-transparent"
+              className="grow !bg-transparent"
               placeholder={t!(HOME_KEYS.AVATAR)}
               value={avatar}
               readOnly
@@ -185,33 +185,32 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
             placeholder={t!(HOME_KEYS.PLEASE_INPUT) + t!(item.locale)}
             {...register(item.prop, item.validation)}
             maxLength={item.validation?.maxLength as number}
-            className={`${
-              index === formView.length - 1 ||
-              errors[item.prop] ||
-              errors.root?.[item.prop]
-                ? 'mb-7'
-                : 'mb-4'
-            } ${InputClassName}`}
+            className={`mb-1 ${
+              errors[item.prop] || errors.root?.[item.prop] ? '' : ''
+            }
+             ${InputClassName}`}
           />
 
-          <span
-            className={`${
+          <div
+            className={`
+            ${index === formView.length - 1 ? 'mb-4' : ''}
+            ${
               errors[item.prop] || errors.root?.[item.prop]
-                ? 'opacity-1'
-                : 'opacity-0'
-            } pl-2 transition-all duration-300 text-xs absolute left-0 bottom-[0.5rem] text-error`}
+                ? 'opacity-1 h-auto'
+                : 'opacity-0 h-0'
+            } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
           >
             {t!(
               errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
                 ''
             )}
-          </span>
+          </div>
         </ItemLabel>
       ))}
 
       <button
-        className="btn btn-primary btn-active mx-auto block w-2/3 disabled:bg-primary/50 disabled:text-neutral-400"
+        className="btn btn-primary mx-auto block w-2/3 disabled:bg-primary/50 disabled:text-neutral-400"
         disabled={loading}
         type="submit"
       >

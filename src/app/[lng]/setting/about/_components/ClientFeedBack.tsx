@@ -118,8 +118,10 @@ export function ClientFeedBack() {
         {issueType.map((issue) => (
           <div
             key={issue.locale}
-            className={`flex-1 flex mb-3 mx-1 rounded-full items-center justify-center bg-base-100 px-3 py-2 transition-all duration-300 ${
-              formData.type === issue.value ? 'bg-primary-focus bg-primary' : ''
+            className={`flex-1 flex mb-3 mx-1 rounded-full items-center justify-center bg-base-200 px-3 py-2 transition-all duration-300 ${
+              formData.type === issue.value
+                ? '!bg-primary-focus !bg-primary text-primary-content'
+                : ''
             }`}
             onClick={() =>
               setFormData((state) => ({
@@ -135,7 +137,7 @@ export function ClientFeedBack() {
       </div>
 
       <button
-        className="btn btn-primary btn-active mt-6 w-full disabled:bg-primary/50 disabled:text-neutral-400"
+        className="btn btn-primary mt-6 w-full disabled:bg-primary/50 "
         disabled={!formData.content || loading}
         onClick={handleSubmit}
       >

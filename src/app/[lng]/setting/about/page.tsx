@@ -16,7 +16,7 @@ export default async function About({ params: { lng } }: CustomReactParams) {
   return (
     <>
       <div className="mt-36 mb-6 flex justify-center flex-wrap">
-        <div className="w-24 h-24 mb-4 m-auto rounded-box bg-base-300 dark:bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="w-24 h-24 mb-4 m-auto rounded-box b3-opacity-6 dark:bg-black flex justify-center items-center">
           <Image
             className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
             src={logo}
@@ -31,7 +31,7 @@ export default async function About({ params: { lng } }: CustomReactParams) {
         <div className="text-sm">{pck.version}</div>
       </div>
 
-      <ul className="menu rounded-lg overflow-hidden bg-base-300 bg-opacity-60">
+      <ul className="menu rounded-lg overflow-hidden">
         <ClientAboutMenu></ClientAboutMenu>
       </ul>
     </>

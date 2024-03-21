@@ -25,7 +25,7 @@ const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
       </div>
       <div
         className={`${
-          isMy ? 'chat-bubble-primary' : 'bg-base-300 text-base-content'
+          isMy ? 'chat-bubble-primary' : 'b3-opacity-6 text-base-content'
         } chat-bubble rounded-lg min-h-[unset]`}
       >
         <div className="whitespace-break-spaces break-words">{msg}</div>

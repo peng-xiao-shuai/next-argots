@@ -69,7 +69,7 @@ export const GridAvatar: FC<{
   setAvatarVisible: Dispatch<SetStateAction<boolean>>;
 }> = ({ setAvatar, setAvatarVisible }) => {
   return (
-    <ul className="dropdown-content !duration-300 mt-2 grid grid-cols-6 bg-opacity-80 gap-x-2 gap-y-3 px-2 py-3 z-[1] bg-base-300 rounded-sm w-full">
+    <ul className="dropdown-content !duration-300 mt-2 grid grid-cols-6 bg-opacity-80 gap-x-2 gap-y-3 px-2 py-3 z-[1] b3-opacity-6 rounded-sm w-full">
       {avatars.map((item) => (
         <li
           key={item}

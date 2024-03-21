@@ -60,7 +60,7 @@ export const Navbar: FC<{
         }`}
       >
         <div
-          className={`navbar rounded-lg bg-base-300 bg-opacity-60 dark:bg-opacity-100 min-h-12`}
+          className={`navbar rounded-lg b3-opacity-6 bg-opacity-60 min-h-12`}
         >
           <div
             onClick={() => {

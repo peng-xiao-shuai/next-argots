@@ -35,7 +35,7 @@ export const ClientOperate: FC<{
           {t!(HOME_KEYS.SELECT_ROOM)}
         </button>
         <button
-          className="w-[43%] btn btn-primary btn-active"
+          className="w-[43%] btn btn-primary"
           onClick={() => handleRoom(RoomStatus.ADD)}
         >
           {t!(HOME_KEYS.CREATE_ROOM)}

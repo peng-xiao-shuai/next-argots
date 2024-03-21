@@ -44,10 +44,7 @@ export const ClientLang: FC<{
             <input
               type="radio"
               name="radio"
-              className={`
-        ${locale !== item.value ? 'opacity-0' : ''},
-        radio checked:bg-primary
-      `}
+              className={`radio checked:!bg-primary`}
               checked={locale === item.value}
               value={item.value}
               onChange={({ target }) => {
