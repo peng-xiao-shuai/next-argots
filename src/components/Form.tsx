@@ -12,6 +12,7 @@ import { stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
 import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
+import { Lng } from '@/locales/i18n';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -31,8 +32,9 @@ type FormView = {
 
 type HomeForm = FC<{
   roomStatus: RoomStatus;
+  lng: Lng;
 }>;
-export const HomeForm: HomeForm = ({ roomStatus }) => {
+export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
   const formView: FormView[] = [
     {
       type: 'text',
@@ -115,7 +117,7 @@ export const HomeForm: HomeForm = ({ roomStatus }) => {
 
       signin(roomStatus)
         .then((res) => {
-          router.push('/chat-room');
+          router.push(`/${lng}/chat-room`);
         })
         .catch((err) => {
           setLoading(false);
