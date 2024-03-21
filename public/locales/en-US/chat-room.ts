@@ -7,4 +7,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.HOUSE_OWNER]: 'House owner',
   [CHAT_ROOM_KEYS.DECRYPTION_FAILURE]:
     'Unknown problem, message decryption failed! Please go to {{origin}} to feedback your questions',
+  [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: 'The content cannot be empty',
 };

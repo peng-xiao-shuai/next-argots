@@ -8,4 +8,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.HOUSE_OWNER]: '房主',
   [CHAT_ROOM_KEYS.DECRYPTION_FAILURE]:
     '未知問題，消息解密失敗！請前往 {{origin}} 反饋問題',
+  [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '內容不能為空',
 };

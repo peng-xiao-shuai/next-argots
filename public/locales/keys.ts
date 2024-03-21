@@ -50,6 +50,7 @@ export enum CHAT_ROOM_KEYS {
   HOUSE_OWNER = 'House_owner',
 
   DECRYPTION_FAILURE = 'Decryption_failure',
+  CONTENT_CANNOT_BE_EMPTY = 'Content_cannot_be_empty',
 }
 
 export enum COMMON_KEYS {
@@ -71,6 +72,7 @@ export enum COMMON_KEYS {
   OPEN = 'Open',
   CONFIRM = 'Confirm',
   COMPLETE = 'Complete',
+  SUCCESSFULLY_SET = 'Successfully_set',
 }
 
 export enum API_KEYS {

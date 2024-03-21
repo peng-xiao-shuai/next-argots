@@ -19,6 +19,7 @@ export const COMMON = {
   [COMMON_KEYS.OPEN]: '打开',
   [COMMON_KEYS.CONFIRM]: '确认',
   [COMMON_KEYS.COMPLETE]: '完成',
+  [COMMON_KEYS.SUCCESSFULLY_SET]: '修改成功',
 
   [META.DESC]:
     '自由的聊天平台，全程加密对话信息，保护您的安全隐私。不会收集您的任何信息，不需要您的任何权限。',
