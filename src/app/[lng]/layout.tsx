@@ -33,10 +33,10 @@ export default async function RootLayout({
   return (
     <html
       lang={lng}
-      data-theme={theme?.value}
+      data-theme={theme?.value || 'dark'}
       dir={dir(lng)}
       style={{
-        fontSize: size?.value + 'px',
+        fontSize: size?.value || 16 + 'px',
       }}
     >
       <Head>
@@ -60,7 +60,12 @@ export default async function RootLayout({
               </div>
             </AppProvider>
           </TrpcProviders>
-          <Toaster richColors />
+          <Toaster
+            richColors
+            toastOptions={{
+              duration: 1000,
+            }}
+          />
         </main>
       </body>
     </html>

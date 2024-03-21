@@ -46,7 +46,7 @@ export const ClientThemeChange: FC = () => {
 
         <input
           type="checkbox"
-          className="toggle toggle-primary"
+          className="toggle !toggle-primary"
           checked={isAuto}
           onChange={({ target }) => {
             setIsAuto(target.checked);
@@ -72,7 +72,7 @@ export const ClientThemeChange: FC = () => {
                     v-model="pattern"
                     type="radio"
                     name="radio"
-                    className="radio checked:bg-primary"
+                    className="radio checked:!bg-primary"
                     defaultChecked={pattern === item.value}
                     value={item.value}
                     onChange={({ target }) =>

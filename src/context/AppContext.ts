@@ -15,8 +15,8 @@ export interface AppContextData extends DefaultData {
 }
 
 export const defaultData: DefaultData = {
-  size: Cookie.get(COOKIE.SIZE) ? Number(Cookie.get(COOKIE.SIZE)) : 16,
-  dataTheme: (Cookie.get(COOKIE.THEME) as DefaultData['dataTheme']) || 'dark',
+  size: Cookie?.get(COOKIE.SIZE) ? Number(Cookie?.get(COOKIE.SIZE)) : 16,
+  dataTheme: (Cookie?.get(COOKIE.THEME) as DefaultData['dataTheme']) || 'dark',
 };
 
 export const AppContext = createContext<AppContextData>(defaultData);
