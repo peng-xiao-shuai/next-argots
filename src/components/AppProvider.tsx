@@ -1,10 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { Lng } from '@/locales/i18n';
-import { SettingContextData, AppContext, defaultData } from '@/context';
-import { setDataTheme } from '@/utils/set-theme';
-
+import { AppContextData, AppContext, defaultData } from '@/context';
+import { useTranslation } from '@/locales/client';
 export function AppProvider({
   children,
   language,
@@ -12,10 +10,11 @@ export function AppProvider({
   children: React.ReactNode;
   language: Lng;
 }) {
-  const path = usePathname();
-  const [setting, setSetting] = useState<SettingContextData>({
+  const { t } = useTranslation();
+  const [setting, setSetting] = useState<AppContextData>({
     ...defaultData,
     language: language,
+    t,
   });
 
   useEffect(() => {
@@ -24,18 +23,5 @@ export function AppProvider({
     }
   }, []);
 
-  useEffect(() => {
-    const data = JSON.parse(
-      localStorage.getItem('settings') || '{}'
-    ) as SettingContextData;
-
-    if (Object.keys(data).length) {
-      setSetting(data);
-
-      document.documentElement.style.fontSize = data.size + 'px';
-
-      setDataTheme(data.dataTheme);
-    }
-  }, [path]);
   return <AppContext.Provider value={setting}>{children}</AppContext.Provider>;
 }

@@ -1,22 +1,22 @@
 'use client';
 import { createContext } from 'react';
 import { Lng } from '@/locales/i18n';
-import { COMMON_KEYS } from '@@/locales/keys';
-
+import { TFunction } from 'i18next';
+import { COOKIE } from '@/server/enum';
+import Cookie from 'js-cookie';
 export interface DefaultData {
   size: number;
-  name: string;
   dataTheme: 'dark' | 'light' | 'auto';
 }
 
-export interface SettingContextData extends DefaultData {
+export interface AppContextData extends DefaultData {
   language?: Lng;
+  t?: TFunction<'translation', undefined>;
 }
 
 export const defaultData: DefaultData = {
-  size: 16,
-  dataTheme: 'dark',
-  name: COMMON_KEYS.PACKAGE_NAME,
+  size: Cookie.get(COOKIE.SIZE) ? Number(Cookie.get(COOKIE.SIZE)) : 16,
+  dataTheme: (Cookie.get(COOKIE.THEME) as DefaultData['dataTheme']) || 'dark',
 };
 
-export const AppContext = createContext<SettingContextData>(defaultData);
+export const AppContext = createContext<AppContextData>(defaultData);

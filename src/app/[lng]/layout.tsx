@@ -8,6 +8,8 @@ import { languages, useTranslation } from '@/locales/i18n';
 import Head from 'next/head';
 import { META } from '@@/locales/keys';
 import dynamic from 'next/dynamic';
+import { cookies } from 'next/headers';
+import { COOKIE } from '@/server/enum';
 const inter = Inter({ subsets: ['latin'] });
 const Navbar = dynamic(() => import('@/components/Navbar'));
 
@@ -24,8 +26,19 @@ export default async function RootLayout({
   params: { lng },
 }: CustomReactLayout) {
   const { t } = await useTranslation(lng);
+  const cookieStore = cookies();
+  const size = cookieStore.get(COOKIE.SIZE);
+  const theme = cookieStore.get(COOKIE.THEME);
+
   return (
-    <html lang={lng} data-theme={'dark'} dir={dir(lng)}>
+    <html
+      lang={lng}
+      data-theme={theme?.value}
+      dir={dir(lng)}
+      style={{
+        fontSize: size?.value + 'px',
+      }}
+    >
       <Head>
         <meta name="description" content={t(META.DESC)} />
         <meta name="keywords" content={t(META.KEYWORDS)} />
