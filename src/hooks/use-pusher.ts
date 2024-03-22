@@ -286,7 +286,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           },
           timestamp,
           msg:
-            Aes?.decrypted('2222') ||
+            Aes?.decrypted(msg) ||
             t!(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
               origin:
                 process.env.NEXT_PUBLIC_SERVER_URL +
