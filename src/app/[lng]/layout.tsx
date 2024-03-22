@@ -10,6 +10,7 @@ import { META } from '@@/locales/keys';
 import dynamic from 'next/dynamic';
 import { cookies } from 'next/headers';
 import { COOKIE } from '@/server/enum';
+import { Viewport } from 'next';
 const inter = Inter({ subsets: ['latin'] });
 const Navbar = dynamic(() => import('@/components/Navbar'));
 
@@ -21,22 +22,37 @@ export async function getStaticPaths() {
   return { paths, fallback: 'blocking' };
 }
 
+export function generateViewport(): Viewport {
+  return {
+    themeColor: [
+      { media: '(prefers-color-scheme: light)', color: 'cyan' },
+      { media: '(prefers-color-scheme: dark)', color: 'black' },
+    ],
+    colorScheme: 'dark light',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  };
+}
+
 export default async function RootLayout({
   children,
   params: { lng },
 }: CustomReactLayout) {
-  const { t } = await useTranslation(lng);
   const cookieStore = cookies();
-  const size = cookieStore.get(COOKIE.SIZE);
-  const theme = cookieStore.get(COOKIE.THEME);
+  const size = cookieStore.get(COOKIE.SIZE)?.value;
+  const theme = cookieStore.get(COOKIE.THEME)?.value;
+  const { t } = await useTranslation(lng);
 
   return (
     <html
+      suppressHydrationWarning
       lang={lng}
-      data-theme={theme?.value || 'dark'}
       dir={dir(lng)}
+      data-theme={theme || 'dark'}
       style={{
-        fontSize: size?.value || 16 + 'px',
+        fontSize: (size || 16) + 'px',
       }}
     >
       <Head>
@@ -45,6 +61,36 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            const dataTheme = (function (cookieString = document.cookie) {
+              const list = {};
+              cookieString &&
+                cookieString.split(';').forEach((cookie) => {
+                  const parts = cookie.split('=');
+                  if (parts.length) {
+                    list[parts.shift().trim()] = decodeURI(parts.join('='));
+                  }
+                });
+              return list['theme'];
+            }())
+
+            if (dataTheme === 'auto') {
+              const isDark =
+                window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+              document.documentElement.setAttribute(
+                'data-theme',
+                isDark ? 'dark' : 'light'
+              );
+            } else {
+              document.documentElement.setAttribute('data-theme', dataTheme);
+            }
+          `,
+          }}
+        ></script>
         <main className="w-full h-[100vh] m-0 relative box-border overflow-x-hidden">
           <TrpcProviders>
             <AppProvider language={lng}>
