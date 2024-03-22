@@ -21,6 +21,7 @@ export default async function About({ params: { lng } }: CustomReactParams) {
             className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
             src={logo}
             alt="Logo"
+            priority
           />
         </div>
 
