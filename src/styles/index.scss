@@ -2,23 +2,26 @@
 @import './root.scss';
 
 @font-face {
-  font-family: 'HelveticaNeue-Bold'; /* 自定义字体名称 */
-  src: url('./HelveticaNeue-Bold.ttf');
-}
-
-@font-face {
   font-family: 'Helvetica-Neue'; /* 自定义字体名称 */
   src: url('./Helvetica-Neue.ttf');
 }
 
-[data-theme] * {
-  transition: all 0.3s;
+body {
+  font-family: 'Helvetica-Neue';
 }
 
-[data-theme='dark'] {
-  background-color: #000;
-  color: var(--fallback-bc, oklch(var(--bc) / 1));
+[data-theme] * {
+  transition: all 0.3s;
+  letter-spacing: 1px;
   svg path {
     fill: inherit;
   }
+}
+
+[data-theme='dark'] {
+  background-color: black;
+}
+
+[data-theme='light'] {
+  background-color: white;
 }

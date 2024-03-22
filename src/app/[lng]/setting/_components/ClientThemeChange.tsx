@@ -38,7 +38,7 @@ export const ClientThemeChange: FC = () => {
     <>
       <div className="flex justify-between items-center">
         <div>
-          <div>{t!(SETTING_KEYS.MODE_AUTO)}</div>
+          <div className="text-base-content">{t!(SETTING_KEYS.MODE_AUTO)}</div>
           <span className="text-xs desc-color">
             {t!(SETTING_KEYS.MODE_SWITCH)}
           </span>

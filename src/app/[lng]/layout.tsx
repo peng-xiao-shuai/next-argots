@@ -1,5 +1,3 @@
-// 保证layout为服务端组件
-import { Inter } from 'next/font/google';
 import { Transition, AppProvider, TrpcProviders } from '../../components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
@@ -11,7 +9,6 @@ import dynamic from 'next/dynamic';
 import { cookies } from 'next/headers';
 import { COOKIE } from '@/server/enum';
 import { Viewport } from 'next';
-const inter = Inter({ subsets: ['latin'] });
 const Navbar = dynamic(() => import('@/components/Navbar'));
 
 export async function getStaticPaths() {
