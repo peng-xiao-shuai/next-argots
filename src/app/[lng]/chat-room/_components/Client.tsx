@@ -52,6 +52,7 @@ export function ClientChat() {
   const ChatScroll = useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = useState('');
   const { encryptData } = useRoomStore();
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const { ClientSendMessage, exitRoom, unsubscribe } = usePusher(setChat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
@@ -107,6 +108,8 @@ export function ClientChat() {
 
       ClientSendMessage(content.trim());
       setContent('');
+
+      textAreaRef.current?.focus();
     });
   };
 
@@ -135,6 +138,12 @@ export function ClientChat() {
   useEffect(() => {
     handleScrollBottom();
   }, [chat]);
+
+  useEffect(() => {
+    console.log(textAreaRef.current);
+
+    textAreaRef.current?.focus();
+  }, []);
 
   return (
     <>
@@ -174,7 +183,7 @@ export function ClientChat() {
 
       <div className="flex items-end w-full px-[var(--padding)]">
         {/* textarea */}
-        <div className="textarea flex-1 max-h-40 min-h-[2.5rem] p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
+        <div className="textarea b3-opacity-6 flex-1 max-h-40 min-h-[2.5rem] p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
           <div className="overflow-hidden max-h-[9rem]">
             <textarea
               value={content}
@@ -182,9 +191,10 @@ export function ClientChat() {
               style={{
                 height: !content ? 'auto' : height,
               }}
-              className="w-full leading-6 text-base block caret-primary overflow-hidden resize-none outline-none bg-[rgba(0,0,0,0)]"
+              className="w-full !bg-opacity-0 leading-6 text-base block caret-primary overflow-hidden resize-none outline-none"
               onInput={autoResize}
               onKeyDown={handleKeyDown}
+              ref={textAreaRef}
             />
           </div>
         </div>
