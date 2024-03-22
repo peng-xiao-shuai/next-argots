@@ -55,6 +55,7 @@ export const ClientRangeInput: FC = () => {
       <input
         value={rangeValue}
         type="range"
+        className="!bg-opacity-0"
         min="0"
         max="70"
         step={70 / 7}

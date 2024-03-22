@@ -34,7 +34,7 @@ export default async function SizeChange({
   const { t } = await useTranslation(lng);
 
   return (
-    <>
+    <div>
       {/* 使用动态颜色的时候，必须先静态声明，否则不会存在样式 */}
       <div className="chat-end chat-start" />
       {chat.map((item, index) => (
@@ -80,6 +80,6 @@ export default async function SizeChange({
 
         <ClientRangeInput></ClientRangeInput>
       </div>
-    </>
+    </div>
   );
 }

@@ -69,7 +69,11 @@ export const ClientAboutMenu: FC = () => {
           }
         >
           <span className="px-0 !bg-opacity-0">{t!(item.locale)}</span>
-          {item.path ? <AiOutlineRight className="w-3 h-3 p-0" /> : <></>}
+          {item.path ? (
+            <AiOutlineRight className="w-3 h-3 p-0 rtl:rotate-180" />
+          ) : (
+            <></>
+          )}
         </li>
       ))}
     </>

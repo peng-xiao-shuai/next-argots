@@ -76,7 +76,7 @@ export const Navbar: FC<{
                 }`}
               >
                 <AiOutlineHome className="svg-icon !w-[1.3rem] !h-[1.3rem] mx-auto swap-on" />
-                <AiOutlineLeft className="svg-icon swap-off" />
+                <AiOutlineLeft className="svg-icon swap-off  rtl:rotate-180" />
               </label>
             </div>
           </div>

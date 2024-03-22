@@ -44,12 +44,13 @@
     @apply text-base-content text-opacity-60;
   }
 
+  [dir='rtl'] .chat-start .chat-bubble:before,
   .chat-end .chat-bubble::before {
-    left: 99% !important;
     transform: translateX(-1px);
   }
+
+  [dir='rtl'] .chat-end .chat-bubble:before,
   .chat-start .chat-bubble::before {
-    right: 99% !important;
     transform: translateX(1px);
   }
 
