@@ -7,13 +7,13 @@
  */
 import { z } from 'zod';
 import { procedure, router } from './trpc';
-import { getPayloadClient } from '../payload/get-payload';
 import { TRPCError } from '@trpc/server';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import { requestPusherApi } from '../pusher/pusher-auth';
-import pusher from '../pusher/get-pusher';
-import { UserRole } from '../enum';
+import { requestPusherApi } from '../../app/api/pusher/[path]/pusher-auth';
+import pusher from '../../app/api/pusher/[path]/get-pusher';
+import clientPromise from '../db';
+import { FeedbackRecord, Room } from '../payload/payload-types';
 
 export const appRouter = router({
   feedbackAdd: procedure
@@ -25,11 +25,17 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const payload = await getPayloadClient();
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<FeedbackRecord>('feedback-record');
+
       try {
-        await payload.create({
-          collection: 'feedback-record',
-          data: input,
+        await collection.insertOne({
+          ...input,
+          id: new ObjectId().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         });
       } catch (error: any) {
         throw new TRPCError({
@@ -56,25 +62,22 @@ export const appRouter = router({
         nickName,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
-      const payload = await getPayloadClient();
+
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<Room>('room');
       try {
-        const room = await payload.findByID({
-          collection: 'room',
+        const room = await collection.findOneAndDelete({
           id: recordId,
+          houseOwnerId,
+          roomId,
         });
 
         /**
          * 是否存在房间号
          */
-        if (room.id) {
-          await payload.delete({
-            collection: 'room',
-            where: {
-              roomId: { equals: roomId },
-              houseOwnerId: { equals: houseOwnerId },
-            },
-          });
-
+        if (room.ok) {
           const data = await requestPusherApi<{ users: { id: string }[] }>(
             `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
           );
