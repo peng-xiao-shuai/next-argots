@@ -1,5 +1,5 @@
 import { Members } from 'pusher-js';
-import { UserRole } from '../enum';
+import { UserRole } from '&/enum';
 
 /**
  * 签名成功返回的用户信息，由 pusher.signer() 触发 API_URL.PUSHER_SIGNIN 接口

@@ -1,31 +1,45 @@
 import crypto from 'crypto';
-import type { Express, Response } from 'express';
 import axios from 'axios';
-import { API_URL, RoomStatus, UserRole } from '../enum';
-import getPayloadClient from '../payload/get-payload';
+import { RoomStatus, UserRole } from '&/enum';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
-import { AuthSuccessUserData, SigninSuccessUserData } from './type';
-import { Room } from '../payload/payload-types';
+import { AuthSuccessUserData, SigninSuccessUserData } from './pusher-type';
+import { Room } from '&/payload/payload-types';
+import { NextRequest } from 'next/server';
+import clientPromise from '@/server/db';
+import { ObjectId } from 'mongodb';
 
 let pusherSignature: string;
 
-export const pusherAuthApi = (app: Express) => {
+/**
+ * Response 对象
+ */
+const res = (data: Indexes, status: number) =>
+  new Response(
+    JSON.stringify({
+      ...data,
+      code: data.code || String(status),
+    }),
+    {
+      status: 200,
+    }
+  );
+
+export const pusherAuthApi = {
   /**
    * 身份验证 校验加密信息以及同房间是否存在用户名称, 标准做法应该是直接返回成功签名数据，逻辑在
    * 授权接口 API_URL.PUSHER_AUTH 中去判断
    */
-  app.post(API_URL.PUSHER_SIGNIN, async (req, res) => {
-    const { socket_id, nickName, roomStatus, password, roomName } = req.body;
+  'user-auth': async (req: NextRequest) => {
+    const body: Indexes = {};
+    const formData = await req.formData();
+    formData.forEach((item, key) => {
+      body[key] = item;
+    });
 
-    if (
-      !isPresence(res, req.body, [
-        'nickName',
-        'roomName',
-        'roomStatus',
-        'password',
-      ])
-    )
+    const { socket_id, nickName, roomStatus, password, roomName } = body;
+
+    if (!isPresence(body, ['nickName', 'roomName', 'roomStatus', 'password']))
       return;
     const user: SigninSuccessUserData = {
       id: socket_id,
@@ -52,69 +66,69 @@ export const pusherAuthApi = (app: Express) => {
           user.user_info.code = '403';
           user.user_info.message = 'The user name already exists';
           const authResponse = pusher.authenticateUser(socket_id, user);
-
-          res.status(200).json(authResponse);
-          return;
+          return res(authResponse, 200);
         }
       }
       /**
        * 校验
        */
-      if (!diffHash(password, req.headers['hash'] as string)) {
+      if (!diffHash(password, req.headers.get('hash') as string)) {
         user.user_info.code = '403';
         user.user_info.message = 'decryption failure';
         const authResponse = pusher.authenticateUser(socket_id, user);
-        res.status(200).json(authResponse);
-        return;
+        return res(authResponse, 200);
       }
 
       user.user_info.code = '200';
       user.user_info.message = '';
       const authResponse = pusher.authenticateUser(socket_id, user);
-      res.status(200).json(authResponse);
+      return res(authResponse, 200);
     } catch (error: any) {
       console.log(error);
-
-      res.status(500).json({
-        code: '500',
-        message: error?.message || 'UNKNOWN ERROR',
-        data: {},
-      });
+      return res(
+        {
+          message: error?.message || 'UNKNOWN ERROR',
+          data: {},
+        },
+        500
+      );
     }
-  });
+  },
 
   /**
    * 授权连接
    */
-  app.post(API_URL.PUSHER_AUTH, async (req, res) => {
+  auth: async (req: Request) => {
+    const body: Indexes = {};
+    const formData = await req.formData();
+    formData.forEach((item, key) => {
+      body[key] = item;
+    });
     const { socket_id, nickName, password, roomStatus, roomName, avatar } =
-      req.body;
+      body;
     const role =
       roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
-    if (
-      !isPresence(res, req.body, [
-        'nickName',
-        'password',
-        'roomName',
-        'roomStatus',
-      ])
-    )
+    if (!isPresence(body, ['nickName', 'password', 'roomName', 'roomStatus']))
       return;
 
     /**
      * 校验
      */
-    if (!diffHash(password, req.headers['hash'] as string)) {
-      res.status(403).json({
-        code: '403',
-        message: 'decryption failure',
-        data: {},
-      });
-      return;
+    if (!diffHash(password, req.headers.get('hash') as string)) {
+      return res(
+        {
+          message: 'decryption failure',
+          data: {},
+        },
+        403
+      );
     }
 
     try {
-      const payload = await getPayloadClient();
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<Room>('room');
       const roomId = hashSync(
         roomName,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
@@ -125,56 +139,51 @@ export const pusherAuthApi = (app: Express) => {
       /**
        * 判断是否存在房间，避免非浏览器发起请求时，没有走 API_URL.GET_CHANNEL
        */
-      const { docs: roomList } = await payload.find({
-        collection: 'room',
-        context: {
-          role,
-        },
-        where: {
-          roomId: { equals: roomId },
-          hash: { equals: req.headers['hash'] },
-        },
+      const roomData = await collection.findOne({
+        roomId: roomId,
+        hash: req.headers.get('hash') || '',
       });
 
       if (roomStatus === RoomStatus.ADD) {
         // 房间号添加缺已经存在房间号
-        if (roomList.length) {
-          res.status(423).json({
-            code: '423',
-            message: 'Do not create rooms',
-            data: {},
-          });
-          return;
+        if (roomData) {
+          return res(
+            {
+              message: 'Do not create rooms',
+              data: {},
+            },
+            423
+          );
         }
 
-        room = await payload.create({
-          collection: 'room',
-          context: {
-            role,
-          },
-          data: {
-            roomId: roomId,
-            iv,
-            houseOwnerId: hashSync(
-              nickName,
-              '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-            ),
-            hash: req.headers['hash'] as string,
-          },
-        });
+        room = {
+          roomId: roomId,
+          iv,
+          houseOwnerId: hashSync(
+            nickName,
+            '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+          ),
+          hash: req.headers.get('hash') as string,
+          id: new ObjectId().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        await collection.insertOne(room);
       } else {
         /**
          * 这里只能有一个数据
          */
-        if (!roomList.length) {
-          res.status(401).json({
-            code: '401',
-            message: 'Incorrect password',
-            data: {},
-          });
+        if (!roomData) {
+          return res(
+            {
+              message: 'Incorrect password',
+              data: {},
+            },
+            401
+          );
           return;
         } else {
-          room = roomList[0];
+          room = roomData;
         }
       }
 
@@ -195,25 +204,27 @@ export const pusherAuthApi = (app: Express) => {
         `presence-${roomName}`,
         presenceData
       );
-      res.status(200).json(auth);
+      return res(auth, 200);
     } catch (error: any) {
       console.log(error);
-
-      res.status(500).json({
-        code: '500',
-        message: error?.message || 'UNKNOWN ERROR',
-        data: {},
-      });
+      return res(
+        {
+          message: error?.message || 'UNKNOWN ERROR',
+          data: {},
+        },
+        500
+      );
     }
-  });
+  },
 
   /**
    * 判断是否存在房间号
    */
-  app.post(API_URL.GET_CHANNEL, async (req, res) => {
-    const { roomName } = req.body;
+  getChannel: async (req: Request) => {
+    const body = req.body as Indexes;
+    const { roomName } = body;
 
-    if (!isPresence(res, req.body, ['roomName'])) return;
+    if (!isPresence(body, ['roomName'])) return;
 
     // 判断是否存在同名房间号
     try {
@@ -222,31 +233,38 @@ export const pusherAuthApi = (app: Express) => {
       );
 
       if (data && data.occupied) {
-        res.status(200).json({
-          code: '200',
-          message: 'The room number already exists',
-          data: {
-            isRoom: true,
+        return res(
+          {
+            message: 'The room number already exists',
+            data: {
+              isRoom: true,
+            },
           },
-        });
+          200
+        );
         return;
       }
 
-      res.status(200).json({
-        code: '200',
-        message: '',
-        data: {
-          isRoom: false,
+      return res(
+        {
+          code: '200',
+          message: '',
+          data: {
+            isRoom: false,
+          },
         },
-      });
+        200
+      );
     } catch (error: any) {
-      res.status(500).json({
-        code: '500',
-        message: error?.message || 'UNKNOWN ERROR',
-        data: {},
-      });
+      return res(
+        {
+          message: error?.message || 'UNKNOWN ERROR',
+          data: {},
+        },
+        500
+      );
     }
-  });
+  },
 };
 
 type Body = {
@@ -329,18 +347,17 @@ const diffHash = (pwd: string, headerHash: string) => {
 /**
  * 判断参数是否存在
  */
-const isPresence = <T, K extends keyof T>(
-  res: Response,
-  params: T,
-  keys: K[]
-) => {
+const isPresence = <T, K extends keyof T>(params: T, keys: K[]) => {
   for (let k of keys) {
     if (!params[k]) {
-      res.status(400).json({
-        code: '400',
-        message: `'${String(k)}' Parameter missing`,
-        data: {},
-      });
+      return res(
+        {
+          code: '400',
+          message: `'${String(k)}' Parameter missing`,
+          data: {},
+        },
+        400
+      );
       return false;
     }
   }

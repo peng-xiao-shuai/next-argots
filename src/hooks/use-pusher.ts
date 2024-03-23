@@ -4,7 +4,6 @@ import {
   SetStateAction,
   useState,
   useEffect,
-  useRef,
   useContext,
 } from 'react';
 import Pusher from 'pusher-js';
@@ -21,14 +20,12 @@ import {
   AuthSuccessUserData,
   SigninSuccessUserData,
   SubscriptionSuccessMember,
-} from '@/server/pusher/type';
+} from '@/app/api/pusher/[path]/pusher-type';
 import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
 import { AppContext } from '@/context';
-import { TFunction } from 'i18next';
-import { Lng } from '@/locales/i18n';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',

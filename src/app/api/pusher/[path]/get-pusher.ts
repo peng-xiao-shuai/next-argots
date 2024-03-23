@@ -1,11 +1,4 @@
 import Pusher from 'pusher';
-import { config } from 'dotenv';
-
-if (process.env.NODE_ENV === 'development') {
-  config({ path: '.env.development.local' });
-}
-config({ path: '.env.local' });
-config({ path: '.env' });
 
 declare global {
   var _pusher: Pusher;

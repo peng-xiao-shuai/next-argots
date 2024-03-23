@@ -1,5 +1,4 @@
 import { AvatarName } from '@/components/ImageSvg';
-import { AuthSuccessUserData } from '@/server/pusher/type';
 import { create } from 'zustand';
 
 interface RoomStore {
