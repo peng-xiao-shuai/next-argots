@@ -10,6 +10,7 @@ export interface Config {
   collections: {
     users: User;
     'feedback-record': FeedbackRecord;
+    room: Room;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -40,6 +41,15 @@ export interface FeedbackRecord {
         [k: string]: unknown;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+export interface Room {
+  id: string;
+  roomId: string;
+  houseOwnerId: string;
+  hash: string;
+  iv: string;
   updatedAt: string;
   createdAt: string;
 }

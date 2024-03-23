@@ -1,3 +1,3 @@
 export enum CustomEvent {
-  RECEIVE_INFORMATION = 'receive_information',
+  RECEIVE_INFORMATION = 'client-receive_information',
 }

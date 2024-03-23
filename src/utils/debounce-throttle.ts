@@ -13,10 +13,12 @@ let debounceOnly = true;
  * @param callback - 回调事件(必传)
  * @param time - 间隔时间，默认300
  * @param arg - callback 参数
- * @param immediate - 开始时还是结束时 默认false结束时, true开始时
- *  例：<el-button @click="debounce(callback,300)"></el-button>
+ * @param immediate - 开始时还是结束时 默认 true 开始时, false 开始时
+ * @example
+    <button onClick={() => debounce(callback)}></button>
+    <button onClick={() => debounce(callback, 200)}></button>
+    <button onClick={() => debounce(callback, 200, [], false)}></button>
  */
-
 export const debounce = (
   callback: Function,
   time?: number,
@@ -39,6 +41,44 @@ export const debounce = (
     callback(...(args as []));
   }, time || 300);
 };
+
+/**
+ * 创建防抖函数，适用于多个地方调用 debounce 而导致 debounce 只执一次，因为 debounceOnly 被占用
+ * @returns [debounce, clear] debounce 防抖函数，clear 清除内存
+ */
+export function createDebounce(): [typeof debounce, Function] {
+  let timer: any;
+  let debounceOnly = true;
+
+  return [
+    function debounce(
+      callback: Function,
+      time: number = 300,
+      arg?: any[],
+      immediate: boolean = true
+    ): void {
+      const args = arg || [];
+      // 是否立即执行
+      if (immediate && debounceOnly) {
+        debounceOnly = false;
+        callback(...args);
+      }
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (!immediate) {
+          callback(...args);
+        }
+        debounceOnly = true;
+      }, time);
+    },
+    function () {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    },
+  ];
+}
 
 let bol = true;
 // 只执行一次

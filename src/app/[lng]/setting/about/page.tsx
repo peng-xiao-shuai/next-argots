@@ -1,87 +1,39 @@
-'use client';
+'use server';
 import './style.css';
-import logo from '/public/logo4.png';
-import { AppContext } from '@/context';
-import { COMMON_KEYS } from '@@/locales/keys';
+import logo from '/public/logo.svg';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
-import { AiOutlineRight } from 'react-icons/ai';
 import pck from '../../../../../package.json';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/locales/i18n';
+import { ClientAboutMenu } from '../_components/ClientAbout';
+import { GenerateMetadata } from '../../meta';
 
-type AboutList = {
-  label: string;
-  locale: string;
-  path?: string;
-  click?: (item: AboutList) => void;
-};
+export const generateMetadata = async ({
+  params: { lng },
+}: CustomReactParams) => await GenerateMetadata(lng, '/setting/about');
 
-const aboutList: AboutList[] = [
-  // {
-  //   label: '检查更新',
-  //   locale: COMMON_KEYS.CHECK_FOR_UPDATES,
-  //   click(item) {
-  //     console.log(item.label);
-  //   },
-  // },
-  {
-    label: '意见反馈',
-    locale: COMMON_KEYS.FEEDBACK,
-    path: '/setting/about/feedback',
-  },
-  // {
-  //   label: '隐私政策',
-  //   locale: 'Privacy.policy',
-  //   path: '/issue-opinion',
-  // },
-  {
-    label: '邮件联系',
-    locale: COMMON_KEYS['E-MAIL_CONTACT'],
-    click(item) {
-      const recipient = 'pxs161256513@gmail.com';
-
-      const mailtoLink = `mailto:${encodeURIComponent(recipient)}`;
-
-      window.location.href = mailtoLink;
-    },
-  },
-];
-export default function About() {
-  const setting = useContext(AppContext);
-  const { t } = useTranslation();
-  const router = useRouter();
+export default async function About({ params: { lng } }: CustomReactParams) {
+  const { t } = await useTranslation(lng);
   return (
     <>
-      <div className="pt-12 flex justify-center flex-wrap">
-        <Image
-          className="w-32 h-32 mb-4 mask mask-squircle"
-          src={logo}
-          alt=""
-        />
+      <div className="mt-36 mb-6 flex justify-center flex-wrap">
+        <div className="w-24 h-24 mb-4 m-auto rounded-box b3-opacity-6 dark:bg-black flex justify-center items-center">
+          <Image
+            className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
+            src={logo}
+            alt="Logo"
+            priority
+          />
+        </div>
 
-        <div className="w-full text-center text-xl">{t(setting.name)}</div>
+        {/* pck.name 需要和对应 COMMON_KEYS.PACKAGE_NAME */}
+        <div className="w-full text-center text-xl mb-2 capitalize font-bold tracking-wider">
+          {t(pck.name)}
+        </div>
         <div className="text-sm">{pck.version}</div>
       </div>
 
-      <ul className="menu w-1/1 rounded-box py-4 px-0">
-        {aboutList.map((item, index) => (
-          <li
-            key={item.label}
-            className="border-t flex-row h-12 items-center justify-between row-active"
-            style={{
-              borderTopColor: index ? 'oklch(var(--nc) / 0.15)' : 'transparent',
-            }}
-            onClick={() =>
-              item.path
-                ? router.push(item.path)
-                : item.click && item.click(item)
-            }
-          >
-            <span className="px-0 !bg-opacity-0">{t(item.locale)}</span>
-            {item.path ? <AiOutlineRight className="w-3 h-3 p-0" /> : <></>}
-          </li>
-        ))}
+      <ul className="menu rounded-lg overflow-hidden">
+        <ClientAboutMenu></ClientAboutMenu>
       </ul>
     </>
   );

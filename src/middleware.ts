@@ -6,7 +6,9 @@ import { COOKIE_NAME } from './locales/settings';
 acceptLanguage.languages(languages);
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|avatar/|logo).*)',
+  ],
 };
 
 export function middleware(req: NextRequest) {

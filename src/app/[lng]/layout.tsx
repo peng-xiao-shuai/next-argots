@@ -1,14 +1,15 @@
-// 保证layout为服务端组件
-import { Inter } from 'next/font/google';
-import { Navbar, Transition, AppProvider, TrpcProviders } from './components';
+import { Transition, AppProvider, TrpcProviders } from '../../components';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
-import { languages } from '@/locales/i18n';
-// import meta from './meta';
-const inter = Inter({ subsets: ['latin'] });
-
-// export const metadata = meta['/'];
+import { languages, useTranslation } from '@/locales/i18n';
+import Head from 'next/head';
+import { META } from '@@/locales/keys';
+import dynamic from 'next/dynamic';
+import { cookies } from 'next/headers';
+import { COOKIE } from '@/server/enum';
+import { Viewport } from 'next';
+const Navbar = dynamic(() => import('@/components/Navbar'));
 
 export async function getStaticPaths() {
   const paths = languages.map((lng) => ({
@@ -18,27 +19,96 @@ export async function getStaticPaths() {
   return { paths, fallback: 'blocking' };
 }
 
-export default function RootLayout({
+export function generateViewport(): Viewport {
+  return {
+    themeColor: [
+      { media: '(prefers-color-scheme: light)', color: 'cyan' },
+      { media: '(prefers-color-scheme: dark)', color: 'black' },
+    ],
+    colorScheme: 'dark light',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  };
+}
+
+export default async function RootLayout({
   children,
   params: { lng },
 }: CustomReactLayout) {
+  const cookieStore = cookies();
+  const size = cookieStore.get(COOKIE.SIZE)?.value;
+  const theme = cookieStore.get(COOKIE.THEME)?.value;
+  const { t } = await useTranslation(lng);
+
   return (
-    <html lang={lng} data-theme={'dark'} dir={dir(lng)}>
+    <html
+      suppressHydrationWarning
+      lang={lng}
+      dir={dir(lng)}
+      data-theme={theme || 'dark'}
+      style={{
+        fontSize: (size || 16) + 'px',
+      }}
+    >
+      <Head>
+        <meta name="description" content={t(META.DESC)} />
+        <meta name="keywords" content={t(META.KEYWORDS)} />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <body>
-        <main className="w-full h-[100vh] m-0 p-[var(--padding)] relative box-border  overflow-x-hidden">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            const dataTheme = (function (cookieString = document.cookie) {
+              const list = {};
+              cookieString &&
+                cookieString.split(';').forEach((cookie) => {
+                  const parts = cookie.split('=');
+                  if (parts.length) {
+                    list[parts.shift().trim()] = decodeURI(parts.join('='));
+                  }
+                });
+              return list['theme'];
+            }())
+
+            if (dataTheme === 'auto') {
+              const isDark =
+                window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+              document.documentElement.setAttribute(
+                'data-theme',
+                isDark ? 'dark' : 'light'
+              );
+            } else {
+              document.documentElement.setAttribute('data-theme', dataTheme);
+            }
+          `,
+          }}
+        ></script>
+        <main className="w-full h-[100vh] m-0 relative box-border overflow-x-hidden">
           <TrpcProviders>
             <AppProvider language={lng}>
-              <Navbar />
+              <div className="flex flex-col h-full">
+                <Navbar language={lng} />
 
-              <Transition
-                language={lng}
-                className="page-content w-full max-h-[calc(100vh-var(--padding)*2-3rem-1rem)] overflow-y-auto"
-              >
-                {children}
-              </Transition>
+                <Transition
+                  language={lng}
+                  className="flex-1 page-content w-full px-[var(--padding)]"
+                >
+                  {children}
+                </Transition>
+              </div>
             </AppProvider>
           </TrpcProviders>
-          <Toaster />
+          <Toaster
+            richColors
+            toastOptions={{
+              duration: 1000,
+            }}
+          />
         </main>
       </body>
     </html>

@@ -20,6 +20,8 @@ export enum SETTING_KEYS {
   ISSUE = 'issue',
   OPINION = 'opinion',
   CONTENT = 'content_feedback',
+  E_MAIL_FORMAT_IS_INCORRECT = 'e-mail_format_is_incorrect',
+  FEEDBACK_SUCCESS = 'Feedback_Success',
 }
 
 export enum HOME_KEYS {
@@ -37,14 +39,22 @@ export enum HOME_KEYS {
   EMPTY_NICKNAME = 'Please_input_nickname_as_your_room_nickname',
   EMPTY_PASSWORD = 'Please_input_room_password_enter_the_room',
   EMPTY_ROOM_NUMBER = 'Please_input_room_number_nickname_enter_the_room',
+  AVATAR = 'avatar',
 }
 
 export enum CHAT_ROOM_KEYS {
   SEND = 'Send',
+  MEMBER_ADDED = 'Member_added',
+  MEMBER_REMOVED = 'Member_removed',
+  OWNER_MEMBER_REMOVED = 'Owner_member_removed',
+  HOUSE_OWNER = 'House_owner',
+
+  DECRYPTION_FAILURE = 'Decryption_failure',
+  CONTENT_CANNOT_BE_EMPTY = 'Content_cannot_be_empty',
 }
 
 export enum COMMON_KEYS {
-  PACKAGE_NAME = 'Privacy_Chat',
+  PACKAGE_NAME = 'argots',
 
   HOME = 'Home',
   CHAT = 'Chat',
@@ -62,4 +72,18 @@ export enum COMMON_KEYS {
   OPEN = 'Open',
   CONFIRM = 'Confirm',
   COMPLETE = 'Complete',
+  SUCCESSFULLY_SET = 'Successfully_set',
+}
+
+export enum API_KEYS {
+  PUSHER_AUTH_401 = 'Incorrect_password',
+  PUSHER_AUTH_400 = 'Parameter_missing',
+  PUSHER_AUTH_403 = 'Access_denied',
+  PUSHER_AUTH_423 = 'Room_already_exists,_please_try_another',
+  PUSHER_AUTH_500 = 'Unknown_error',
+}
+
+export enum META {
+  DESC = 'meta_desc',
+  KEYWORDS = 'meta_keywords',
 }

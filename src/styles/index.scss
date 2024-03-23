@@ -2,60 +2,26 @@
 @import './root.scss';
 
 @font-face {
-  font-family: 'HelveticaNeue-Bold'; /* 自定义字体名称 */
-  src: url('./HelveticaNeue-Bold.ttf');
-}
-
-@font-face {
   font-family: 'Helvetica-Neue'; /* 自定义字体名称 */
   src: url('./Helvetica-Neue.ttf');
 }
 
-[data-theme] {
-  transition: all 0.3s;
+body {
+  font-family: 'Helvetica-Neue';
 }
 
-[data-theme='dark'] {
-  background-color: #000;
-  color: #fff;
+[data-theme] * {
+  transition: all 0.3s;
+  letter-spacing: 1px;
   svg path {
     fill: inherit;
   }
 }
 
-body {
-  font-family: 'Helvetica-Neue', sans-serif;
+[data-theme='dark'] {
+  background-color: black;
 }
 
-._bold {
-  font-family: 'HelveticaNeue-Bold', sans-serif;
-}
-
-._neue {
-  font-family: 'Helvetica-Neue', sans-serif;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0%);
-    // position: static;
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease;
-  overflow: hidden;
-}
-
-.home {
-  background: radial-gradient(
-    circle at 50% 30%,
-    rgba(65, 37, 76, 1) 0%,
-    rgba(0, 0, 0, 1) 35%
-  );
+[data-theme='light'] {
+  background-color: white;
 }

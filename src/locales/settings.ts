@@ -1,6 +1,6 @@
 import { Lng, languages, FALLBACK_LNG } from './i18n';
-
-export const DEFAULT_NS = 'translation';
+import { DEFAULT_NS } from './i18n';
+export { DEFAULT_NS } from './i18n';
 export const COOKIE_NAME = 'i18next';
 
 export function getOptions(lng: Lng = FALLBACK_LNG, ns: string = DEFAULT_NS) {

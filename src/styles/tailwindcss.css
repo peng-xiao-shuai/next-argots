@@ -3,31 +3,55 @@
 @tailwind utilities;
 
 @layer utilities {
+  .menu {
+    @apply rounded-lg overflow-hidden b3-opacity-6;
+  }
+  .menu > .row-active {
+    @apply last-of-type:after:border-transparent after:border-neutral-content after:border-opacity-10 after:border-t after:w-[calc(100%-theme(padding.2)*2)] after:absolute after:left-2 after:bottom-0 flex-row h-12 items-center justify-between;
+  }
   .row-active {
-    @apply px-2 transition-all;
-    transition-duration: 300ms;
+    @apply px-2 transition-all duration-300 relative after:transition-all after:duration-300;
   }
   .row-active:hover,
   .row-active:active,
   .row-active:focus {
-    @apply bg-neutral-content/[0.15];
+    @apply bg-neutral-content bg-opacity-10 rounded-lg after:border-transparent;
+  }
+  .row-active:hover > *:hover,
+  .row-active:active > *:active,
+  .row-active:focus > *:focus {
+    background: transparent !important;
+    background: transparent !important;
+    background: transparent !important;
+  }
+  .row-active.no-active:hover,
+  .row-active.no-active:active,
+  .row-active.no-active:focus {
+    @apply last-of-type:after:border-transparent bg-[unset] bg-opacity-[unset] rounded-[unset] after:border-neutral-content after:border-opacity-10;
   }
 
   .svg-icon {
-    @apply h-6 fill-accent-content w-6;
+    @apply h-6 fill-base-content w-6;
   }
-
+  /* 
   svg {
     width: inherit;
     height: inherit;
     fill: inherit;
+  } */
+
+  .desc-color {
+    @apply text-base-content text-opacity-60;
   }
 
+  [dir='rtl'] .chat-start .chat-bubble:before,
   .chat-end .chat-bubble::before {
-    left: 99% !important;
+    transform: translateX(-1px);
   }
+
+  [dir='rtl'] .chat-end .chat-bubble:before,
   .chat-start .chat-bubble::before {
-    right: 99% !important;
+    transform: translateX(1px);
   }
 
   .btn,
@@ -37,5 +61,22 @@
 
   .loading-hidden {
     @apply opacity-0 w-0;
+  }
+
+  .b3-opacity-6 {
+    --tw-bg-opacity: 0.6 !important;
+    background-color: var(
+      --fallback-b3,
+      oklch(var(--b3) / var(--tw-bg-opacity))
+    ) !important;
+  }
+
+  input,
+  textarea {
+    --tw-bg-opacity: 0.6 !important;
+    background-color: var(
+      --fallback-b3,
+      oklch(var(--b3) / var(--tw-bg-opacity))
+    ) !important;
   }
 }
