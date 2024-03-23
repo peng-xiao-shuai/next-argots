@@ -2,7 +2,6 @@
   "name": "argots",
   "version": "0.1.0",
   "private": true,
-  "main": "dist/index.js",
   "scripts": {
     "dev": "next",
     "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload generate:types",
