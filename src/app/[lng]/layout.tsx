@@ -83,7 +83,7 @@ export default async function RootLayout({
                 isDark ? 'dark' : 'light'
               );
             } else {
-              document.documentElement.setAttribute('data-theme', dataTheme);
+              document.documentElement.setAttribute('data-theme', dataTheme || 'dark');
             }
           `,
           }}
