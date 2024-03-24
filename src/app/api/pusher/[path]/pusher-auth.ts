@@ -128,7 +128,7 @@ export const pusherAuthApi = {
       const client = await clientPromise;
       const collection = client
         .db(process.env.DATABASE_DB)
-        .collection<Room>('room');
+        .collection<Room>('rooms');
       const roomId = hashSync(
         roomName,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!

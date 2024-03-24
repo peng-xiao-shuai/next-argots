@@ -28,7 +28,7 @@ export const appRouter = router({
       const client = await clientPromise;
       const collection = client
         .db(process.env.DATABASE_DB)
-        .collection<FeedbackRecord>('feedback-record');
+        .collection<FeedbackRecord>('feedback-records');
 
       try {
         await collection.insertOne({
@@ -66,7 +66,7 @@ export const appRouter = router({
       const client = await clientPromise;
       const collection = client
         .db(process.env.DATABASE_DB)
-        .collection<Room>('room');
+        .collection<Room>('rooms');
       try {
         const room = await collection.findOneAndDelete({
           id: recordId,
