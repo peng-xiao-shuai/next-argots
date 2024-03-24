@@ -33,15 +33,18 @@ export const ClientMenu: FC = () => {
   ]);
 
   useEffect(() => {
-    if (!lists[0].path.includes(location?.pathname)) {
-      const copyLists = lists.map((item) => ({
-        ...item,
-        path: location.pathname + item.path,
-      }));
+    const copyLists = lists.map((item) => ({
+      ...item,
+      path: item.path
+        ? item.path.includes(location?.pathname)
+          ? item.path
+          : location.pathname + item.path
+        : '',
+    }));
 
-      setLists(copyLists);
-    }
-  }, [lists]);
+    setLists(copyLists);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       {lists.map((item, index) => (
