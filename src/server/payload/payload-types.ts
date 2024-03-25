@@ -8,27 +8,10 @@
 
 export interface Config {
   collections: {
-    users: User;
     'feedback-record': FeedbackRecord;
-    room: Room;
-    'payload-preferences': PayloadPreference;
-    'payload-migrations': PayloadMigration;
+    rooms: Room;
   };
   globals: {};
-}
-export interface User {
-  id: string;
-  role: 'admin' | 'user';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password: string | null;
 }
 export interface FeedbackRecord {
   id: string;
@@ -53,33 +36,6 @@ export interface Room {
   updatedAt: string;
   createdAt: string;
 }
-export interface PayloadPreference {
-  id: string;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
-  key?: string | null;
-  value?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-export interface PayloadMigration {
-  id: string;
-  name?: string | null;
-  batch?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

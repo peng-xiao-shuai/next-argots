@@ -5,7 +5,7 @@ import { CollectionConfig } from 'payload/types';
 import { UserRole } from '../enum';
 
 export const Room: CollectionConfig = {
-  slug: 'room',
+  slug: 'rooms',
   fields: [
     {
       name: 'roomId',
@@ -31,7 +31,8 @@ export const Room: CollectionConfig = {
   access: {
     read: ({ req: { context, user } }) =>
       context.role === UserRole.MEMBER ||
-      (context.role === UserRole.HOUSE_OWNER) || (user.role === 'admin'),
+      context.role === UserRole.HOUSE_OWNER ||
+      user.role === 'admin',
     delete: ({ req: { context, user } }) =>
       context.role === UserRole.HOUSE_OWNER || user.role === 'admin',
     create: ({ req: { context } }) => context.role === UserRole.MEMBER,

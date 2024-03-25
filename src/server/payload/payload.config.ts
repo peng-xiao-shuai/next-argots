@@ -9,10 +9,12 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { webpackBundler } from '@payloadcms/bundler-webpack';
 import { slateEditor } from '@payloadcms/richtext-slate';
 import { buildConfig } from 'payload/config';
-import { Users } from '../collections/Users';
 import { Feedback } from '../collections/Feedback';
 import { Room } from '../collections/Room';
 
+/**
+ * 这里没有用到 payload 了 所以不需要用环境变了，但是可以用 payload 生成类型
+ */
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(
   '$PORT',
   process.env.PORT || '3000'
@@ -21,9 +23,8 @@ const serverURL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(
 export default buildConfig({
   // 设置服务器的 URL，从环境变量 NEXT_PUBLIC_SERVER_URL 获取。
   serverURL: serverURL,
-  collections: [Users, Feedback, Room],
+  collections: [Feedback, Room],
   admin: {
-    user: 'users',
     // 设置用于 Payload CMS 管理界面的打包工具，这里使用了
     bundler: webpackBundler(),
     // 配置管理系统 Meta
