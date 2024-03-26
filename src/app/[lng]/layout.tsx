@@ -1,4 +1,6 @@
 import { Transition, AppProvider, TrpcProviders } from '../../components';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
@@ -52,11 +54,6 @@ export default async function RootLayout({
         fontSize: (size || 16) + 'px',
       }}
     >
-      <Head>
-        <meta name="description" content={t(META.DESC)} />
-        <meta name="keywords" content={t(META.KEYWORDS)} />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <body>
         <script
           dangerouslySetInnerHTML={{
@@ -110,6 +107,9 @@ export default async function RootLayout({
             }}
           />
         </main>
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
