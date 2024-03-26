@@ -7,6 +7,7 @@
     "generate:types": "cross-env PAYLOAD_CONFIG_PATH=src/server/payload/payload.config.ts payload generate:types",
     "build": "next build",
     "start": "next start",
+    "generate:sitemap": "next-sitemap",
     "lint": "next lint"
   },
   "resolutions": {
@@ -23,8 +24,8 @@
     "@trpc/next": "^10.43.1",
     "@trpc/react-query": "^10.43.1",
     "@trpc/server": "^10.43.1",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/js-cookie": "^3.0.6",
+    "@vercel/analytics": "^1.2.2",
+    "@vercel/speed-insights": "^1.0.10",
     "accept-language": "^3.0.18",
     "axios": "^1.6.6",
     "bcryptjs": "^2.4.3",
@@ -41,7 +42,8 @@
     "i18next-resources-to-backend": "^1.2.0",
     "js-cookie": "^3.0.5",
     "mitt": "^3.0.1",
-    "next": "^14.1.0",
+    "next": "^14.1.4",
+    "next-sitemap": "^4.2.3",
     "payload": "^2.9.0",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0-rc2",
@@ -57,9 +59,11 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.2.1",
     "@types/express": "^4.17.20",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

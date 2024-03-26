@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://argots.cn
+
+# Sitemaps
+Sitemap: https://argots.cn/sitemap.xml
