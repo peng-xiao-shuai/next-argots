@@ -1,5 +1,5 @@
-import { Lng, useTranslation } from '@/locales/i18n';
-import { COMMON_KEYS } from '@@/locales/keys';
+import { Lng, useTranslation } from '../../locales/i18n';
+import { COMMON_KEYS, META } from '../../../public/locales/keys';
 import type { Metadata } from 'next';
 export interface Meta extends Metadata {
   title: string;
@@ -77,6 +77,8 @@ export const GenerateMetadata = async (
   const metadata = { ...meta[path] };
   const { t } = await useTranslation(lng);
   metadata.title = `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`;
+  metadata.description = `${t(META.DESC)}`;
+  metadata.keywords = `${t(META.KEYWORDS)}`;
 
   return metadata;
 };
