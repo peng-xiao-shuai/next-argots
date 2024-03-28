@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { GrEmoji } from 'react-icons/gr';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { Chat, ChatMsg, MESSAGE_TYPE, usePusher } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
@@ -18,6 +19,7 @@ import { unicodeToString } from '@/utils/string-transform';
 import { ImageSvg } from '@/components/ImageSvg';
 import { toast } from 'sonner';
 import { AppContext } from '@/context';
+import Picker from '@emoji-mart/react';
 
 const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
   return (
@@ -41,6 +43,40 @@ const ChatRecords: FC<ChatMsg> = ({ isMy, msg, user }) => {
   );
 };
 
+export const ClientPicker: FC<{
+  onEmojiSelect: (e: any) => void;
+  onClickOutside: (e: any) => void;
+}> = ({ onEmojiSelect, onClickOutside }) => {
+  const { dataTheme } = useContext(AppContext);
+  const [data, setData] = useState();
+  useEffect(() => {
+    const getData = async () => {
+      const response = await fetch(
+        'https://cdn.jsdelivr.net/npm/@emoji-mart/data'
+      );
+      const res = await response.json();
+
+      setData(res);
+    };
+
+    getData();
+  }, []);
+  return data ? (
+    <Picker
+      data={data}
+      searchPosition="none"
+      previewPosition="none"
+      theme={dataTheme}
+      maxFrequentRows={1}
+      perLine={8}
+      onEmojiSelect={onEmojiSelect}
+      onClickOutside={onClickOutside}
+    />
+  ) : (
+    <></>
+  );
+};
+
 export function ClientChat() {
   const { current: isMobile } = useRef(
     /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent)
@@ -49,6 +85,7 @@ export function ClientChat() {
   const { t } = useContext(AppContext);
   const [content, setContent] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
+  const [visibleEmoji, setVisibleEmoji] = useState(false);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = useState('');
   const { encryptData } = useRoomStore();
@@ -127,6 +164,14 @@ export function ClientChat() {
     }
   };
 
+  const onEmojiSelect = (e: any) => {
+    setContent((state) => state + e.native);
+    textAreaRef.current?.focus();
+  };
+  const onClickOutside = (e: any) => {
+    console.log(e);
+  };
+
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
@@ -182,6 +227,28 @@ export function ClientChat() {
       </div>
 
       <div className="flex items-end w-full px-[var(--padding)]">
+        <div className="relative h-[2.5rem] flex items-center">
+          <GrEmoji
+            className="w-8 h-8 text-accent-content/80 mr-4"
+            onClick={() => {
+              setVisibleEmoji((state) => !state);
+            }}
+          />
+          <div
+            className={`absolute left-0 ${
+              visibleEmoji ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+            style={{
+              bottom: height ? height + 'px' : '3rem',
+            }}
+          >
+            <ClientPicker
+              onEmojiSelect={onEmojiSelect}
+              onClickOutside={onClickOutside}
+            ></ClientPicker>
+          </div>
+        </div>
+
         {/* textarea */}
         <div className="textarea b3-opacity-6 flex-1 max-h-40 min-h-[2.5rem] p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
           <div className="overflow-hidden max-h-[9rem]">
