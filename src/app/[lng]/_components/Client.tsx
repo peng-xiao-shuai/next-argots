@@ -6,6 +6,7 @@ import { FC, useContext, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
 import { Dialog, HomeForm } from '../../../components';
 import { AppContext } from '@/context';
+import Picker from '@emoji-mart/react';
 
 export const ClientOperate: FC<{
   lng: Lng;
@@ -47,5 +48,34 @@ export const ClientOperate: FC<{
         </div>
       </Dialog>
     </>
+  );
+};
+
+export const ClientPicker = () => {
+  const [data, setData] = useState();
+  useEffect(() => {
+    const getData = async () => {
+      const response = await fetch(
+        'https://cdn.jsdelivr.net/npm/@emoji-mart/data'
+      );
+      const res = await response.json();
+
+      setData(res);
+    };
+
+    getData();
+  }, []);
+  return data ? (
+    <Picker
+      data={data}
+      searchPosition="none"
+      previewPosition="none"
+      maxFrequentRows={1}
+      onEmojiSelect={console.log}
+      perLine={9}
+      className="h-10"
+    />
+  ) : (
+    <></>
   );
 };
