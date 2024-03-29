@@ -25,16 +25,16 @@ export enum SETTING_KEYS {
 }
 
 export enum HOME_KEYS {
-  SELECT_ROOM = 'Select_room',
-  CREATE_ROOM = 'Create_Room',
-  ROOM_NUMBER = 'Room_number',
+  SELECT_ROOM = 'Select_channel',
+  CREATE_ROOM = 'Create_channel',
+  ROOM_NUMBER = 'channel_number',
   NICKNAME = 'Nickname',
-  PASSWORD = 'Room_password',
+  PASSWORD = 'channel_password',
   PLEASE_INPUT = 'Please_input',
 
   HOME_API = 'Home_Api_Tip',
-  NO_ROOM_NAME = 'Sorry_~_Room_name_not_exists!',
-  ROOM_NAME = 'Sorry_~_Room_name_already_exists!',
+  NO_ROOM_NAME = 'Sorry_~_channel_name_not_exists!',
+  ROOM_NAME = 'Sorry_~_channel_name_already_exists!',
   PASSWORD_ERROR = 'Password_error',
   EMPTY_NICKNAME = 'Please_input_nickname_as_your_room_nickname',
   EMPTY_PASSWORD = 'Please_input_room_password_enter_the_room',
@@ -79,7 +79,7 @@ export enum API_KEYS {
   PUSHER_AUTH_401 = 'Incorrect_password',
   PUSHER_AUTH_400 = 'Parameter_missing',
   PUSHER_AUTH_403 = 'Access_denied',
-  PUSHER_AUTH_423 = 'Room_already_exists,_please_try_another',
+  PUSHER_AUTH_423 = 'Channel_already_exists,_please_try_another',
   PUSHER_AUTH_500 = 'Unknown_error',
 }
 

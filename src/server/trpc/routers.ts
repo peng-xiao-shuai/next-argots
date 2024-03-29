@@ -75,7 +75,7 @@ export const appRouter = router({
         });
 
         /**
-         * 是否存在房间号
+         * 是否存在频道号
          */
         if (room.ok) {
           const data = await requestPusherApi<{ users: { id: string }[] }>(

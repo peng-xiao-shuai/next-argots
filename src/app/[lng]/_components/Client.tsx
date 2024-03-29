@@ -20,7 +20,7 @@ export const ClientOperate: FC<{
     router.prefetch(`/${lng}/chat-room`);
   }, [router, lng]);
 
-  // 点击加入/创建房间按钮
+  // 点击加入/创建频道按钮
   const handleRoom = (type: RoomStatus) => {
     setRoomStatus(type);
     setVisible(true);

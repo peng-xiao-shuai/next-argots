@@ -24,7 +24,7 @@ export type AuthSuccessUserData = {
      */
     avatar: string;
     /**
-     * 房主才会有
+     * 頻道主才会有
      */
     roomRecordId?: string;
     role: UserRole;

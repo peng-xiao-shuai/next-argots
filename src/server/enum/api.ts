@@ -12,7 +12,7 @@ export enum API_URL {
   PUSHER_AUTH = '/api/pusher/auth',
 
   /**
-   * 获取连接以判断是否存在房间号
+   * 获取连接以判断是否存在频道号
    */
   GET_CHANNEL = '/api/pusher/getChannel',
 }

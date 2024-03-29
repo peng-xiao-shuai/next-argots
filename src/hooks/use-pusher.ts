@@ -217,7 +217,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   };
 
   /**
-   * 观察用户进入房间或者离开房间
+   * 观察用户进入频道或者离开频道
    */
   const ObserveEntryOrExit = () => {
     console.log('开启监听');
@@ -348,7 +348,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   };
 
   /**
-   * 房主退出清除房间人员以及删除数据
+   * 頻道主退出清除频道人员以及删除数据
    */
   const exitRoom = <
     T extends UseMutateFunction<

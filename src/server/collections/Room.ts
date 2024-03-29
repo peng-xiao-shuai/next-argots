@@ -1,5 +1,5 @@
 /**
- * 房间
+ * 频道
  */
 import { CollectionConfig } from 'payload/types';
 import { UserRole } from '../enum';

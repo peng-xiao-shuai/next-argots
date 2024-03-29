@@ -27,7 +27,7 @@ const res = (data: Indexes, status: number) =>
 
 export const pusherAuthApi = {
   /**
-   * 身份验证 校验加密信息以及同房间是否存在用户名称, 标准做法应该是直接返回成功签名数据，逻辑在
+   * 身份验证 校验加密信息以及同频道是否存在用户名称, 标准做法应该是直接返回成功签名数据，逻辑在
    * 授权接口 API_URL.PUSHER_AUTH 中去判断
    */
   'user-auth': async (req: NextRequest) => {
@@ -52,7 +52,7 @@ export const pusherAuthApi = {
 
     try {
       /**
-       * 加入房间判断是否存在同名用户
+       * 加入频道判断是否存在同名用户
        */
       if (roomStatus === RoomStatus.JOIN) {
         const data = await requestPusherApi<{ users: { id: string }[] }>(
@@ -137,7 +137,7 @@ export const pusherAuthApi = {
       let room: Room;
 
       /**
-       * 判断是否存在房间，避免非浏览器发起请求时，没有走 API_URL.GET_CHANNEL
+       * 判断是否存在频道，避免非浏览器发起请求时，没有走 API_URL.GET_CHANNEL
        */
       const roomData = await collection.findOne({
         roomId: roomId,
@@ -145,7 +145,7 @@ export const pusherAuthApi = {
       });
 
       if (roomStatus === RoomStatus.ADD) {
-        // 房间号添加缺已经存在房间号
+        // 频道号添加缺已经存在频道号
         if (roomData) {
           return res(
             {
@@ -218,7 +218,7 @@ export const pusherAuthApi = {
   },
 
   /**
-   * 判断是否存在房间号
+   * 判断是否存在频道号
    */
   getChannel: async (req: Request) => {
     const body = req.body as Indexes;
@@ -226,7 +226,7 @@ export const pusherAuthApi = {
 
     if (!isPresence(body, ['roomName'])) return;
 
-    // 判断是否存在同名房间号
+    // 判断是否存在同名频道号
     try {
       const data = await requestPusherApi(
         `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
