@@ -5,8 +5,6 @@ import { dir } from 'i18next';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
-import Head from 'next/head';
-import { META } from '@@/locales/keys';
 import dynamic from 'next/dynamic';
 import { cookies } from 'next/headers';
 import { COOKIE } from '@/server/enum';
@@ -57,32 +55,7 @@ export default async function RootLayout({
       <body>
         <script
           dangerouslySetInnerHTML={{
-            __html: `
-            const dataTheme = (function (cookieString = document.cookie) {
-              const list = {};
-              cookieString &&
-                cookieString.split(';').forEach((cookie) => {
-                  const parts = cookie.split('=');
-                  if (parts.length) {
-                    list[parts.shift().trim()] = decodeURI(parts.join('='));
-                  }
-                });
-              return list['theme'];
-            }())
-
-            if (dataTheme === 'auto') {
-              const isDark =
-                window.matchMedia &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches;
-          
-              document.documentElement.setAttribute(
-                'data-theme',
-                isDark ? 'dark' : 'light'
-              );
-            } else {
-              document.documentElement.setAttribute('data-theme', dataTheme || 'dark');
-            }
-          `,
+            __html: `const dataTheme=(function(cookieString=document.cookie){const list={};cookieString&&cookieString.split(';').forEach((cookie)=>{const parts=cookie.split('=');if(parts.length){list[parts.shift().trim()]=decodeURI(parts.join('='));}});return list['theme'];}());if(dataTheme==='auto'){const isDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');}else{document.documentElement.setAttribute('data-theme',dataTheme||'dark');}`,
           }}
         ></script>
         <main className="w-full h-[100vh] m-0 relative box-border overflow-x-hidden">
@@ -101,7 +74,6 @@ export default async function RootLayout({
             </AppProvider>
           </TrpcProviders>
           <Toaster
-            richColors
             toastOptions={{
               duration: 1000,
             }}

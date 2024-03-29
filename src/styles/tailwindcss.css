@@ -79,4 +79,13 @@
       oklch(var(--b3) / var(--tw-bg-opacity))
     ) !important;
   }
+
+  input::placeholder,
+  textarea::placeholder {
+    --tw-text-opacity: 0.5;
+    color: var(
+      --fallback-ac,
+      oklch(var(--ac) / var(--tw-text-opacity))
+    ) !important;
+  }
 }

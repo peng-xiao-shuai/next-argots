@@ -17,8 +17,8 @@ const config: Config = {
           error: '#aa0b56',
           primary: '#8A13A4',
           'accent-content': '#FFFFFF',
-          'base-content': '#dddddd',
-          'primary-content': '#dddddd',
+          'base-content': '#eeeeee',
+          'primary-content': '#eeeeee',
 
           '.home': {
             background:
