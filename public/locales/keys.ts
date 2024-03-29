@@ -51,6 +51,8 @@ export enum CHAT_ROOM_KEYS {
 
   DECRYPTION_FAILURE = 'Decryption_failure',
   CONTENT_CANNOT_BE_EMPTY = 'Content_cannot_be_empty',
+
+  SPEAK_OUT_FREELY = 'Speak_out_freely',
 }
 
 export enum COMMON_KEYS {

@@ -9,4 +9,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.DECRYPTION_FAILURE]:
     '未知問題，消息解密失敗！請前往 {{origin}} 反饋問題',
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '內容不能為空',
+  [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '暢所欲言吧~',
 };

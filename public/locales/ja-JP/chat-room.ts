@@ -9,4 +9,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.DECRYPTION_FAILURE]:
     '未知の問題、メッセージの解読に失敗します! {{origin}} へのフィードバックをお願いします。',
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '中身を空にしてはいけません',
+  [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '言いたいことを言います ~',
 };
