@@ -1,6 +1,6 @@
 /* 定义初始颜色
 ------------------------------- */
-$--color-whites: #FFFFFF !default;
+$--color-whites: #ffffff !default;
 $--color-blacks: #000000 !default;
 $--padding: 16px !default;
 
@@ -19,7 +19,7 @@ $--padding: 16px !default;
 /* 赋值给:root
 ------------------------------- */
 :root {
-	--color-white: #{$--color-whites};
-	--color-black: #{$--color-blacks};
-	--padding: #{$--padding};
+  --color-white: #{$--color-whites};
+  --color-black: #{$--color-blacks};
+  --padding: #{$--padding};
 }
