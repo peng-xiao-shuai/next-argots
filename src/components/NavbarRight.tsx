@@ -24,14 +24,13 @@ export const NavRight: FC<{
         <Link href={`/${language}/setting`}>
           <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
         </Link>
-      ) : (
-        <></>
-      )}
-
-      {metadata.rightOperateType === 'complete' ? (
+      ) : metadata.rightOperateType === 'complete' ? (
         <button className="btn btn-primary btn-sm" onClick={handleComplete}>
           {t(COMMON_KEYS.COMPLETE)}
         </button>
+      ) : metadata.rightOperateType === 'custom' &&
+        metadata.NavbarRightComponent ? (
+        <metadata.NavbarRightComponent></metadata.NavbarRightComponent>
       ) : (
         <></>
       )}
