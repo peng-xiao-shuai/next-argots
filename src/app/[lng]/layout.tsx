@@ -75,7 +75,7 @@ export default async function RootLayout({
           </TrpcProviders>
           <Toaster
             toastOptions={{
-              duration: 1000,
+              duration: 1500,
             }}
           />
         </main>
