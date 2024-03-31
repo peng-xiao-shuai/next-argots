@@ -7,7 +7,7 @@ import {
   useContext,
 } from 'react';
 import Pusher from 'pusher-js';
-import type { Channel } from 'pusher-js';
+import type { Channel, PresenceChannel } from 'pusher-js';
 import Metadata from 'pusher-js/types/src/core/channels/metadata';
 import { toast } from 'sonner';
 import { useRoomStore } from './use-room-data';
@@ -67,7 +67,7 @@ export type MemberInfo = {
   };
 };
 
-let channel: Channel;
+let channel: PresenceChannel | Channel;
 let cachePusher: Pusher | null;
 let Aes: AES | null;
 Pusher.logToConsole = process.env.NODE_ENV === 'development';
@@ -270,9 +270,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
       ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
-        // @ts-ignore
-        const user_info = channel?.members.get(metadata.user_id)
-          .info as AuthSuccessUserData['user_info'];
+        const user_info = (channel as PresenceChannel)?.members.get(
+          metadata.user_id!
+        ).info as AuthSuccessUserData['user_info'];
 
         setChatValue({
           type: MESSAGE_TYPE.MSG,
@@ -301,6 +301,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 客户端发送
    */
   const ClientSendMessage = (content: string, cb?: () => void) => {
+    if (!cachePusher || !channel) {
+      toast(t!(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
+      return;
+    }
+
     const timestamp = Date.now();
     setChatValue({
       type: MESSAGE_TYPE.MSG,
@@ -364,8 +369,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     mutate: T
   ) => {
     const { encryptData } = useRoomStore.getState();
-    // @ts-ignore
-    const user_info = channel?.members.get(encryptData.nickName).info;
+    const user_info = (channel as PresenceChannel)?.members.get(
+      encryptData.nickName
+    ).info;
 
     if (user_info?.role === UserRole.HOUSE_OWNER) {
       mutate({
@@ -392,9 +398,18 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     Aes = null;
   };
 
+  /**
+   * 判断用户是否存在
+   */
+  const isChannelUserExist = (nickName: string) =>
+    Object.keys((channel as PresenceChannel)?.members.members).includes(
+      nickName
+    );
+
   return {
     pusher,
     signin,
+    isChannelUserExist,
     ClientSendMessage,
     ObserveEntryOrExit,
     exitRoom,
