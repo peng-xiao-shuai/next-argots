@@ -11,6 +11,21 @@ import { PropsWithChildren, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { trpc } from '&/trpc/client';
 import { httpBatchLink } from '@trpc/client';
+function getBaseUrl() {
+  if (typeof window !== 'undefined') {
+    return '';
+  }
+
+  if (
+    process.env.NEXT_PUBLIC_SITE_URL &&
+    process.env.NODE_ENV === 'production'
+  ) {
+    return `https://${process.env.NEXT_PUBLIC_SITE_URL}`;
+  }
+
+  // assume localhost
+  return `http://localhost:${process.env.PORT ?? 3000}`;
+}
 
 export const TrpcProviders = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient());
@@ -18,7 +33,7 @@ export const TrpcProviders = ({ children }: PropsWithChildren) => {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/trpc`,
+          url: `${getBaseUrl()}/api/trpc`,
 
           /**
            * @see https://trpc.io/docs/client/headers
