@@ -14,6 +14,7 @@ import { API_URL, RoomStatus } from '&/enum';
 import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
 import { toast } from 'sonner';
+import { HiMiniInformationCircle } from 'react-icons/hi2';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -357,9 +358,10 @@ export const ShareForm: FC<{
         </ItemLabel>
       ))}
 
-      {/* <div className="py-4">
-
-      </div> */}
+      <div className="pb-4 px-2 text-xs">
+        <HiMiniInformationCircle className="text-accent-content w-4 h-4 inline-block" />{' '}
+        每个邀请链接只能邀请一个用户，邀请成功之后无效
+      </div>
 
       <div className="flex gap-4">
         <button
