@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export const ClientShare = () => {
   const [visible, setVisible] = useState(false);
-  const { getChannelUser } = usePusher();
+  const { isChannelUserExist } = usePusher();
 
   return (
     <>
@@ -20,7 +20,9 @@ export const ClientShare = () => {
 
       <Dialog visible={visible} setVisible={setVisible}>
         <div className="flex flex-wrap justify-center">
-          {visible && <ShareForm getChannelUser={getChannelUser}></ShareForm>}
+          {visible && (
+            <ShareForm isChannelUserExist={isChannelUserExist}></ShareForm>
+          )}
         </div>
       </Dialog>
     </>

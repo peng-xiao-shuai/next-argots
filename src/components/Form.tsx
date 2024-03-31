@@ -3,7 +3,7 @@ import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
-import { COMMON_KEYS, HOME_KEYS } from '@@/locales/keys';
+import { COMMON_KEYS, HOME_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { AppContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
@@ -13,6 +13,7 @@ import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
 import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
+import { toast } from 'sonner';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -234,10 +235,153 @@ export const ItemLabel: FC<{
 }> = ({ label, children }) => {
   return (
     <div className="w-full relative">
-      <label className="inline-block text-base mb-2 desc-color _p-x">
+      <label className="inline-block text-base mb-2 text-accent-content _p-x">
         {label}
       </label>
       {children}
     </div>
+  );
+};
+
+export const ShareForm: FC<{
+  isChannelUserExist: (nickName: string) => boolean;
+}> = ({ isChannelUserExist }) => {
+  const formView: FormView[] = [
+    {
+      type: 'text',
+      locale: HOME_KEYS.NICKNAME,
+      prop: 'nickName',
+      validation: {
+        maxLength: 12,
+      },
+    },
+  ];
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<FormData>();
+  const { t } = useContext(AppContext);
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+    if (isChannelUserExist(stringToUnicode(formData.nickName))) {
+      setError('root.nickName', {
+        type: 'custom',
+        message: `The user name already exists`,
+      });
+
+      return;
+    }
+
+    toast('Coming soon');
+    // setLoading(true);
+  };
+  const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarName>('');
+  const [avatarVisible, setAvatarVisible] = useState(false);
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      onClick={() => {
+        setAvatarVisible(false);
+      }}
+    >
+      <ItemLabel
+        label={`${t!(HOME_KEYS.AVATAR)} (${t!(SETTING_KEYS.OPTIONAL)})`}
+      >
+        <div
+          className={`dropdown ${
+            avatarVisible ? 'dropdown-open' : 'dropdown-close'
+          } w-full mb-4`}
+        >
+          <div
+            role="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setAvatarVisible(true);
+            }}
+            className={`${InputClassName} flex items-center gap-2 b3-opacity-6`}
+          >
+            <ImageSvg
+              name={avatar}
+              className="w-8 h-8 opacity-70 !bg-transparent"
+            ></ImageSvg>
+
+            <input
+              type="text"
+              className="grow !bg-transparent"
+              placeholder={t!(HOME_KEYS.AVATAR)}
+              value={avatar}
+              readOnly
+            />
+          </div>
+          <GridAvatar
+            setAvatar={setAvatar}
+            setAvatarVisible={setAvatarVisible}
+          ></GridAvatar>
+        </div>
+      </ItemLabel>
+
+      {formView.map((item, index) => (
+        <ItemLabel
+          key={item.prop}
+          label={`${t!(item.locale)} (${t!(SETTING_KEYS.OPTIONAL)})`}
+        >
+          <input
+            type={item.type}
+            placeholder={t!(HOME_KEYS.PLEASE_INPUT) + t!(item.locale)}
+            {...register(item.prop, item.validation)}
+            maxLength={item.validation?.maxLength as number}
+            className={`mb-1 ${
+              errors[item.prop] || errors.root?.[item.prop] ? '' : ''
+            } ${InputClassName}`}
+          />
+
+          <div
+            className={`
+        ${index === formView.length - 1 ? 'mb-4' : ''}
+        ${
+          errors[item.prop] || errors.root?.[item.prop]
+            ? 'opacity-1 h-auto'
+            : 'opacity-0 h-0'
+        } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
+          >
+            {t!(
+              errors[item.prop]?.message ||
+                errors.root?.[item.prop]?.message ||
+                ''
+            )}
+          </div>
+        </ItemLabel>
+      ))}
+
+      {/* <div className="py-4">
+
+      </div> */}
+
+      <div className="flex gap-4">
+        <button
+          className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
+          disabled={loading}
+          type="submit"
+        >
+          <span
+            className={`loading loading-spinner ${
+              loading ? 'opacity-1' : 'loading-hidden'
+            }`}
+          />
+          分享
+        </button>
+
+        <button
+          className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
+          type="submit"
+        >
+          复制地址
+        </button>
+      </div>
+    </form>
   );
 };
