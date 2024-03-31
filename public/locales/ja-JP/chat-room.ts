@@ -10,4 +10,5 @@ export const CHAT_ROOM = {
     '未知の問題、メッセージの解読に失敗します! {{origin}} へのフィードバックをお願いします。',
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '中身を空にしてはいけません',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '言いたいことを言います ~',
+  [CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL]: '未接続の部屋です',
 };

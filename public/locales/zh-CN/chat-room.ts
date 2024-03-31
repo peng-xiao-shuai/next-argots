@@ -10,4 +10,5 @@ export const CHAT_ROOM = {
     '未知问题，消息解密失败！请前往 {{origin}} 反馈问题',
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '内容不能为空',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '畅所欲言吧~',
+  [CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL]: '未连接频道',
 };

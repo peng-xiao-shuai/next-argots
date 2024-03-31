@@ -53,6 +53,9 @@ export enum CHAT_ROOM_KEYS {
   CONTENT_CANNOT_BE_EMPTY = 'Content_cannot_be_empty',
 
   SPEAK_OUT_FREELY = 'Speak_out_freely',
+
+  // 未连接频道
+  UNCONNECTED_CHANNEL = 'Unconnected_channel',
 }
 
 export enum COMMON_KEYS {
