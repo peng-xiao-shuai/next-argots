@@ -21,7 +21,7 @@ const res = (data: Indexes, status: number) =>
       code: data.code || String(status),
     }),
     {
-      status: 200,
+      status: status,
     }
   );
 
@@ -37,10 +37,19 @@ export const pusherAuthApi = {
       body[key] = item;
     });
 
+    /**
+     * 参数校验
+     */
+    const paramsCheck = isPresence(body, [
+      'nickName',
+      'password',
+      'roomName',
+      'roomStatus',
+    ]);
+    if (typeof paramsCheck !== 'boolean') {
+      return res(paramsCheck, 400);
+    }
     const { socket_id, nickName, roomStatus, password, roomName } = body;
-
-    if (!isPresence(body, ['nickName', 'roomName', 'roomStatus', 'password']))
-      return;
     const user: SigninSuccessUserData = {
       id: socket_id,
       user_info: {
@@ -89,8 +98,9 @@ export const pusherAuthApi = {
         {
           message: error?.message || 'UNKNOWN ERROR',
           data: {},
+          code: '500',
         },
-        500
+        200
       );
     }
   },
@@ -106,10 +116,22 @@ export const pusherAuthApi = {
     });
     const { socket_id, nickName, password, roomStatus, roomName, avatar } =
       body;
+
+    /**
+     * 参数校验
+     */
+    const paramsCheck = isPresence(body, [
+      'nickName',
+      'password',
+      'roomName',
+      'roomStatus',
+    ]);
+    if (typeof paramsCheck !== 'boolean') {
+      return res(paramsCheck, 400);
+    }
+
     const role =
       roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
-    if (!isPresence(body, ['nickName', 'password', 'roomName', 'roomStatus']))
-      return;
 
     /**
      * 校验
@@ -221,14 +243,23 @@ export const pusherAuthApi = {
    * 判断是否存在频道号
    */
   getChannel: async (req: Request) => {
-    const body = req.body as Indexes;
+    const body = (await req.json()) as Indexes;
     const { roomName } = body;
-
-    if (!isPresence(body, ['roomName'])) return;
+    /**
+     * 参数校验
+     */
+    const paramsCheck = isPresence(body, ['roomName']);
+    if (typeof paramsCheck !== 'boolean') {
+      return res(paramsCheck, 400);
+    }
 
     // 判断是否存在同名频道号
     try {
       const data = await requestPusherApi(
+        `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
+      );
+      console.log(
+        data,
         `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
       );
 
@@ -349,16 +380,12 @@ const diffHash = (pwd: string, headerHash: string) => {
  */
 const isPresence = <T, K extends keyof T>(params: T, keys: K[]) => {
   for (let k of keys) {
-    if (!params[k]) {
-      return res(
-        {
-          code: '400',
-          message: `'${String(k)}' Parameter missing`,
-          data: {},
-        },
-        400
-      );
-      return false;
+    if (!Boolean(params[k])) {
+      return {
+        code: '400',
+        message: `'${String(k)}' Parameter missing`,
+        data: {},
+      };
     }
   }
 
