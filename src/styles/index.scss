@@ -13,6 +13,7 @@ body {
 [data-theme] * {
   transition: all 0.3s;
   letter-spacing: 1px;
+  outline: none !important;
   svg path {
     fill: inherit;
   }

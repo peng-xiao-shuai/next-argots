@@ -48,7 +48,7 @@ export const Dialog: FC<{
           <div
             className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-200 transform scale-50 ${
               boxVisible ? '!scale-100 opacity-100' : 'opacity-0'
-            } ${contentClassName || 'bg-base-100'}`}
+            } ${contentClassName || 'bg-base-100 opacity-95'}`}
             onClick={(e) => e.stopPropagation()}
           >
             {children}
