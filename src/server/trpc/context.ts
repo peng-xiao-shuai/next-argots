@@ -6,8 +6,6 @@ type Opts = Partial<FetchCreateContextFnOptions>;
  * @see https://trpc.io/docs/server/adapters/fetch#create-the-context
  */
 export function createContext(opts?: Opts): Opts {
-  console.log(process.env);
-
   return { ...(opts || {}) };
 }
 
