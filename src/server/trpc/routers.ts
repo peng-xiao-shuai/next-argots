@@ -6,14 +6,14 @@
  * @Description:
  */
 import { z } from 'zod';
-import { procedure, router } from './trpc';
+import { authProcedure, procedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { requestPusherApi } from '../../app/api/pusher/[path]/pusher-auth';
 import pusher from '../../app/api/pusher/[path]/get-pusher';
 import clientPromise from '../db';
-import { FeedbackRecord, Room } from '../payload/payload-types';
+import { FeedbackRecord, InviteLink, Room } from '../payload/payload-types';
 
 export const appRouter = router({
   feedbackAdd: procedure
@@ -44,7 +44,7 @@ export const appRouter = router({
         });
       }
     }),
-  removeRoom: procedure
+  removeRoom: authProcedure
     .input(
       z.object({
         roomName: z.string(),
@@ -96,6 +96,33 @@ export const appRouter = router({
             message: 'do not have permission',
           });
         }
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
+
+  inviteLinkCreate: procedure
+    .input(
+      z.object({
+        userInfo: z.string().default('{"nickName": "", "avatar": ""}'),
+        roomName: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { roomName, userInfo } = input;
+      const roomId = hashSync(
+        roomName,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
+
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<InviteLink>('invite-link');
+      try {
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
