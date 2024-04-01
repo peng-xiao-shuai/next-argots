@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { AppContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
+import Cookies from 'js-cookie';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -31,6 +32,8 @@ export function ClientChat() {
   const { ClientSendMessage, exitRoom, unsubscribe } = usePusher(setChat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
+      Cookies.remove('pw-256');
+      Cookies.remove('hash');
       unsubscribe();
     },
     onError: (err, v) => {

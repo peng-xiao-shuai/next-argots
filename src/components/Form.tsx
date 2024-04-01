@@ -15,6 +15,7 @@ import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
 import { toast } from 'sonner';
 import { HiMiniInformationCircle } from 'react-icons/hi2';
+import Cookies from 'js-cookie';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -118,6 +119,8 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
 
       signin(roomStatus)
         .then((res) => {
+          Cookies.set('pw-256', encryptData.password);
+          Cookies.set('hash', res);
           router.push(`/${lng}/chat-room`);
         })
         .catch((err) => {
