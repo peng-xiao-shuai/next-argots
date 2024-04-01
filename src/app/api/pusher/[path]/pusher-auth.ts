@@ -8,6 +8,7 @@ import { Room } from '&/payload/payload-types';
 import { NextRequest } from 'next/server';
 import clientPromise from '@/server/db';
 import { ObjectId } from 'mongodb';
+import { diffHash, isPresence } from '@/utils/server-utils';
 
 let pusherSignature: string;
 
@@ -258,10 +259,6 @@ export const pusherAuthApi = {
       const data = await requestPusherApi(
         `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
       );
-      console.log(
-        data,
-        `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}`
-      );
 
       if (data && data.occupied) {
         return res(
@@ -365,29 +362,3 @@ export async function requestPusherApi<T = any>(
     throw new Error(error.message);
   }
 }
-
-/**
- * 校验header hash 字段
- */
-const diffHash = (pwd: string, headerHash: string) => {
-  const hash = hashSync(pwd, '$2a$10$' + process.env.NEXT_PUBLIC_SALT);
-
-  return headerHash === hash;
-};
-
-/**
- * 判断参数是否存在
- */
-const isPresence = <T, K extends keyof T>(params: T, keys: K[]) => {
-  for (let k of keys) {
-    if (!Boolean(params[k])) {
-      return {
-        code: '400',
-        message: `'${String(k)}' Parameter missing`,
-        data: {},
-      };
-    }
-  }
-
-  return true;
-};
