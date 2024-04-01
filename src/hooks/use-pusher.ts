@@ -92,7 +92,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 校验
    */
   const signin = (roomStatus: RoomStatus) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const { encryptData } = useRoomStore.getState();
       const hash = hashSync(
         encryptData.password,
@@ -206,9 +206,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
                 passphrase: hash,
                 ivHexString: info.iv,
               });
-
               channel.unbind('pusher:subscription_succeeded');
-              resolve('');
+              resolve(hash);
             }
           );
         }
@@ -389,7 +388,6 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    */
   const unsubscribe = () => {
     const { encryptData } = useRoomStore.getState();
-    console.log('unsubscribe');
 
     removeObserve();
     cachePusher?.unsubscribe('presence-' + encryptData.roomName);
