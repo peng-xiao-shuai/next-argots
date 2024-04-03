@@ -43,8 +43,8 @@ export interface Room {
 export interface InviteLink {
   id: string;
   roomId: string | Room;
-  userinfo: string;
-  hash: string;
+  userInfo: string;
+  status?: ('0' | '1') | null;
   updatedAt: string;
   createdAt: string;
 }

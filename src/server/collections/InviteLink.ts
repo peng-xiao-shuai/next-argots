@@ -13,14 +13,25 @@ export const InviteLink: CollectionConfig = {
       relationTo: 'rooms',
     },
     {
-      name: 'userinfo',
+      name: 'userInfo',
       type: 'text',
       required: true,
     },
     {
-      name: 'hash',
-      type: 'text',
-      required: true,
+      // 邀请状态
+      name: 'status',
+      type: 'select',
+      defaultValue: '0',
+      options: [
+        {
+          label: 'unused',
+          value: '0',
+        },
+        {
+          label: 'used',
+          value: '1',
+        },
+      ],
     },
   ],
   access: {
