@@ -255,8 +255,15 @@ export const ItemLabel: FC<{
 
 export const ShareForm: FC<{
   isChannelUserExist: (nickName: string) => boolean;
-}> = ({ isChannelUserExist }) => {
-  const formView: FormView[] = [
+  showLinkList: () => void;
+}> = ({ isChannelUserExist, showLinkList }) => {
+  type ShareFormDataRules = Omit<FormData, 'password' | 'roomName'>;
+  interface ShareFormView extends FormView {
+    prop: 'nickName';
+    validation: RegisterOptions<ShareFormDataRules>;
+  }
+
+  const formView: ShareFormView[] = [
     {
       type: 'text',
       locale: HOME_KEYS.NICKNAME,
@@ -272,9 +279,20 @@ export const ShareForm: FC<{
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<ShareFormDataRules>();
   const { t } = useContext(AppContext);
-  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+  const { encryptData } = useRoomStore();
+  const { mutate } = trpc.inviteLinkCreate.useMutation({
+    onSuccess: (id) => {
+      setLoading(false);
+      copyText(`${location.href}?link=${id}`);
+    },
+    onError: (error) => {
+      setLoading(false);
+      toast.error(error.message || 'unknown error');
+    },
+  });
+  const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
     if (isChannelUserExist(stringToUnicode(formData.nickName))) {
       setError('root.nickName', {
         type: 'custom',
@@ -284,8 +302,11 @@ export const ShareForm: FC<{
       return;
     }
 
-    toast('Coming soon');
-    // setLoading(true);
+    setLoading(true);
+    mutate({
+      roomName: encryptData.roomName,
+      userInfo: JSON.stringify(formData),
+    });
   };
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<AvatarName>('');
@@ -373,8 +394,15 @@ export const ShareForm: FC<{
       </div>
 
       <div className="flex gap-4">
+        <div
+          className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400 !px-2"
+          onClick={showLinkList}
+        >
+          查看生成链接
+        </div>
+
         <button
-          className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
+          className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
           disabled={loading}
           type="submit"
         >
@@ -383,14 +411,7 @@ export const ShareForm: FC<{
               loading ? 'opacity-1' : 'loading-hidden'
             }`}
           />
-          分享
-        </button>
-
-        <button
-          className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
-          type="submit"
-        >
-          复制地址
+          生成邀请地址
         </button>
       </div>
     </form>
