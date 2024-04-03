@@ -5,17 +5,14 @@ import { diffHash } from '@/utils/server-utils';
 const t = initTRPC.context<Context>().create();
 
 const authMiddleware = t.middleware(({ ctx, next }) => {
-  if (
-    !diffHash(
-      cookies().get('pw-256')?.value || '',
-      cookies().get('hash')?.value || ''
-    )
-  ) {
+  const hash = cookies().get('hash')?.value;
+  if (!diffHash(cookies().get('pw-256')?.value || '', hash || '')) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
       ...ctx,
+      hash,
     },
   });
 });

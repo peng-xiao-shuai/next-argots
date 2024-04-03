@@ -67,7 +67,16 @@ export const appRouter = router({
       const collection = client
         .db(process.env.DATABASE_DB)
         .collection<Room>('rooms');
+
+      const linkCollection = client
+        .db(process.env.DATABASE_DB)
+        .collection<InviteLink>('invite-link');
       try {
+        // 清除邀请记录
+        linkCollection.deleteMany({
+          roomId,
+        });
+
         const room = await collection.findOneAndDelete({
           id: recordId,
           houseOwnerId,
@@ -104,7 +113,7 @@ export const appRouter = router({
       }
     }),
 
-  inviteLinkCreate: procedure
+  inviteLinkCreate: authProcedure
     .input(
       z.object({
         userInfo: z.string().default('{"nickName": "", "avatar": ""}'),
@@ -123,6 +132,92 @@ export const appRouter = router({
         .db(process.env.DATABASE_DB)
         .collection<InviteLink>('invite-link');
       try {
+        const id = new ObjectId().toString();
+        const data = await collection.insertOne({
+          roomId,
+          userInfo,
+          id,
+          status: '0',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+        if (data.acknowledged) {
+          return id;
+        } else {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Link generation failure',
+          });
+        }
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
+
+  inviteLinkGet: authProcedure
+    .input(
+      z.object({
+        roomName: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { roomName } = input;
+      const roomId = hashSync(
+        roomName,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
+
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<InviteLink>('invite-link');
+      try {
+        console.log(roomId);
+
+        const data = await collection
+          .find({
+            roomId,
+          })
+          .toArray();
+
+        return data;
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
+
+  inviteLinkRemove: authProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        roomName: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, roomName } = input;
+      const roomId = hashSync(
+        roomName,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
+
+      const client = await clientPromise;
+      const collection = client
+        .db(process.env.DATABASE_DB)
+        .collection<InviteLink>('invite-link');
+      try {
+        const data = await collection.deleteOne({
+          id,
+          roomId,
+        });
+
+        return data.acknowledged;
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
