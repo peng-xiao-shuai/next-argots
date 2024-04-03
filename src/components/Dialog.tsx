@@ -30,8 +30,7 @@ export const Dialog: FC<{
       const time = setTimeout(() => {
         setVisible(!visible);
         clearTimeout(time);
-        // 与 duration-200 时间相同
-      }, 200);
+      }, 100);
     });
 
   return (
@@ -46,9 +45,9 @@ export const Dialog: FC<{
           onClick={handleClose}
         >
           <div
-            className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-200 transform scale-50 ${
-              boxVisible ? '!scale-100 opacity-100' : 'opacity-0'
-            } ${contentClassName || 'bg-base-100 opacity-95'}`}
+            className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-300 transform scale-50 ${
+              boxVisible ? '!scale-100 opacity-95' : 'opacity-0'
+            } ${contentClassName || 'bg-base-100'}`}
             onClick={(e) => e.stopPropagation()}
           >
             {children}
