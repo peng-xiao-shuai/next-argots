@@ -8,14 +8,15 @@ import { AppContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
-import { stringToUnicode } from '@/utils/string-transform';
+import { copyText, stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
 import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
-import { toast } from 'sonner';
 import { HiMiniInformationCircle } from 'react-icons/hi2';
 import Cookies from 'js-cookie';
+import { trpc } from '@/server/trpc/client';
+import { toast } from 'sonner';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -26,18 +27,19 @@ const formDataRules = z.object({
 
 type FormData = z.infer<typeof formDataRules>;
 
-type FormView = {
+interface FormView {
   type: React.HTMLInputTypeAttribute;
   locale: string;
   prop: 'roomName' | 'nickName' | 'password';
   validation?: RegisterOptions<FormData>;
-};
+}
 
 type HomeForm = FC<{
   roomStatus: RoomStatus;
   lng: Lng;
+  visible: boolean;
 }>;
-export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
+export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
   const formView: FormView[] = [
     {
       type: 'text',
@@ -74,6 +76,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
     trigger,
     setError,
     setFocus,
+    reset,
     formState: { errors },
   } = useForm<FormData>();
   const { t } = useContext(AppContext);
@@ -138,9 +141,12 @@ export const HomeForm: HomeForm = ({ roomStatus, lng }) => {
   const [avatarVisible, setAvatarVisible] = useState(false);
 
   useEffect(() => {
-    setFocus('roomName');
+    if (visible) {
+      setFocus('roomName');
+      reset();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible]);
 
   return (
     <form

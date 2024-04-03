@@ -43,7 +43,11 @@ export const ClientOperate: FC<{
       </div>
       <Dialog visible={visible} setVisible={setVisible}>
         <div className="flex flex-wrap justify-center">
-          {visible && <HomeForm roomStatus={roomStatus} lng={lng}></HomeForm>}
+          <HomeForm
+            roomStatus={roomStatus}
+            lng={lng}
+            visible={visible}
+          ></HomeForm>
         </div>
       </Dialog>
     </>
