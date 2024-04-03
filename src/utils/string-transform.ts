@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 /**
  * 字符串 token 转对象
  */
@@ -39,3 +41,39 @@ export const unicodeToString = (unicodeStr: string) => {
     .map((uni) => String.fromCharCode(Number.parseInt(uni, 16)))
     .join('');
 };
+
+/**
+ * COPY 字符串
+ */
+export function copyText(value: string, cb?: Function) {
+  // 兼容低版本不存在 navigator.clipboard 情况
+  if (navigator.clipboard && navigator.permissions) {
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
+        toast.success('Copy Successfully');
+        cb?.();
+      })
+      .catch((err) => {
+        console.error('Unable to copy text to clipboard', err);
+      });
+  } else {
+    // 创建dom
+    const input = document.createElement('input');
+    input.setAttribute('value', value);
+    input.style.position = 'fixed';
+    input.style.left = '999px';
+    input.style.top = '10px';
+    // 选中文本
+    document.body.appendChild(input);
+    input.select();
+
+    document.execCommand('copy');
+
+    toast.success('Copy Successfully');
+    //  删除dom
+    document.body.removeChild(input);
+
+    cb?.();
+  }
+}
