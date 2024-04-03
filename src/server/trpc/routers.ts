@@ -176,8 +176,6 @@ export const appRouter = router({
         .db(process.env.DATABASE_DB)
         .collection<InviteLink>('invite-link');
       try {
-        console.log(roomId);
-
         const data = await collection
           .find({
             roomId,
