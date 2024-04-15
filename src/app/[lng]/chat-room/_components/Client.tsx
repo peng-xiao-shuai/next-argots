@@ -18,6 +18,8 @@ import { AppContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
 import Cookies from 'js-cookie';
+import { Lng } from '@/locales/i18n';
+import { Data } from '@/app/api/join-link/route';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -201,4 +203,8 @@ export function ClientChat() {
       </div>
     </>
   );
+}
+
+export function Client({ data, lng }: { data?: Data; lng: Lng }) {
+  return <ClientChat></ClientChat>;
 }

@@ -1,16 +1,18 @@
 'use client';
 import { HOME_KEYS } from '@@/locales/keys';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RoomStatus } from '@/server/enum';
 import { FC, useContext, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
 import { Dialog, HomeForm } from '../../../components';
 import { AppContext } from '@/context';
+import { toast } from 'sonner';
 
 export const ClientOperate: FC<{
   lng: Lng;
 }> = ({ lng }) => {
   const { t } = useContext(AppContext);
+  const searchParams = useSearchParams();
   const [visible, setVisible] = useState(false);
   const [roomStatus, setRoomStatus] = useState<RoomStatus>(RoomStatus.ADD);
   const router = useRouter();
@@ -25,6 +27,15 @@ export const ClientOperate: FC<{
     setRoomStatus(type);
     setVisible(true);
   };
+
+  useEffect(() => {
+    const msg = searchParams.get('msg');
+    if (msg) {
+      toast.error(msg);
+      history.replaceState(null, '', `/${lng}`);
+    }
+  });
+
   return (
     <>
       <div className="flex my-auto m-t w-[100%] justify-around">
