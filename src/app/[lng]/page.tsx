@@ -10,7 +10,7 @@ export const generateMetadata = async ({
 export default function Home({ params: { lng } }: CustomReactParams) {
   return (
     <>
-      <div className="flex flex-wrap h-[80%] items-center">
+      <div className="flex flex-wrap h-full items-center">
         <div className="w-24 h-24 m-auto rounded-box b3-opacity-6 dark:bg-black flex justify-center items-center">
           <Image
             className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
