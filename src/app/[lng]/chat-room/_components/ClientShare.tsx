@@ -9,6 +9,7 @@ import { InviteLink } from '@/server/payload/payload-types';
 import { GoLink, GoTrash } from 'react-icons/go';
 import { copyText } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
+import { useBusWatch } from '@/hooks/use-bus-watch';
 
 export const ClientShare = () => {
   const [visible, setVisible] = useState(false);
@@ -37,17 +38,14 @@ export const ClientShare = () => {
     }
   };
 
+  const handleComplete = () => {
+    setVisible(true);
+  };
+
+  useBusWatch('complete', handleComplete);
+
   return (
     <>
-      <button
-        className="btn btn-primary btn-sm"
-        onClick={() => {
-          setVisible(true);
-        }}
-      >
-        Share
-      </button>
-
       <Dialog
         contentClassName="bg-base-100 w-[90vw]"
         visible={listVisible}

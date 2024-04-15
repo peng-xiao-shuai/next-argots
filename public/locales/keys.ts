@@ -78,6 +78,8 @@ export enum COMMON_KEYS {
   CONFIRM = 'Confirm',
   COMPLETE = 'Complete',
   SUCCESSFULLY_SET = 'Successfully_set',
+
+  SHARE = 'Share',
 }
 
 export enum API_KEYS {

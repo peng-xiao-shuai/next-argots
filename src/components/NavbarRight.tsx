@@ -26,11 +26,13 @@ export const NavRight: FC<{
         </Link>
       ) : metadata.rightOperateType === 'complete' ? (
         <button className="btn btn-primary btn-sm" onClick={handleComplete}>
-          {t(COMMON_KEYS.COMPLETE)}
+          {t(metadata.NavbarRightText || COMMON_KEYS.COMPLETE)}
         </button>
       ) : metadata.rightOperateType === 'custom' &&
         metadata.NavbarRightComponent ? (
-        <metadata.NavbarRightComponent></metadata.NavbarRightComponent>
+        <metadata.NavbarRightComponent
+          lng={language}
+        ></metadata.NavbarRightComponent>
       ) : (
         <></>
       )}

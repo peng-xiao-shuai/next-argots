@@ -40,7 +40,6 @@ export default async function RootLayout({
   const cookieStore = cookies();
   const size = cookieStore.get(COOKIE.SIZE)?.value;
   const theme = cookieStore.get(COOKIE.THEME)?.value;
-  const { t } = await useTranslation(lng);
 
   return (
     <html

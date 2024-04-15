@@ -2,13 +2,13 @@ import { Lng, useTranslation } from '../../locales/i18n';
 import { COMMON_KEYS, META } from '../../../public/locales/keys';
 import type { Metadata } from 'next';
 import { FC } from 'react';
-import { ClientShare } from './chat-room/_components/ClientShare';
 export interface Meta extends Metadata {
   title: string;
   locale: string;
   isPlaceholder?: boolean;
   rightOperateType?: 'setting' | 'complete' | 'none' | 'custom';
-  NavbarRightComponent?: FC;
+  NavbarRightText?: string;
+  NavbarRightComponent?: FC<{ lng: Lng }>;
 }
 
 const pathMetaData = {
@@ -65,8 +65,8 @@ const pathMetaData = {
     title: 'Chat Room',
     locale: COMMON_KEYS.CHAT,
     isPlaceholder: true,
-    rightOperateType: 'custom',
-    NavbarRightComponent: ClientShare,
+    rightOperateType: 'complete',
+    NavbarRightText: COMMON_KEYS.SHARE,
   },
 };
 
