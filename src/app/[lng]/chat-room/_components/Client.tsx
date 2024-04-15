@@ -1,15 +1,8 @@
 'use client';
 import '../style.css';
-import {
-  FC,
-  KeyboardEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
-import { Chat, usePusher } from '@/hooks/use-pusher';
+import { type Chat, usePusher } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { debounce } from '@/utils/debounce-throttle';
@@ -18,8 +11,9 @@ import { AppContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
 import Cookies from 'js-cookie';
-import { Lng } from '@/locales/i18n';
-import { Data } from '@/app/api/join-link/route';
+import type { Lng } from '@/locales/i18n';
+import type { Data } from '@/app/api/join-link/route';
+import { ClientShare } from './ClientShare';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -206,5 +200,10 @@ export function ClientChat() {
 }
 
 export function Client({ data, lng }: { data?: Data; lng: Lng }) {
-  return <ClientChat></ClientChat>;
+  return (
+    <>
+      <ClientShare></ClientShare>
+      <ClientChat></ClientChat>
+    </>
+  );
 }

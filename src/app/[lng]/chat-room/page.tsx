@@ -1,7 +1,7 @@
 import { GenerateMetadata } from '../meta';
 import { Client } from './_components/Client';
 import { redirect } from 'next/navigation';
-import { JoinLinkType } from '@/app/api/join-link/route';
+import type { JoinLinkType } from '@/app/api/join-link/route';
 
 export const generateMetadata = async ({
   params: { lng },
@@ -29,4 +29,6 @@ export default async function ChatRoom({
 
     return <Client lng={lng}></Client>;
   }
+
+  return <Client lng={lng}></Client>;
 }
