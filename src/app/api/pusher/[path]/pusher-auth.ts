@@ -9,22 +9,8 @@ import { NextRequest } from 'next/server';
 import clientPromise from '@/server/db';
 import { ObjectId } from 'mongodb';
 import { diffHash, isPresence } from '@/utils/server-utils';
-
+import { res } from '../../utils';
 let pusherSignature: string;
-
-/**
- * Response 对象
- */
-const res = (data: Indexes, status: number) =>
-  new Response(
-    JSON.stringify({
-      ...data,
-      code: data.code || String(status),
-    }),
-    {
-      status: status,
-    }
-  );
 
 export const pusherAuthApi = {
   /**
@@ -152,8 +138,13 @@ export const pusherAuthApi = {
       const collection = client
         .db(process.env.DATABASE_DB)
         .collection<Room>('rooms');
+
+      /**
+       * 使用 密码加频道号组成id，避免某种情况下 pusher 没有 roomName 数据库集合中存在 roomName 导致无法创建房间
+       * 只有在某种情况下 pusher 没有 roomName 而数据库集合中存在 roomName 并且输入的密码和集合中一致时才无法创建
+       */
       const roomId = hashSync(
-        roomName,
+        roomName + password,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
       let iv = crypto.randomBytes(128 / 8).toString('hex');
