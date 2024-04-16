@@ -51,14 +51,9 @@ export const pusherAuthApi = {
        * 加入频道判断是否存在同名用户
        */
       if (roomStatus === RoomStatus.JOIN) {
-        const data = await requestPusherApi<{ users: { id: string }[] }>(
-          `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
-        );
+        const isUser = await isChannelUserExistApi(roomName, nickName);
 
-        if (
-          data &&
-          data.users?.find((item: { id: string }) => item.id === nickName)
-        ) {
+        if (isUser) {
           user.user_info.code = '403';
           user.user_info.message = 'The user name already exists';
           const authResponse = pusher.authenticateUser(socket_id, user);
@@ -261,7 +256,6 @@ export const pusherAuthApi = {
           },
           200
         );
-        return;
       }
 
       return res(
@@ -353,3 +347,17 @@ export async function requestPusherApi<T = any>(
     throw new Error(error.message);
   }
 }
+
+/**
+ * 判断是否存在同名用户
+ */
+export const isChannelUserExistApi = async (
+  roomName: string,
+  nickName: string
+) => {
+  const { users } = await requestPusherApi<{ users: { id: string }[] }>(
+    `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
+  );
+
+  return users && users.find((item: { id: string }) => item.id === nickName);
+};
