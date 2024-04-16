@@ -116,7 +116,10 @@ export const appRouter = router({
   inviteLinkCreate: authProcedure
     .input(
       z.object({
-        userInfo: z.string().default('{"nickName": "", "avatar": ""}'),
+        userInfo: z.object({
+          nickName: z.string().optional(),
+          avatar: z.string().optional(),
+        }),
         roomName: z.string(),
       })
     )
@@ -135,7 +138,10 @@ export const appRouter = router({
         const id = new ObjectId().toString();
         const data = await collection.insertOne({
           roomId,
-          userInfo,
+          userInfo: JSON.stringify({
+            ...userInfo,
+            roomName,
+          }),
           id,
           status: '0',
           createdAt: new Date().toISOString(),

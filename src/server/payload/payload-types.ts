@@ -43,6 +43,9 @@ export interface Room {
 export interface InviteLink {
   id: string;
   roomId: string | Room;
+  /**
+   * {nickName: '', roomName: '', avatar: ''} 转 JSON 字符串
+   */
   userInfo: string;
   status?: ('0' | '1') | null;
   updatedAt: string;
@@ -87,7 +90,6 @@ export interface PayloadMigration {
   updatedAt: string;
   createdAt: string;
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
