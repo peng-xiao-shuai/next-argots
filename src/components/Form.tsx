@@ -17,6 +17,7 @@ import { HiMiniInformationCircle } from 'react-icons/hi2';
 import Cookies from 'js-cookie';
 import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
+import { JoinChannel } from '@/app/[lng]/chat-room/_components/ClientShare';
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -253,11 +254,21 @@ export const ItemLabel: FC<{
   );
 };
 
+export type ShareFormDataRules = Omit<FormData, 'password' | 'roomName'>;
+/**
+ * 分享表单组件
+ *
+ * isChannelUserExist 判断是否存在相同的 用户名 ，在传递 joinChannel 时失效
+ *
+ * showLinkList 点击查看生成链接列表，在传递 showLinkList 时失效
+ *
+ * joinChannel 加入频道，表单触发后执行
+ */
 export const ShareForm: FC<{
   isChannelUserExist: (nickName: string) => boolean;
   showLinkList: () => void;
-}> = ({ isChannelUserExist, showLinkList }) => {
-  type ShareFormDataRules = Omit<FormData, 'password' | 'roomName'>;
+  joinChannel?: JoinChannel;
+}> = ({ isChannelUserExist, showLinkList, joinChannel }) => {
   interface ShareFormView extends FormView {
     prop: 'nickName';
     validation: RegisterOptions<ShareFormDataRules>;
@@ -269,6 +280,7 @@ export const ShareForm: FC<{
       locale: HOME_KEYS.NICKNAME,
       prop: 'nickName',
       validation: {
+        required: Boolean(joinChannel),
         maxLength: 12,
       },
     },
@@ -293,6 +305,17 @@ export const ShareForm: FC<{
     },
   });
   const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
+    if (joinChannel) {
+      const data = await joinChannel(formData, setLoading);
+      if (data && data.msg) {
+        setError(data.prop!, {
+          type: 'custom',
+          message: data.msg,
+        });
+      }
+      return;
+    }
+
     if (isChannelUserExist(stringToUnicode(formData.nickName))) {
       setError('root.nickName', {
         type: 'custom',
@@ -305,7 +328,7 @@ export const ShareForm: FC<{
     setLoading(true);
     mutate({
       roomName: encryptData.roomName,
-      userInfo: JSON.stringify(formData),
+      userInfo: formData,
     });
   };
   const [loading, setLoading] = useState(false);
@@ -388,19 +411,14 @@ export const ShareForm: FC<{
         </ItemLabel>
       ))}
 
-      <div className="pb-4 px-2 text-xs">
-        <HiMiniInformationCircle className="text-accent-content w-4 h-4 inline-block" />{' '}
-        每个邀请链接只能邀请一个用户，邀请成功之后无效
-      </div>
-
-      <div className="flex gap-4">
-        <div
-          className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400 !px-2"
-          onClick={showLinkList}
-        >
-          查看生成链接
+      {!Boolean(joinChannel) && (
+        <div className="pb-4 px-2 text-xs">
+          <HiMiniInformationCircle className="text-accent-content w-4 h-4 inline-block" />{' '}
+          每个邀请链接只能邀请一个用户，邀请成功之后无效
         </div>
+      )}
 
+      {Boolean(joinChannel) ? (
         <button
           className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
           disabled={loading}
@@ -411,9 +429,31 @@ export const ShareForm: FC<{
               loading ? 'opacity-1' : 'loading-hidden'
             }`}
           />
-          生成邀请地址
+          确认
         </button>
-      </div>
+      ) : (
+        <div className="flex gap-4">
+          <div
+            className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400 !px-2"
+            onClick={showLinkList}
+          >
+            查看生成链接
+          </div>
+
+          <button
+            className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
+            disabled={loading}
+            type="submit"
+          >
+            <span
+              className={`loading loading-spinner ${
+                loading ? 'opacity-1' : 'loading-hidden'
+              }`}
+            />
+            生成邀请地址
+          </button>
+        </div>
+      )}
     </form>
   );
 };
