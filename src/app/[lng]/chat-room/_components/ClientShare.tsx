@@ -1,18 +1,61 @@
 'use client';
-import { AvatarName, Dialog, ImageSvg, ShareForm } from '@/components';
+import {
+  AvatarName,
+  Dialog,
+  ImageSvg,
+  ShareForm,
+  type ShareFormDataRules,
+} from '@/components';
 import { usePusher } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { trpc } from '@/server/trpc/client';
-import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useContext, useState } from 'react';
 import LoadingRender from '../../loading';
 import { InviteLink } from '@/server/payload/payload-types';
 import { GoLink, GoTrash } from 'react-icons/go';
 import { copyText } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
 import { useBusWatch } from '@/hooks/use-bus-watch';
+import { ClientContext, LinkUserInfo } from './Client';
+import { isChannelUserExistApi } from '@/app/api/pusher/[path]/pusher-auth';
+import type { FieldPath } from 'react-hook-form';
 
-export const ClientShare = () => {
-  const [visible, setVisible] = useState(false);
+export type JoinChannel = (
+  formData: ShareFormDataRules,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => Promise<{
+  prop: FieldPath<ShareFormDataRules> | `root.${string}` | 'root';
+  msg: string;
+} | void>;
+
+export const ClientShare: FC<{
+  visible: boolean;
+  setVisible: Dispatch<SetStateAction<boolean>>;
+}> = ({ visible, setVisible }) => {
+  const { joinData } = useContext(ClientContext);
+  const joinChannel: JoinChannel | undefined = joinData
+    ? undefined
+    : async (formData, setLoading) => {
+        const userInfo = JSON.parse(joinData!.userInfo) as LinkUserInfo;
+        const isUser = await isChannelUserExistApi(
+          userInfo.roomName,
+          formData.nickName
+        );
+
+        /**
+         * 使 nickname 输入框下弹出错误提示
+         */
+        if (isUser) {
+          return {
+            prop: 'root.nickName',
+            msg: `The user name already exists`,
+          };
+        }
+
+        setLoading(true);
+        // TODO pusher.signin
+      };
+
   const [listVisible, setListVisible] = useState(false);
   const { isChannelUserExist } = usePusher();
   const [list, setList] = useState<InviteLink[]>([]);
@@ -64,6 +107,7 @@ export const ClientShare = () => {
           <ShareForm
             showLinkList={showLinkList}
             isChannelUserExist={isChannelUserExist}
+            joinChannel={joinChannel}
           ></ShareForm>
         </div>
       </Dialog>

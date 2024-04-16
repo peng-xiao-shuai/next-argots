@@ -1,6 +1,13 @@
 'use client';
 import '../style.css';
-import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
+import {
+  KeyboardEvent,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { type Chat, usePusher } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
@@ -199,10 +206,34 @@ export function ClientChat() {
   );
 }
 
-export function Client({ data, lng }: { data?: Data; lng: Lng }) {
+export const ClientContext = createContext<{
+  lng: Lng;
+  joinData?: Data;
+}>({
+  lng: 'en-US',
+});
+
+export type LinkUserInfo = {
+  nickName: string;
+  avatar: string;
+  roomName: string;
+};
+
+export function Client() {
+  const { joinData } = useContext(ClientContext);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (joinData) {
+      const userInfo = JSON.parse(joinData?.userInfo!) as LinkUserInfo;
+      if (!userInfo.nickName) {
+        setVisible(true);
+      }
+    }
+  }, [joinData]);
+
   return (
     <>
-      <ClientShare></ClientShare>
+      <ClientShare visible={visible} setVisible={setVisible}></ClientShare>
       <ClientChat></ClientChat>
     </>
   );
