@@ -1,5 +1,5 @@
 import { GenerateMetadata } from '../meta';
-import { Client } from './_components/Client';
+import { Client, ClientContext } from './_components/Client';
 import { redirect } from 'next/navigation';
 import type { JoinLinkType } from '@/app/api/join-link/route';
 
@@ -17,18 +17,35 @@ export default async function ChatRoom({
   params: { lng },
   searchParams,
 }: Props) {
-  let data: JoinLinkType;
+  let response: JoinLinkType;
   if (searchParams.link) {
-    data = await (
+    response = await (
       await fetch(`http://localhost:3000/api/join-link?id=${searchParams.link}`)
     ).json();
 
-    if (data.code !== '200') {
-      redirect(`/${lng}?msg=${data.message}`);
+    if (response.code !== '200') {
+      redirect(`/${lng}?msg=${response.message}`);
     }
 
-    return <Client lng={lng}></Client>;
+    return (
+      <ClientContext.Provider
+        value={{
+          joinData: response.data,
+          lng: lng,
+        }}
+      >
+        <Client></Client>;
+      </ClientContext.Provider>
+    );
   }
 
-  return <Client lng={lng}></Client>;
+  return (
+    <ClientContext.Provider
+      value={{
+        lng: lng,
+      }}
+    >
+      <Client></Client>;
+    </ClientContext.Provider>
+  );
 }
