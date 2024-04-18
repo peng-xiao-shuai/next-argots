@@ -42,7 +42,6 @@ export const ClientEmojiPicker: FC<{
 
   useEffect(() => {
     const emojiPicker = document.querySelector('em-emoji-picker');
-    console.log(emojiPicker);
     if (emojiPicker) {
       const style = document.createElement('style');
       style.innerHTML = `
