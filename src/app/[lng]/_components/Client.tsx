@@ -34,7 +34,8 @@ export const ClientOperate: FC<{
       toast.error(msg);
       history.replaceState(null, '', `/${lng}`);
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
