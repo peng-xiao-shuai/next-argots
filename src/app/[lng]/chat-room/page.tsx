@@ -22,30 +22,19 @@ export default async function ChatRoom({
     response = await (
       await fetch(`http://localhost:3000/api/join-link?id=${searchParams.link}`)
     ).json();
-
     if (response.code !== '200') {
       redirect(`/${lng}?msg=${response.message}`);
     }
-
     return (
-      <ClientContext.Provider
-        value={{
-          joinData: response.data,
-          lng: lng,
-        }}
-      >
+      <ClientContext joinData={response.data} lng={lng}>
         <Client></Client>;
-      </ClientContext.Provider>
+      </ClientContext>
     );
   }
 
   return (
-    <ClientContext.Provider
-      value={{
-        lng: lng,
-      }}
-    >
-      <Client></Client>;
-    </ClientContext.Provider>
+    <ClientContext lng={lng}>
+      <Client></Client>
+    </ClientContext>
   );
 }
