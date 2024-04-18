@@ -2,6 +2,7 @@ import { GenerateMetadata } from '../meta';
 import { Client, ClientContext } from './_components/Client';
 import { redirect } from 'next/navigation';
 import type { JoinLinkType } from '@/app/api/join-link/route';
+import { getBaseUrl } from '@/utils/server-utils';
 
 export const generateMetadata = async ({
   params: { lng },
@@ -20,8 +21,9 @@ export default async function ChatRoom({
   let response: JoinLinkType;
   if (searchParams.link) {
     response = await (
-      await fetch(`http://localhost:3000/api/join-link?id=${searchParams.link}`)
+      await fetch(`${getBaseUrl()}/api/join-link?id=${searchParams.link}`)
     ).json();
+
     if (response.code !== '200') {
       redirect(`/${lng}?msg=${response.message}`);
     }
