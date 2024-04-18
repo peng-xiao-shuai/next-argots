@@ -27,7 +27,7 @@ export const isPresence = <T, K extends keyof T>(params: T, keys: K[]) => {
 
 export function getBaseUrl() {
   if (typeof window !== 'undefined') {
-    return `http://localhost:${process.env.PORT ?? 3000}`;
+    return `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? 3000}`;
   }
 
   if (
@@ -38,5 +38,5 @@ export function getBaseUrl() {
   }
 
   // assume localhost
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? 3000}`;
 }
