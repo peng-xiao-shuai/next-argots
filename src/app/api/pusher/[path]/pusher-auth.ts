@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import axios from 'axios';
 import { RoomStatus, UserRole } from '&/enum';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
@@ -9,8 +8,19 @@ import { NextRequest } from 'next/server';
 import clientPromise from '@/server/db';
 import { ObjectId } from 'mongodb';
 import { diffHash, isPresence } from '@/utils/server-utils';
-import { res } from '../../utils';
-let pusherSignature: string;
+import { isChannelUserExistApi, requestPusherApi, res } from '../../utils';
+import type { AvatarName } from '@/components';
+
+type BODY = {
+  socket_id: string;
+  nickName: string;
+  password?: string;
+  roomName: string;
+  roomStatus: RoomStatus;
+  avatar: AvatarName;
+  hash?: string;
+  roomId?: string;
+} & Indexes;
 
 export const pusherAuthApi = {
   /**
@@ -24,6 +34,27 @@ export const pusherAuthApi = {
       body[key] = item;
     });
 
+    const { socket_id, nickName, roomStatus, password, roomName, hash } =
+      body as BODY;
+
+    const user: SigninSuccessUserData = {
+      id: socket_id,
+      user_info: {
+        name: nickName,
+        code: '',
+        message: '',
+      },
+    };
+
+    /**
+     * 如果是 JOIN 并且存在 hash 那么就直接加入
+     */
+    if (roomStatus === RoomStatus.JOIN && hash) {
+      user.user_info.code = '200';
+      const authResponse = pusher.authenticateUser(socket_id, user);
+      return res(authResponse, 200);
+    }
+
     /**
      * 参数校验
      */
@@ -36,15 +67,6 @@ export const pusherAuthApi = {
     if (typeof paramsCheck !== 'boolean') {
       return res(paramsCheck, 400);
     }
-    const { socket_id, nickName, roomStatus, password, roomName } = body;
-    const user: SigninSuccessUserData = {
-      id: socket_id,
-      user_info: {
-        name: nickName,
-        code: '',
-        message: '',
-      },
-    };
 
     try {
       /**
@@ -63,7 +85,7 @@ export const pusherAuthApi = {
       /**
        * 校验
        */
-      if (!diffHash(password, req.headers.get('hash') as string)) {
+      if (!diffHash(password!, req.headers.get('hash') as string)) {
         user.user_info.code = '403';
         user.user_info.message = 'decryption failure';
         const authResponse = pusher.authenticateUser(socket_id, user);
@@ -96,37 +118,63 @@ export const pusherAuthApi = {
     formData.forEach((item, key) => {
       body[key] = item;
     });
-    const { socket_id, nickName, password, roomStatus, roomName, avatar } =
-      body;
+    const {
+      socket_id,
+      nickName,
+      password,
+      roomStatus,
+      roomName,
+      avatar,
+      hash,
+      roomId: _roomId,
+    } = body as BODY;
 
     /**
-     * 参数校验
+     * 使用 密码加频道号组成id，避免某种情况下 pusher 没有 roomName 数据库集合中存在 roomName 导致无法创建房间
+     * 只有在某种情况下 pusher 没有 roomName 而数据库集合中存在 roomName 并且输入的密码和集合中一致时才无法创建
      */
-    const paramsCheck = isPresence(body, [
-      'nickName',
-      'password',
-      'roomName',
-      'roomStatus',
-    ]);
-    if (typeof paramsCheck !== 'boolean') {
-      return res(paramsCheck, 400);
+    let roomId: string = '';
+
+    /**
+     * 如果是 JOIN 并且存在 hash 那么就直接加入
+     */
+    if (roomStatus === RoomStatus.JOIN && hash) {
+      roomId = _roomId!;
+    } else {
+      /**
+       * 参数校验
+       */
+      const paramsCheck = isPresence(body, [
+        'nickName',
+        'password',
+        'roomName',
+        'roomStatus',
+      ]);
+      if (typeof paramsCheck !== 'boolean') {
+        return res(paramsCheck, 400);
+      }
+
+      /**
+       * 校验
+       */
+      if (!diffHash(password!, req.headers.get('hash') as string)) {
+        return res(
+          {
+            message: 'decryption failure',
+            data: {},
+          },
+          403
+        );
+      }
+
+      roomId = hashSync(
+        roomName + password,
+        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+      );
     }
 
     const role =
       roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
-
-    /**
-     * 校验
-     */
-    if (!diffHash(password, req.headers.get('hash') as string)) {
-      return res(
-        {
-          message: 'decryption failure',
-          data: {},
-        },
-        403
-      );
-    }
 
     try {
       const client = await clientPromise;
@@ -134,14 +182,6 @@ export const pusherAuthApi = {
         .db(process.env.DATABASE_DB)
         .collection<Room>('rooms');
 
-      /**
-       * 使用 密码加频道号组成id，避免某种情况下 pusher 没有 roomName 数据库集合中存在 roomName 导致无法创建房间
-       * 只有在某种情况下 pusher 没有 roomName 而数据库集合中存在 roomName 并且输入的密码和集合中一致时才无法创建
-       */
-      const roomId = hashSync(
-        roomName + password,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
       let iv = crypto.randomBytes(128 / 8).toString('hex');
       let room: Room;
 
@@ -278,86 +318,4 @@ export const pusherAuthApi = {
       );
     }
   },
-};
-
-type Body = {
-  secret: string;
-  params: { [key: string]: string | number };
-  method: 'POST' | 'GET';
-  path: string;
-};
-
-/**
- * 生成 pusher http 请求签名
- */
-function createPusherSignature({ method, path, params, secret }: Body) {
-  // 将参数按键排序并格式化为查询字符串
-  const sortedParams = Object.keys(params)
-    .sort()
-    .map((key) => {
-      return key + '=' + params[key];
-    })
-    .join('&');
-
-  // 创建签名字符串
-  const stringToSign = [method.toUpperCase(), path, sortedParams].join('\n');
-
-  // 生成HMAC SHA256签名
-  const signature = crypto
-    .createHmac('sha256', secret)
-    .update(stringToSign)
-    .digest('hex');
-  return signature;
-}
-
-/**
- * 发起 pusher http 请求
- */
-export async function requestPusherApi<T = any>(
-  path: string,
-  method: 'POST' | 'GET' = 'GET'
-) {
-  const params: Body['params'] = {
-    auth_key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
-    auth_timestamp: Math.floor(Date.now() / 1000),
-    auth_version: '1.0',
-  };
-
-  // if (!pusherSignature) {
-  // 生成签名
-  pusherSignature = createPusherSignature({
-    method,
-    path,
-    params,
-    secret: process.env.PUSHER_APP_SECRET!,
-  });
-  // }
-
-  // 构建完整的URL
-  const queryString = Object.keys(params)
-    .map((key) => `${key}=${params[key]}`)
-    .join('&');
-  const url = `http://api-${process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER}.pusher.com${path}?${queryString}&auth_signature=${pusherSignature}`;
-
-  try {
-    const response = await axios.get(url);
-    return response.data as T;
-  } catch (error: any) {
-    console.error('Error fetching:', error.message);
-    throw new Error(error.message);
-  }
-}
-
-/**
- * 判断是否存在同名用户
- */
-export const isChannelUserExistApi = async (
-  roomName: string,
-  nickName: string
-) => {
-  const { users } = await requestPusherApi<{ users: { id: string }[] }>(
-    `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
-  );
-
-  return users && users.find((item: { id: string }) => item.id === nickName);
 };
