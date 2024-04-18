@@ -89,15 +89,27 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   }, []);
 
   /**
-   * 校验
+   * 身份验证
+   *
+   * roomStatus 进入频道状态，RoomStatus.JOIN 为加入频道， RoomStatus.ADD 为创建频道
+   *
+   * roomId 只有在通过邀请链接进入时存在
+   *
+   * hash 只有在通过邀请链接进入时存在
    */
-  const signin = (roomStatus: RoomStatus) => {
+  const signin = (opts: {
+    roomStatus: RoomStatus;
+    roomId?: string;
+    hash?: string;
+  }) => {
     return new Promise<string>((resolve, reject) => {
       const { encryptData } = useRoomStore.getState();
-      const hash = hashSync(
-        encryptData.password,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      const hash =
+        opts.hash ||
+        hashSync(
+          encryptData.password,
+          '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
+        );
 
       if (!cachePusher) {
         cachePusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
@@ -107,7 +119,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
             endpoint: API_URL.PUSHER_SIGNIN,
             transport: 'ajax',
             params: {
-              roomStatus,
+              roomStatus: opts.roomStatus,
               ...encryptData,
             },
             headers: {
@@ -118,7 +130,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
             endpoint: API_URL.PUSHER_AUTH,
             transport: 'ajax',
             params: {
-              roomStatus,
+              ...opts,
               ...encryptData,
             },
             headers: {

@@ -121,7 +121,9 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
         avatar: avatar,
       });
 
-      signin(roomStatus)
+      signin({
+        roomStatus,
+      })
         .then((res) => {
           Cookies.set('pw-256', encryptData.password);
           Cookies.set('hash', res);
