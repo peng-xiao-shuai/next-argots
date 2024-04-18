@@ -84,7 +84,11 @@
     "SUPABASE",
     "tailwindcss",
     "tanstack",
-    "trpc"
+    "trpc",
+    "zustand",
+    "languagedetector",
+    "languagedetector",
+    "hookform"
   ],
   // 控制相关文件嵌套展示
   "explorer.fileNesting.enabled": true,
