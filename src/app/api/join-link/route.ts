@@ -40,7 +40,9 @@ const handler = async (req: NextRequest) => {
       .toArray();
 
     if (data.length) {
+      // 存在邀请链接
       if (data[0].status === '0') {
+        // 未被使用
         await collection.updateOne(
           {
             id,
@@ -52,12 +54,23 @@ const handler = async (req: NextRequest) => {
           }
         );
 
-        return res(
-          {
-            data: data[0],
-          },
-          200
-        );
+        if (data[0].roomData.length) {
+          // 频道存在
+          return res(
+            {
+              data: data[0],
+            },
+            200
+          );
+        } else {
+          return res(
+            {
+              data: {},
+              message: 'Channel closed',
+            },
+            403
+          );
+        }
       } else {
         return res(
           {
