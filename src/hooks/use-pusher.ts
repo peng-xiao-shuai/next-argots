@@ -86,7 +86,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       removeObserve();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setChat]);
 
   /**
    * 身份验证
@@ -214,6 +214,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           channel.bind(
             'pusher:subscription_succeeded',
             ({ me: { info } }: SubscriptionSuccessMember) => {
+              const { setUserInfoData } = useRoomStore.getState();
+              setUserInfoData(info);
+
               Aes = new AES({
                 passphrase: hash,
                 ivHexString: info.iv,
