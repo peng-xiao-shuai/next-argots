@@ -4,7 +4,7 @@ import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
 import { COMMON_KEYS, HOME_KEYS, SETTING_KEYS } from '@@/locales/keys';
-import { AppContext } from '@/context';
+import { AppContext, ClientChatContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { fetchReq } from '@/utils/request';
@@ -13,7 +13,7 @@ import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
 import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
-import { HiMiniInformationCircle } from 'react-icons/hi2';
+import { GoInfo } from 'react-icons/go';
 import Cookies from 'js-cookie';
 import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
@@ -288,6 +288,7 @@ export const ShareForm: FC<{
     },
   ];
 
+  const { userInfo } = useContext(ClientChatContext);
   const {
     register,
     handleSubmit,
@@ -308,7 +309,13 @@ export const ShareForm: FC<{
   });
   const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
     if (joinChannel) {
-      const data = await joinChannel(formData, setLoading);
+      const data = await joinChannel(
+        {
+          ...formData,
+          avatar,
+        },
+        setLoading
+      );
       if (data && data.msg) {
         setError(data.prop!, {
           type: 'custom',
@@ -330,11 +337,11 @@ export const ShareForm: FC<{
     setLoading(true);
     mutate({
       roomName: encryptData.roomName,
-      userInfo: formData,
+      userInfo: { ...formData, avatar: avatar },
     });
   };
   const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState<AvatarName>('');
+  const [avatar, setAvatar] = useState<AvatarName>(userInfo?.avatar || '');
   const [avatarVisible, setAvatarVisible] = useState(false);
 
   return (
@@ -415,14 +422,14 @@ export const ShareForm: FC<{
 
       {!Boolean(joinChannel) && (
         <div className="pb-4 px-2 text-xs">
-          <HiMiniInformationCircle className="text-accent-content w-4 h-4 inline-block" />{' '}
+          <GoInfo className="text-accent-content w-4 h-4 inline-block" />{' '}
           每个邀请链接只能邀请一个用户，邀请成功之后无效
         </div>
       )}
 
       {Boolean(joinChannel) ? (
         <button
-          className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
+          className="w-2/3 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
           disabled={loading}
           type="submit"
         >
