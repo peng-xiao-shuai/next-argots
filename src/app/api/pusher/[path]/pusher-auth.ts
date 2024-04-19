@@ -34,7 +34,7 @@ export const pusherAuthApi = {
       body[key] = item;
     });
 
-    const { socket_id, nickName, roomStatus, password, roomName, hash } =
+    const { socket_id, nickName, roomStatus, password, roomName } =
       body as BODY;
 
     const user: SigninSuccessUserData = {
@@ -47,9 +47,9 @@ export const pusherAuthApi = {
     };
 
     /**
-     * 如果是 JOIN 并且存在 hash 那么就直接加入
+     * 如果是 LINK_JOIN 并且存在 hash 那么就直接加入
      */
-    if (roomStatus === RoomStatus.JOIN && hash) {
+    if (roomStatus === RoomStatus.LINK_JOIN) {
       user.user_info.code = '200';
       const authResponse = pusher.authenticateUser(socket_id, user);
       return res(authResponse, 200);
@@ -136,9 +136,9 @@ export const pusherAuthApi = {
     let roomId: string = '';
 
     /**
-     * 如果是 JOIN 并且存在 hash 那么就直接加入
+     * 如果是 LINK_JOIN 并且存在 hash 那么就直接加入
      */
-    if (roomStatus === RoomStatus.JOIN && hash) {
+    if (roomStatus === RoomStatus.LINK_JOIN && hash) {
       roomId = _roomId!;
     } else {
       /**
@@ -305,6 +305,53 @@ export const pusherAuthApi = {
           data: {
             isRoom: false,
           },
+        },
+        200
+      );
+    } catch (error: any) {
+      return res(
+        {
+          message: error?.message || 'UNKNOWN ERROR',
+          data: {},
+        },
+        500
+      );
+    }
+  },
+
+  /**
+   * 判断是否存在同用户名称
+   */
+  checkNickName: async (req: Request) => {
+    const body = (await req.json()) as Indexes;
+    const { roomName, nickName } = body;
+    /**
+     * 参数校验
+     */
+    const paramsCheck = isPresence(body, ['roomName', 'nickName']);
+    if (typeof paramsCheck !== 'boolean') {
+      return res(paramsCheck, 400);
+    }
+
+    try {
+      const isUser = await isChannelUserExistApi(roomName, nickName);
+
+      if (isUser) {
+        return res(
+          {
+            data: true,
+            message: `The user name already exists`,
+            code: '400',
+          },
+          200
+        );
+      }
+
+      return res(
+        {
+          data: false,
+          message: ``,
+          code: '200',
         },
         200
       );

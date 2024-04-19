@@ -6,4 +6,5 @@ export enum UserRole {
 export enum RoomStatus {
   ADD = 'add',
   JOIN = 'join',
+  LINK_JOIN = 'link_join',
 }
