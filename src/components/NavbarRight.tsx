@@ -8,11 +8,13 @@ import { COMMON_KEYS } from '@@/locales/keys';
 import { Lng } from '@/locales/i18n';
 import { TFunction } from 'i18next';
 
-export const NavRight: FC<{
+export type NavRightProps = {
   metadata: Meta;
   t: TFunction<'translation', undefined>;
   language: Lng;
-}> = ({ metadata, t, language }) => {
+};
+
+export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
   // 完成事件，点击触发全局通信
   const handleComplete = () => {
     bus.emit('complete');
@@ -31,7 +33,11 @@ export const NavRight: FC<{
       ) : metadata.rightOperateType === 'custom' &&
         metadata.NavbarRightComponent ? (
         <metadata.NavbarRightComponent
-          lng={language}
+          {...{
+            metadata,
+            t,
+            language,
+          }}
         ></metadata.NavbarRightComponent>
       ) : (
         <></>
