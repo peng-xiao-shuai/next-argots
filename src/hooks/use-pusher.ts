@@ -77,14 +77,14 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
 
   useEffect(() => {
-    debounce(() => {
-      if (channel && window.location.pathname.includes('/chat-room')) {
-        removeObserve();
+    if (channel && window.location.pathname.includes('/chat-room') && setChat) {
+      ObserveEntryOrExit();
+      receiveInformation();
+    }
 
-        ObserveEntryOrExit();
-        receiveInformation();
-      }
-    });
+    return () => {
+      removeObserve();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
