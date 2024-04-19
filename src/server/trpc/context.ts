@@ -7,6 +7,7 @@ type Opts = Partial<FetchCreateContextFnOptions>;
  */
 export function createContext(opts?: Opts): Opts & {
   hash?: string;
+  pw?: string;
 } {
   return { ...(opts || {}) };
 }

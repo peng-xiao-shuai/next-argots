@@ -10,7 +10,7 @@ import { authProcedure, procedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import { requestPusherApi } from '../../app/api/pusher/[path]/pusher-auth';
+import { requestPusherApi } from '../../app/api/utils';
 import pusher from '../../app/api/pusher/[path]/get-pusher';
 import clientPromise from '../db';
 import { FeedbackRecord, InviteLink, Room } from '../payload/payload-types';
@@ -55,7 +55,7 @@ export const appRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { roomName, nickName, recordId } = input;
       const roomId = hashSync(
-        roomName,
+        roomName + ctx.pw,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
       const houseOwnerId = hashSync(
@@ -126,7 +126,7 @@ export const appRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { roomName, userInfo } = input;
       const roomId = hashSync(
-        roomName,
+        roomName + ctx.pw,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
 
@@ -173,7 +173,7 @@ export const appRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { roomName } = input;
       const roomId = hashSync(
-        roomName,
+        roomName + ctx.pw,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
 
@@ -207,7 +207,7 @@ export const appRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, roomName } = input;
       const roomId = hashSync(
-        roomName,
+        roomName + ctx.pw,
         '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
       );
 
