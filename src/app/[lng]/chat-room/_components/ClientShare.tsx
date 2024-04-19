@@ -9,16 +9,22 @@ import {
 import { usePusher } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { trpc } from '@/server/trpc/client';
-import { Dispatch, FC, SetStateAction, useContext, useState } from 'react';
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import LoadingRender from '../../loading';
 import { InviteLink } from '@/server/payload/payload-types';
 import { GoLink, GoTrash } from 'react-icons/go';
 import { copyText } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
-import { useBusWatch } from '@/hooks/use-bus-watch';
-import { ClientContext, LinkUserInfo } from './Client';
-import { isChannelUserExistApi } from '@/app/api/pusher/[path]/pusher-auth';
+import { LinkUserInfo } from './Client';
 import type { FieldPath } from 'react-hook-form';
+import { ClientChatContext } from '@/context';
 
 export type JoinChannel = (
   formData: ShareFormDataRules,
@@ -31,30 +37,49 @@ export type JoinChannel = (
 export const ClientShare: FC<{
   visible: boolean;
   setVisible: Dispatch<SetStateAction<boolean>>;
-}> = ({ visible, setVisible }) => {
-  const { joinData } = useContext(ClientContext);
-  const joinChannel: JoinChannel | undefined = joinData
-    ? undefined
-    : async (formData, setLoading) => {
-        const userInfo = JSON.parse(joinData!.userInfo) as LinkUserInfo;
-        const isUser = await isChannelUserExistApi(
-          userInfo.roomName,
-          formData.nickName
-        );
+  joinChannelSignin: (formData?: ShareFormDataRules) => Promise<string>;
+}> = ({ visible, setVisible, joinChannelSignin }) => {
+  const { joinData } = useContext(ClientChatContext);
 
-        /**
-         * 使 nickname 输入框下弹出错误提示
-         */
-        if (isUser) {
-          return {
-            prop: 'root.nickName',
-            msg: `The user name already exists`,
-          };
-        }
+  const joinChannel = useMemo<JoinChannel | undefined>(
+    () =>
+      !joinData
+        ? undefined
+        : async (formData, setLoading) => {
+            const userInfo = JSON.parse(joinData!.userInfo) as LinkUserInfo;
+            const { data, message } = await (
+              await fetch('/api/pusher/checkNickName', {
+                method: 'post',
+                body: JSON.stringify({
+                  roomName: userInfo.roomName,
+                  nickName: formData.nickName,
+                }),
+              })
+            ).json();
 
-        setLoading(true);
-        // TODO pusher.signin
-      };
+            /**
+             * 使 nickname 输入框下弹出错误提示
+             */
+            if (data) {
+              return {
+                prop: 'root.nickName',
+                msg: message,
+              };
+            }
+            setLoading(true);
+
+            joinChannelSignin(formData)
+              .then((res) => {
+                setLoading(false);
+              })
+              .catch((err) => {
+                console.log(err);
+
+                setLoading(false);
+              });
+          },
+    [joinChannelSignin, joinData]
+  );
 
   const [listVisible, setListVisible] = useState(false);
   const { isChannelUserExist } = usePusher();
@@ -80,12 +105,6 @@ export const ClientShare: FC<{
       setVisible(true);
     }
   };
-
-  const handleComplete = () => {
-    setVisible(true);
-  };
-
-  useBusWatch('complete', handleComplete);
 
   return (
     <>
