@@ -50,10 +50,15 @@ export function copyText(value: string, cb?: Function) {
   if (navigator.clipboard && navigator.permissions) {
     navigator.clipboard
       .writeText(value)
-      .then(() => {
-        toast.success('Copy Successfully');
-        cb?.();
-      })
+      .then(
+        () => {
+          toast.success('Copy Successfully');
+          cb?.();
+        },
+        (err) => {
+          console.error('Unable to copy text to clipboard', err);
+        }
+      )
       .catch((err) => {
         console.error('Unable to copy text to clipboard', err);
       });
