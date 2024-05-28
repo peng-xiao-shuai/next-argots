@@ -32,10 +32,12 @@ const handler = async (req: NextRequest) => {
         .db(process.env.DATABASE_DB)
         .collection<InviteLink>('invite-link');
 
-      console.log('Valid webhook');
+      console.log('Valid webhook', body.events);
       body.events.forEach(async (event) => {
         if (event.channel.includes('presence-')) {
           try {
+            console.log('删除：' + event.channel);
+
             const room = await collection.findOneAndDelete({
               channel: event.channel,
             });
@@ -43,8 +45,6 @@ const handler = async (req: NextRequest) => {
             linkCollection.deleteMany({
               roomId: room.value?.id,
             });
-
-            console.log('删除：' + event.channel);
           } catch (err) {
             console.log(err, '删除报错');
           }
