@@ -39,11 +39,11 @@ const handler = async (req: NextRequest) => {
           event.name === 'channel_vacated'
         ) {
           try {
-            console.log('删除：' + event.channel);
-
             const room = await collection.findOneAndDelete({
               channel: event.channel,
             });
+
+            console.log('删除：' + event.channel, room);
 
             linkCollection.deleteMany({
               roomId: room.value?.id,
