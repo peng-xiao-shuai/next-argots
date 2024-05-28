@@ -67,10 +67,11 @@ export const Navbar: FC<{
                 router.back();
               }
             }}
+            className="transition-all duration-300"
           >
             <div className="flex-none leading-none">
               <label
-                className={`swap swap-rotate items-center ${
+                className={`swap swap-rotate items-center transition-all ${
                   metadata.title === 'Home' ? 'swap-active' : ''
                 }`}
               >
@@ -80,7 +81,7 @@ export const Navbar: FC<{
             </div>
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 transition-all duration-300">
             <span className="font-sans _bold text-base-content pl-2 text-1rem normal-case">
               {navTitle}
             </span>

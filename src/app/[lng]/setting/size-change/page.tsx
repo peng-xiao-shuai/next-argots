@@ -40,7 +40,9 @@ export default async function SizeChange({
       {chat.map((item, index) => (
         <div
           key={index}
-          className={`chat chat-${item.type === 'user' ? 'end' : 'start'}`}
+          className={`chat transition-all duration-300 chat-${
+            item.type === 'user' ? 'end' : 'start'
+          }`}
         >
           <div className="chat-image avatar">
             <div className="w-10 rounded-lg">

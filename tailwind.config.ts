@@ -35,7 +35,7 @@ const config: Config = {
 
           '.home': {
             background:
-              'radial-gradient( circle at -50% 5%, rgba(119, 15, 142, 1) 0%, rgba(255, 255, 255, 0.7) 55%)',
+              'radial-gradient( circle at -10% 5%, rgba(119, 15, 142, 0.4) 0%, rgba(255, 255, 255, 0.7) 55%)',
           },
         },
       },
