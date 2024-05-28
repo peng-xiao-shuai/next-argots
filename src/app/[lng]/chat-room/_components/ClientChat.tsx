@@ -22,7 +22,6 @@ export function ClientChat() {
   const pathname = usePathname();
   const { t } = useContext(AppContext);
   const [content, setContent] = useState('');
-  const [height, setHeight] = useState('');
   const [chat, setChat] = useState<Chat[]>([]);
   const [visibleEmoji, setVisibleEmoji] = useState(false);
   const isMobile = useRef(false);
@@ -44,12 +43,9 @@ export function ClientChat() {
     if (target.value.trim().length === 0) {
       if (content.length === 0) return;
       setContent('');
-      // TODO 清除不会更改高度
-      setHeight(`${target.scrollHeight}px`);
       return;
     }
-    // TODO 清除不会更改高度
-    setHeight(`${target.scrollHeight}px`);
+
     setContent(target.value);
   };
 
@@ -155,27 +151,37 @@ export function ClientChat() {
           ></ClientSwapSvg>
 
           {/* textarea */}
-          <div className="textarea b3-opacity-6 flex-1 max-h-40 min-h-[2.5rem] p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
-            <div className="relative overflow-hidden max-h-[9rem]">
+          <div className="textarea b3-opacity-6 flex-1 max-h-40 min-h-[2.5rem] h-auto p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
+            <div className="relative overflow-hidden max-h-[9rem] min-h-[1.4rem] h-auto">
               {/* 站位 */}
-              <div
-                className="max-h-[9rem] min-h-[1.4rem]"
-                style={{
-                  height: !content ? '1.4rem' : height,
-                }}
-              ></div>
+              <div className="max-h-[9rem] min-h-[1.4rem] w-full text-base box-border overflow-hidden whitespace-pre-wrap break-all invisible">
+                {content.split('\n').map(function (item, index) {
+                  if (item.length === 0) {
+                    return (
+                      <React.Fragment key={`${index}-${item}`}>
+                        <div>{item}</div>
+                        <br />
+                      </React.Fragment>
+                    );
+                  }
+                  return <div key={`${index}-item`}>{item}</div>;
+                })}
+              </div>
               {/* absolute bottom-0  防止光标到最底部导致看不到 */}
               <textarea
                 value={content}
                 rows={1}
                 placeholder={t!(CHAT_ROOM_KEYS.SPEAK_OUT_FREELY)}
                 style={{
-                  height: !content ? 'auto' : height,
+                  height: '100%',
                 }}
-                className="absolute bottom-0 w-full !bg-opacity-0 text-base block caret-primary overflow-hidden resize-none outline-none"
-                onInput={autoResize}
+                className="absolute bottom-0 w-full box-border !bg-opacity-0 text-base block caret-primary overflow-hidden resize-none outline-none"
+                onChange={autoResize}
                 onKeyDown={handleKeyDown}
                 onFocus={handleFocus}
+                onClick={() => {
+                  setVisibleEmoji(false);
+                }}
                 ref={textAreaRef}
               />
             </div>
