@@ -24,7 +24,8 @@ import { copyText } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
 import { LinkUserInfo } from './Client';
 import type { FieldPath } from 'react-hook-form';
-import { ClientChatContext } from '@/context';
+import { AppContext, ClientChatContext } from '@/context';
+import { CHAT_ROOM_KEYS, COMMON_KEYS } from '@@/locales/keys';
 
 export type JoinChannel = (
   formData: ShareFormDataRules,
@@ -140,6 +141,8 @@ const LinkRecord: FC<{
   list: InviteLink[];
   setList: Dispatch<SetStateAction<InviteLink[]>>;
 }> = ({ isLoading, list, removeMutate, setList }) => {
+  const { t } = useContext(AppContext);
+
   if (isLoading) {
     return <LoadingRender></LoadingRender>;
   }
@@ -147,7 +150,7 @@ const LinkRecord: FC<{
   if (list.length == 0) {
     return (
       <div className="h-20 w-full leading-10 text-center text-neutral-content">
-        No Data
+        {t!(COMMON_KEYS.NO_DATA)}
       </div>
     );
   }
@@ -201,7 +204,9 @@ const LinkRecord: FC<{
               <div className="flex gap-2 items-center">
                 <ImageSvg className="h-7 w-7" name={user.avatar}></ImageSvg>
                 <div className="line-clamp-1 text-sm leading-none">
-                  {user.nickName === '' ? 'No nickName' : `"${user.nickName}"`}
+                  {user.nickName === ''
+                    ? t!(CHAT_ROOM_KEYS.NO_NICKNAME)
+                    : `"${user.nickName}"`}
                 </div>
               </div>
               <span className="text-sm leading-none text-base-content text-opacity-50">

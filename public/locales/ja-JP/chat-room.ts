@@ -11,4 +11,10 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '中身を空にしてはいけません',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '言いたいことを言います ~',
   [CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL]: '未接続の部屋です',
+  [CHAT_ROOM_KEYS.NO_NICKNAME]: 'ニックネームはまだありません',
+  [CHAT_ROOM_KEYS.NAME_EXISTS]: 'ニックネームは既に存在します',
+  [CHAT_ROOM_KEYS.INVITATION_DESCRIPTION]:
+    '1つの招待リンクには1人のユーザーしか招待できません。',
+  [CHAT_ROOM_KEYS.LOOK_LINKS]: '生成リンクを見ます',
+  [CHAT_ROOM_KEYS.CREATE_INVITE]: '招待先を作成します',
 };

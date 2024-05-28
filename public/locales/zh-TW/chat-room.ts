@@ -11,4 +11,10 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '內容不能為空',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '暢所欲言吧~',
   [CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL]: '未連接頻道',
+  [CHAT_ROOM_KEYS.NO_NICKNAME]: '暫無暱稱',
+  [CHAT_ROOM_KEYS.NAME_EXISTS]: '暱稱已經存在',
+  [CHAT_ROOM_KEYS.INVITATION_DESCRIPTION]:
+    '每一個邀請鏈接只能邀請一個用戶，邀請成功之後無效',
+  [CHAT_ROOM_KEYS.LOOK_LINKS]: '查看生成鏈接',
+  [CHAT_ROOM_KEYS.CREATE_INVITE]: '生成邀請地址',
 };

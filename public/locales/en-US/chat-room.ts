@@ -9,4 +9,7 @@ export const CHAT_ROOM = {
     'Unknown problem, message decryption failed! Please go to {{origin}} to feedback your questions',
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: 'The content cannot be empty',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: 'Feel free to speak up ~',
+  [CHAT_ROOM_KEYS.NAME_EXISTS]: 'Nickname already exists',
+  [CHAT_ROOM_KEYS.INVITATION_DESCRIPTION]:
+    'Each invitation link can only invite one user, and the invitation is invalid after success',
 };

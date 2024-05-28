@@ -56,6 +56,15 @@ export enum CHAT_ROOM_KEYS {
 
   // 未连接频道
   UNCONNECTED_CHANNEL = 'Unconnected_channel',
+
+  NO_NICKNAME = 'No_nickname',
+  NAME_EXISTS = 'The_user_name_already_exists',
+  // 每个邀请链接只能邀请一个用户，邀请成功之后无效
+  INVITATION_DESCRIPTION = 'Invitation_description',
+  // 查看生成链接
+  LOOK_LINKS = 'View_build_link',
+  // 生成邀请地址
+  CREATE_INVITE = 'Generate_invite_address',
 }
 
 export enum COMMON_KEYS {
@@ -80,6 +89,7 @@ export enum COMMON_KEYS {
   SUCCESSFULLY_SET = 'Successfully_set',
 
   SHARE = 'Share',
+  NO_DATA = 'No_Data',
 }
 
 export enum API_KEYS {

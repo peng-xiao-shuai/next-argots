@@ -3,7 +3,13 @@ import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
-import { COMMON_KEYS, HOME_KEYS, SETTING_KEYS } from '@@/locales/keys';
+import {
+  API_KEYS,
+  CHAT_ROOM_KEYS,
+  COMMON_KEYS,
+  HOME_KEYS,
+  SETTING_KEYS,
+} from '@@/locales/keys';
 import { AppContext, ClientChatContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/hooks/use-room-data';
@@ -304,7 +310,7 @@ export const ShareForm: FC<{
     },
     onError: (error) => {
       setLoading(false);
-      toast.error(error.message || 'unknown error');
+      toast.error(error.message || t!(API_KEYS.PUSHER_AUTH_500));
     },
   });
   const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
@@ -328,7 +334,7 @@ export const ShareForm: FC<{
     if (isChannelUserExist(stringToUnicode(formData.nickName))) {
       setError('root.nickName', {
         type: 'custom',
-        message: `The user name already exists`,
+        message: t!(CHAT_ROOM_KEYS.NAME_EXISTS),
       });
 
       return;
@@ -423,7 +429,7 @@ export const ShareForm: FC<{
       {!Boolean(joinChannel) && (
         <div className="pb-4 px-2 text-xs">
           <GoInfo className="text-accent-content w-4 h-4 inline-block" />{' '}
-          每个邀请链接只能邀请一个用户，邀请成功之后无效
+          {t!(CHAT_ROOM_KEYS.INVITATION_DESCRIPTION)}
         </div>
       )}
 
@@ -438,7 +444,7 @@ export const ShareForm: FC<{
               loading ? 'opacity-1' : 'loading-hidden'
             }`}
           />
-          确认
+          {t!(COMMON_KEYS.CONFIRM)}
         </button>
       ) : (
         <div className="flex gap-4">
@@ -446,7 +452,7 @@ export const ShareForm: FC<{
             className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400 !px-2"
             onClick={showLinkList}
           >
-            查看生成链接
+            {t!(CHAT_ROOM_KEYS.LOOK_LINKS)}
           </div>
 
           <button
@@ -459,7 +465,7 @@ export const ShareForm: FC<{
                 loading ? 'opacity-1' : 'loading-hidden'
               }`}
             />
-            生成邀请地址
+            {t!(CHAT_ROOM_KEYS.CREATE_INVITE)}
           </button>
         </div>
       )}

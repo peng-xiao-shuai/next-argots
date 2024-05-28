@@ -11,4 +11,10 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY]: '内容不能为空',
   [CHAT_ROOM_KEYS.SPEAK_OUT_FREELY]: '畅所欲言吧~',
   [CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL]: '未连接频道',
+  [CHAT_ROOM_KEYS.NO_NICKNAME]: '暂无昵称',
+  [CHAT_ROOM_KEYS.NAME_EXISTS]: '昵称已经存在',
+  [CHAT_ROOM_KEYS.INVITATION_DESCRIPTION]:
+    '每个邀请链接只能邀请一个用户，邀请成功之后无效',
+  [CHAT_ROOM_KEYS.LOOK_LINKS]: '查看生成链接',
+  [CHAT_ROOM_KEYS.CREATE_INVITE]: '生成邀请地址',
 };

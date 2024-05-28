@@ -20,6 +20,7 @@ export const COMMON = {
   [COMMON_KEYS.SUCCESSFULLY_SET]: '修正成功です',
 
   [COMMON_KEYS.SHARE]: '裾分け',
+  [COMMON_KEYS.NO_DATA]: '仮無数の根拠です',
 
   [META.DESC]:
     '自由なチャットプラットフォームで、すべての会話を暗号化して、あなたの安全なプライバシーを保護します。あなたの情報を収集することはなく、あなたの権限を必要としません。チャット終了後にすべての記録を消去します。',

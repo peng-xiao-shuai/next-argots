@@ -22,6 +22,7 @@ export const COMMON = {
   [COMMON_KEYS.SUCCESSFULLY_SET]: '修改成功',
 
   [COMMON_KEYS.SHARE]: '分享',
+  [COMMON_KEYS.NO_DATA]: '暫無數據',
 
   [META.DESC]:
     '自由的聊天平台，全程加密對話信息，保護您的安全隱私。不會收集您的任何信息，不需要您的任何權限。聊天結束清除所有記錄。',
