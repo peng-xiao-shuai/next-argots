@@ -3,7 +3,8 @@ import { NextRequest } from 'next/server';
 
 const handler = async (req: NextRequest) => {
   const body = await req.json();
-  console.log();
+  console.log(body);
+
   if (req.headers.get('user-agent') === 'pusher-webhooks') {
     const receivedSignature = req.headers.get('x-pusher-signature');
     const receivedKey = req.headers.get('x-pusher-key');
