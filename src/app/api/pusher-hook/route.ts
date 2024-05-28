@@ -34,7 +34,10 @@ const handler = async (req: NextRequest) => {
 
       console.log('Valid webhook', body.events);
       body.events.forEach(async (event) => {
-        if (event.channel.includes('presence-')) {
+        if (
+          event.channel.includes('presence-') &&
+          event.name === 'channel_vacated'
+        ) {
           try {
             console.log('删除：' + event.channel);
 
