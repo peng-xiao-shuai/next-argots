@@ -2,6 +2,7 @@ import { Transition, AppProvider, TrpcProviders } from '../../components';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { dir } from 'i18next';
+import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
@@ -33,6 +34,10 @@ export function generateViewport(): Viewport {
   };
 }
 
+const inter = localFont({
+  src: '../../../public/Helvetica-Neue.ttf',
+});
+
 export default async function RootLayout({
   children,
   params: { lng },
@@ -51,7 +56,7 @@ export default async function RootLayout({
         fontSize: (size || 16) + 'px',
       }}
     >
-      <body>
+      <body className={`${inter.className}`}>
         <script
           dangerouslySetInnerHTML={{
             __html: `const dataTheme=(function(cookieString=document.cookie){const list={};cookieString&&cookieString.split(';').forEach((cookie)=>{const parts=cookie.split('=');if(parts.length){list[parts.shift().trim()]=decodeURI(parts.join('='));}});return list['theme'];}());if(dataTheme==='auto'){const isDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');}else{document.documentElement.setAttribute('data-theme',dataTheme||'dark');}`,

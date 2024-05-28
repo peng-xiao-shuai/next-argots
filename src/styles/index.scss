@@ -1,17 +1,10 @@
 @import './tailwindcss.css';
 @import './root.scss';
 
-@font-face {
-  font-family: 'Helvetica-Neue'; /* 自定义字体名称 */
-  src: url('./Helvetica-Neue.ttf');
-}
-
-body {
-  font-family: 'Helvetica-Neue';
-}
-
 [data-theme] * {
-  transition: all 0.3s;
+  // transition-property: all;
+  // transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  // transition-duration: 300ms;
   letter-spacing: 1px;
   outline: none !important;
   svg path {
