@@ -51,9 +51,11 @@ const handler = async (req: NextRequest) => {
 
               console.log('删除：' + event.channel, room);
 
-              linkCollection.deleteMany({
-                roomId: room.value?.id,
-              });
+              if (room.value && room.ok === 1) {
+                linkCollection.deleteMany({
+                  roomId: room.value?.roomId,
+                });
+              }
             } catch (err) {
               console.log(err, '删除报错');
             }
