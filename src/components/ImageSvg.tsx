@@ -54,6 +54,7 @@ export const ImageSvg: FC<{
         alt={name || 'avatar'}
         width={30}
         height={30}
+        loading="lazy"
         className={`filter ${
           name
             ? 'dark:invert-[90%] dark:brightness-200 dark:contrast-100 dark:opacity-100 opacity-70 !w-[65%] !h-[65%]'
