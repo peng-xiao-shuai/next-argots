@@ -26,15 +26,20 @@ export const isPresence = <T, K extends keyof T>(params: T, keys: K[]) => {
 };
 
 export function getBaseUrl() {
-  if (typeof window !== 'undefined') {
-    return `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? 3000}`;
-  }
-
   if (
     process.env.NEXT_PUBLIC_SITE_URL &&
     process.env.NODE_ENV === 'production'
   ) {
-    return `https://${process.env.NEXT_PUBLIC_SITE_URL}`;
+    return `${process.env.NEXT_PUBLIC_SITE_URL}`;
+  }
+
+  if (typeof window !== 'undefined') {
+    return `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? 3000}`;
+    return `${process.env.NEXT_PUBLIC_SITE_URL}`;
+  }
+
+  if (typeof window !== 'undefined') {
+    return `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? 3000}`;
   }
 
   // assume localhost
