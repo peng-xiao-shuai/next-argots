@@ -32,6 +32,7 @@ export interface FeedbackRecord {
   createdAt: string;
 }
 export interface Room {
+  channel: string;
   id: string;
   roomId: string;
   houseOwnerId: string;

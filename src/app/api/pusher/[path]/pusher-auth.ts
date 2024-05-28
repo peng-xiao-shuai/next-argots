@@ -213,6 +213,7 @@ export const pusherAuthApi = {
             '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
           ),
           hash: req.headers.get('hash') as string,
+          channel: 'presence-' + roomName,
           id: new ObjectId().toString(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

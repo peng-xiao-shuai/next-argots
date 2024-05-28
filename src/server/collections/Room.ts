@@ -18,6 +18,11 @@ export const Room: CollectionConfig = {
       required: true,
     },
     {
+      name: 'channel',
+      type: 'text',
+      required: true,
+    },
+    {
       name: 'hash',
       type: 'text',
       required: true,
