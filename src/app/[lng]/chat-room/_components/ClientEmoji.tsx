@@ -1,7 +1,7 @@
 'use client';
 import { GrEmoji, GrKeyboard } from 'react-icons/gr';
 import Picker from '@emoji-mart/react';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '@/context';
 import LoadingRender from '../../loading';
 
@@ -12,13 +12,22 @@ export const ClientEmojiPicker: FC<{
 }> = ({ setContent, textAreaRef, visibleEmoji }) => {
   const { dataTheme } = useContext(AppContext);
   const [emojiData, setEmojiData] = useState();
+  const cursorPosition = useRef(0);
 
   /**
    * 选中表情
    */
   const onEmojiSelect = (e: any) => {
-    setContent((state) => state + e.native);
-    textAreaRef.current?.focus();
+    setContent((state) => {
+      cursorPosition.current =
+        textAreaRef.current?.selectionStart || cursorPosition.current + 1;
+
+      return (
+        state.substring(0, cursorPosition.current) +
+        e.native +
+        state.substring(cursorPosition.current, state.length)
+      );
+    });
   };
 
   /**
@@ -91,7 +100,12 @@ export const ClientSwapSvg: FC<{
   <label
     className="relative text-accent-content/80 mr-4 h-[2.5rem] swap"
     onClick={() => {
-      setVisibleEmoji((state) => !state);
+      const bol = visibleEmoji;
+      setVisibleEmoji((state) => !bol);
+      if (!bol) {
+        // @ts-ignore
+        document.activeElement?.blur?.();
+      }
     }}
   >
     <GrKeyboard
