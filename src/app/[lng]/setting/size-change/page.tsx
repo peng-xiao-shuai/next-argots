@@ -1,5 +1,4 @@
 import './style.css';
-import logo from '/public/logo.svg';
 import Image from 'next/image';
 import { SETTING_KEYS } from '@@/locales/keys';
 import { useTranslation } from '@/locales/i18n';
@@ -51,7 +50,7 @@ export default async function SizeChange({
                 className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
                 width={40}
                 height={40}
-                src={item.type === 'user' ? logo : logo}
+                src={item.type === 'user' ? '/logo.svg' : '/logo.svg'}
               />
             </div>
           </div>
