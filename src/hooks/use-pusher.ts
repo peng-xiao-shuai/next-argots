@@ -80,11 +80,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     if (channel && window.location.pathname.includes('/chat-room') && setChat) {
       ObserveEntryOrExit();
       receiveInformation();
-    }
 
-    return () => {
-      removeObserve();
-    };
+      return () => {
+        removeObserve();
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setChat]);
 
@@ -283,10 +283,12 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   const receiveInformation = () => {
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
-      ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
+      async ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
         const user_info = (channel as PresenceChannel)?.members.get(
           metadata.user_id!
         ).info as AuthSuccessUserData['user_info'];
+
+        const decryptedValue = await Aes?.decrypt(msg);
 
         setChatValue({
           type: MESSAGE_TYPE.MSG,
@@ -297,7 +299,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           },
           timestamp,
           msg:
-            Aes?.decrypted(msg) ||
+            decryptedValue ||
             t!(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
               origin:
                 process.env.NEXT_PUBLIC_SERVER_URL +
@@ -314,7 +316,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   /**
    * 客户端发送
    */
-  const ClientSendMessage = (content: string, cb?: () => void) => {
+  const ClientSendMessage = async (content: string, cb?: () => void) => {
     if (!cachePusher || !channel) {
       toast(t!(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
       return;
@@ -330,10 +332,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     });
 
     cb?.();
+    const encryptedValue = await Aes?.encrypt(content);
 
     const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
       type: MESSAGE_TYPE.MSG,
-      msg: Aes?.encrypted(content),
+      msg: encryptedValue,
       timestamp,
     });
 
