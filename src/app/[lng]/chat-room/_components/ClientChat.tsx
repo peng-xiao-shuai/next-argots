@@ -88,7 +88,9 @@ export function ClientChat() {
       ClientSendMessage(content.trim());
       setContent('');
 
-      textAreaRef.current?.focus();
+      if (!visibleEmoji) {
+        textAreaRef.current?.focus();
+      }
     });
   };
 
@@ -134,6 +136,7 @@ export function ClientChat() {
     <>
       <div
         className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
+        data-hideEmoji="true"
         ref={ChatScroll}
       >
         <div className="px-[var(--padding)]">
@@ -202,6 +205,7 @@ export function ClientChat() {
           setContent={setContent}
           textAreaRef={textAreaRef}
           visibleEmoji={visibleEmoji}
+          setVisibleEmoji={setVisibleEmoji}
         ></ClientEmojiPicker>
       </div>
     </>

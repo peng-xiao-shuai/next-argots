@@ -1,7 +1,14 @@
 'use client';
 import { GrEmoji, GrKeyboard } from 'react-icons/gr';
 import Picker from '@emoji-mart/react';
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  FC,
+  PointerEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { AppContext } from '@/context';
 import LoadingRender from '../../loading';
 
@@ -9,7 +16,8 @@ export const ClientEmojiPicker: FC<{
   textAreaRef: React.MutableRefObject<HTMLTextAreaElement | null>;
   setContent: React.Dispatch<React.SetStateAction<string>>;
   visibleEmoji: boolean;
-}> = ({ setContent, textAreaRef, visibleEmoji }) => {
+  setVisibleEmoji: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setContent, textAreaRef, visibleEmoji, setVisibleEmoji }) => {
   const { dataTheme } = useContext(AppContext);
   const [emojiData, setEmojiData] = useState();
   const cursorPosition = useRef(0);
@@ -33,8 +41,10 @@ export const ClientEmojiPicker: FC<{
   /**
    * 表情外点击
    */
-  const onClickOutside = (e: any) => {
-    // setVisibleEmoji(false);
+  const onClickOutside = (e: PointerEvent) => {
+    if ((e.target as HTMLElement).dataset.hideemoji === 'true') {
+      setVisibleEmoji(false);
+    }
   };
 
   useEffect(() => {
