@@ -5,6 +5,7 @@ import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { Button } from '@/components';
 
 type FormData = {
   email: string;
@@ -136,18 +137,15 @@ export function ClientFeedBack() {
         ))}
       </div>
 
-      <button
-        className="btn btn-primary mt-6 w-full disabled:bg-primary/50 "
-        disabled={!formData.content || loading}
-        onClick={handleSubmit}
-      >
-        <span
-          className={`loading loading-spinner ${
-            loading ? 'opacity-1' : 'loading-hidden'
-          }`}
-        />
-        {t!(COMMON_KEYS.CONFIRM)}
-      </button>
+      <Button
+        title={t!(COMMON_KEYS.CONFIRM)}
+        click={handleSubmit}
+        className="mt-6 w-full"
+        loading={loading}
+        attrs={{
+          disabled: !formData.content || loading,
+        }}
+      />
     </>
   );
 }

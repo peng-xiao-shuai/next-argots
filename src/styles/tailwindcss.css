@@ -60,7 +60,7 @@
   }
 
   .loading-hidden {
-    @apply opacity-0 w-0;
+    @apply opacity-0 w-0 h-0;
   }
 
   .b3-opacity-6 {

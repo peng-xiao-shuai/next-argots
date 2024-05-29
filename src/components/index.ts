@@ -4,3 +4,4 @@ export * from './Dialog';
 export * from './TrpcProviders';
 export * from './Form';
 export * from './ImageSvg';
+export * from './Button';

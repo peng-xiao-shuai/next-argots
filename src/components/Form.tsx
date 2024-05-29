@@ -25,6 +25,7 @@ import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
 import { JoinChannel } from '@/app/[lng]/chat-room/_components/ClientShare';
 import dynamic from 'next/dynamic';
+import { Button } from './Button';
 let GridAvatar: typeof import('./ImageSvg').default;
 
 const formDataRules = z.object({
@@ -239,18 +240,13 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
         </ItemLabel>
       ))}
 
-      <button
-        className="btn btn-primary mx-auto block w-2/3 disabled:bg-primary/50 disabled:text-neutral-400"
-        disabled={loading}
-        type="submit"
-      >
-        <span
-          className={`loading loading-spinner ${
-            loading ? 'opacity-1' : 'loading-hidden'
-          }`}
-        />
-        {t!(COMMON_KEYS.COMPLETE)}
-      </button>
+      <Button
+        title={t!(COMMON_KEYS.COMPLETE)}
+        attrs={{
+          disabled: loading,
+          type: 'submit',
+        }}
+      />
     </form>
   );
 };
@@ -446,18 +442,13 @@ export const ShareForm: FC<{
       )}
 
       {Boolean(joinChannel) ? (
-        <button
-          className="w-2/3 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
-          disabled={loading}
-          type="submit"
-        >
-          <span
-            className={`loading loading-spinner ${
-              loading ? 'opacity-1' : 'loading-hidden'
-            }`}
-          />
-          {t!(COMMON_KEYS.CONFIRM)}
-        </button>
+        <Button
+          title={t!(COMMON_KEYS.CONFIRM)}
+          attrs={{
+            disabled: loading,
+            type: 'submit',
+          }}
+        />
       ) : (
         <div className="flex gap-4">
           <div
@@ -467,18 +458,13 @@ export const ShareForm: FC<{
             {t!(CHAT_ROOM_KEYS.LOOK_LINKS)}
           </div>
 
-          <button
-            className="flex-1 btn btn-primary mx-auto block disabled:bg-primary/50 disabled:text-neutral-400"
-            disabled={loading}
-            type="submit"
-          >
-            <span
-              className={`loading loading-spinner ${
-                loading ? 'opacity-1' : 'loading-hidden'
-              }`}
-            />
-            {t!(CHAT_ROOM_KEYS.CREATE_INVITE)}
-          </button>
+          <Button
+            title={t!(CHAT_ROOM_KEYS.CREATE_INVITE)}
+            attrs={{
+              disabled: loading,
+              type: 'submit',
+            }}
+          />
         </div>
       )}
     </form>
