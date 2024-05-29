@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { FC } from 'react';
 import { NavRightProps } from '@/components/NavbarRight';
 import { NavbarRightComponent } from './chat-room/_components/NavbarRight';
+
 export interface Meta extends Metadata {
   title: string;
   locale: string;
@@ -82,10 +83,45 @@ export const GenerateMetadata = async (
 ) => {
   const metadata = { ...meta[path] };
   const { t } = await useTranslation(lng);
+  metadata.applicationName = t(COMMON_KEYS.PACKAGE_NAME);
   metadata.title = `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`;
   metadata.description = `${t(META.DESC)}`;
   metadata.keywords = `${t(META.KEYWORDS)}`;
-
+  metadata.robots = 'index, follow';
+  metadata.appleWebApp = {
+    capable: true,
+    title: t(COMMON_KEYS.PACKAGE_NAME),
+    startupImage: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+    statusBarStyle: 'black-translucent',
+  };
+  metadata.verification = {
+    google: 'oKUAZe57ikDxiRUtYzSrO-nv_EMdG_Nju0BoSoevbhM',
+  };
+  metadata.icons = {
+    icon: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+    apple: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+  };
+  metadata.openGraph = {
+    type: 'website',
+    url: process.env.NEXT_PUBLIC_SITE_URL,
+    title: `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`,
+    description: `${t(META.DESC)}`,
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+        width: 200,
+        height: 200,
+        alt: 'Argots OG Image',
+      },
+    ],
+  };
+  metadata.twitter = {
+    card: 'summary_large_image',
+    site: process.env.NEXT_PUBLIC_SITE_URL,
+    title: `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`,
+    description: `${t(META.DESC)}`,
+    images: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+  };
   return metadata;
 };
 
