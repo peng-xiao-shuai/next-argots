@@ -17,13 +17,15 @@ import { fetchReq } from '@/utils/request';
 import { copyText, stringToUnicode } from '@/utils/string-transform';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_URL, RoomStatus } from '&/enum';
-import { AvatarName, GridAvatar, ImageSvg } from './ImageSvg';
+import { AvatarName, ImageSvg } from './ImageSvg';
 import { Lng } from '@/locales/i18n';
 import { GoInfo } from 'react-icons/go';
 import Cookies from 'js-cookie';
 import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
 import { JoinChannel } from '@/app/[lng]/chat-room/_components/ClientShare';
+import dynamic from 'next/dynamic';
+let GridAvatar: any;
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -151,6 +153,9 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
 
   useEffect(() => {
     if (visible) {
+      if (!Boolean(GridAvatar)) {
+        GridAvatar = dynamic(() => import('./ImageSvg'), { ssr: false });
+      }
       setFocus('roomName');
       reset();
     }
@@ -191,10 +196,12 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
               readOnly
             />
           </div>
-          <GridAvatar
-            setAvatar={setAvatar}
-            setAvatarVisible={setAvatarVisible}
-          ></GridAvatar>
+          {Boolean(GridAvatar) && (
+            <GridAvatar
+              setAvatar={setAvatar}
+              setAvatarVisible={setAvatarVisible}
+            ></GridAvatar>
+          )}
         </div>
       </ItemLabel>
 
@@ -386,10 +393,12 @@ export const ShareForm: FC<{
               readOnly
             />
           </div>
-          <GridAvatar
-            setAvatar={setAvatar}
-            setAvatarVisible={setAvatarVisible}
-          ></GridAvatar>
+          {Boolean(GridAvatar) && (
+            <GridAvatar
+              setAvatar={setAvatar}
+              setAvatarVisible={setAvatarVisible}
+            ></GridAvatar>
+          )}
         </div>
       </ItemLabel>
 

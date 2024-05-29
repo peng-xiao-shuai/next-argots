@@ -65,7 +65,7 @@ export const ImageSvg: FC<{
   );
 };
 
-export const GridAvatar: FC<{
+const GridAvatar: FC<{
   setAvatar: Dispatch<SetStateAction<AvatarName>>;
   setAvatarVisible: Dispatch<SetStateAction<boolean>>;
 }> = ({ setAvatar, setAvatarVisible }) => {
@@ -90,3 +90,5 @@ export const GridAvatar: FC<{
     </ul>
   );
 };
+
+export default GridAvatar;
