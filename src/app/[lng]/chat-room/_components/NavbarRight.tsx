@@ -2,15 +2,13 @@
 import { NavRightProps } from '@/components/NavbarRight';
 import { COMMON_KEYS } from '@@/locales/keys';
 import bus from '@/utils/bus';
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { UserRole } from '@/server/enum';
+import { AppContext } from '@/context';
 
-export const NavbarRightComponent: FC<NavRightProps> = ({
-  metadata,
-  t,
-  language,
-}) => {
+export const NavbarRightComponent = () => {
+  const { t } = useContext(AppContext);
   const { userInfo } = useRoomStore();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -25,7 +23,7 @@ export const NavbarRightComponent: FC<NavRightProps> = ({
         bus.emit('complete');
       }}
     >
-      {t(COMMON_KEYS.SHARE)}
+      {t!(COMMON_KEYS.SHARE)}
     </button>
   ) : (
     <></>

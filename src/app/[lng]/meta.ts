@@ -3,12 +3,15 @@ import { COMMON_KEYS, META } from '../../../public/locales/keys';
 import type { Metadata } from 'next';
 import { FC } from 'react';
 import { NavRightProps } from '@/components/NavbarRight';
-import { NavbarRightComponent } from './chat-room/_components/NavbarRight';
+import { ClientChatNavbar } from './chat-room/_components/ClientChatNavbar';
 
 export interface Meta extends Metadata {
   title: string;
   locale: string;
   isPlaceholder?: boolean;
+  Navbar?: FC<{
+    language: Lng;
+  }>;
   rightOperateType?: 'setting' | 'complete' | 'none' | 'custom';
   NavbarRightText?: string;
   NavbarRightComponent?: FC<NavRightProps>;
@@ -68,8 +71,7 @@ const pathMetaData = {
     title: 'Chat Room',
     locale: COMMON_KEYS.CHAT,
     isPlaceholder: true,
-    rightOperateType: 'custom',
-    NavbarRightComponent: NavbarRightComponent,
+    Navbar: ClientChatNavbar,
   },
 };
 

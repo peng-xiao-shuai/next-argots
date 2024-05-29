@@ -53,44 +53,52 @@ export const Navbar: FC<{
 
   return (
     <>
-      <div
-        className={`p-[var(--padding)] w-full${
-          metadata.isPlaceholder ? '' : ' pb-0 fixed z-10 '
-        }`}
-      >
+      {metadata.Navbar ? (
+        <metadata.Navbar {...{ language }} />
+      ) : (
         <div
-          className={`navbar rounded-lg b3-opacity-6 bg-opacity-60 min-h-12`}
+          className={`p-[var(--padding)] w-full${
+            metadata.isPlaceholder ? '' : ' pb-0 fixed z-10 '
+          }`}
         >
           <div
-            onClick={() => {
-              if (metadata.title !== 'Home') {
-                router.back();
-              }
-            }}
-            className="transition-all duration-300"
+            className={`navbar rounded-lg b3-opacity-6 bg-opacity-60 min-h-12`}
           >
-            <div className="flex-none leading-none">
-              <label
-                className={`swap swap-rotate items-center transition-all ${
-                  metadata.title === 'Home' ? 'swap-active' : ''
-                }`}
-              >
-                <AiOutlineHome className="svg-icon !w-[1.3rem] !h-[1.3rem] mx-auto swap-on" />
-                <AiOutlineLeft className="svg-icon swap-off  rtl:rotate-180" />
-              </label>
+            <div
+              onClick={() => {
+                if (metadata.title !== 'Home') {
+                  router.back();
+                }
+              }}
+              className="transition-all duration-300"
+            >
+              <div className="flex-none leading-none">
+                <label
+                  className={`swap swap-rotate items-center transition-all ${
+                    metadata.title === 'Home' ? 'swap-active' : ''
+                  }`}
+                >
+                  <AiOutlineHome className="svg-icon !w-[1.3rem] !h-[1.3rem] mx-auto swap-on" />
+                  <AiOutlineLeft className="svg-icon swap-off  rtl:rotate-180" />
+                </label>
+              </div>
+            </div>
+
+            <div className="flex-1 transition-all duration-300">
+              <span className="font-sans _bold text-base-content pl-2 text-1rem normal-case">
+                {navTitle}
+              </span>
+            </div>
+            <div className="flex-none">
+              <NavRight
+                metadata={metadata}
+                t={t!}
+                language={language}
+              ></NavRight>
             </div>
           </div>
-
-          <div className="flex-1 transition-all duration-300">
-            <span className="font-sans _bold text-base-content pl-2 text-1rem normal-case">
-              {navTitle}
-            </span>
-          </div>
-          <div className="flex-none">
-            <NavRight metadata={metadata} t={t!} language={language}></NavRight>
-          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
