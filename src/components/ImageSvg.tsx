@@ -1,6 +1,12 @@
 'use client';
 import Image from 'next/image';
-import { Dispatch, FC, SetStateAction } from 'react';
+import {
+  ComponentType,
+  Dispatch,
+  FC,
+  FunctionComponent,
+  SetStateAction,
+} from 'react';
 
 export type AvatarName =
   | 'Aries'
@@ -65,7 +71,7 @@ export const ImageSvg: FC<{
   );
 };
 
-const GridAvatar: FC<{
+const GridAvatar: ComponentType<{
   setAvatar: Dispatch<SetStateAction<AvatarName>>;
   setAvatarVisible: Dispatch<SetStateAction<boolean>>;
 }> = ({ setAvatar, setAvatarVisible }) => {

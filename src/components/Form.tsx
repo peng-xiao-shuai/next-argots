@@ -25,7 +25,7 @@ import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
 import { JoinChannel } from '@/app/[lng]/chat-room/_components/ClientShare';
 import dynamic from 'next/dynamic';
-let GridAvatar: any;
+let GridAvatar: typeof import('./ImageSvg').default;
 
 const formDataRules = z.object({
   avatar: z.string(),
@@ -154,7 +154,10 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
   useEffect(() => {
     if (visible) {
       if (!Boolean(GridAvatar)) {
-        GridAvatar = dynamic(() => import('./ImageSvg'), { ssr: false });
+        GridAvatar = dynamic(
+          () => import('./ImageSvg').then((m) => m.default),
+          { ssr: false }
+        );
       }
       setFocus('roomName');
       reset();
