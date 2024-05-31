@@ -42,7 +42,7 @@ export const ClientEmojiPicker: FC<{
    * 表情外点击
    */
   const onClickOutside = (e: PointerEvent) => {
-    if ((e.target as HTMLElement).dataset.hideemoji === 'true') {
+    if ((e.target as HTMLElement).dataset.hide === 'true') {
       setVisibleEmoji(false);
     }
   };

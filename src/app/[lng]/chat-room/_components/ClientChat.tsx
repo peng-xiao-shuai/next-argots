@@ -136,7 +136,7 @@ export function ClientChat() {
     <>
       <div
         className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
-        data-hideEmoji="true"
+        data-hide="true"
         ref={ChatScroll}
       >
         <div className="px-[var(--padding)]">
