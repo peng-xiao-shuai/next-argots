@@ -1,15 +1,22 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import clientPromise from '@/server/db';
 import { Room } from '@/server/payload/payload-types';
 
-const handleSetSALT = async (req: NextApiRequest) => {
-  // 生成新的 salt
-  const newSalt = await bcrypt.genSalt(10);
-
+const handleSetSALT = async (req: Request) => {
   // 使用 Vercel 的 API 更新环境变量
   const vercelToken = process.env.TK;
+  console.log(req.headers.get('Authorization'));
+
+  if (req.headers.get('Authorization') !== `Bearer ${vercelToken}`) {
+    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+      status: 401,
+    });
+  }
+
   const projectId = process.env.PROJECT_ID;
+
+  // 生成新的 salt
+  const newSalt = await bcrypt.genSalt(10);
 
   const client = await clientPromise;
   const collection = client
