@@ -99,7 +99,7 @@
     "package.json": "pnpm-lock.yaml,yarn.lock,pnpm-workspace.yaml,LICENSE,.gitattributes,.gitignore,.gitpod.yml,CNAME,README*,.npmrc,.browserslistrc",
     ".eslintrc.json": ".eslintignore,.eslintrc-auto-import.json,.prettierignore,.stylelintignore,.commitlintrc.js,.prettierrc",
     "env.d.ts": "*.d.ts",
-    "next.config.js": "tsconfig.json,tailwind.config.ts,jsconfig.json,postcss.config.js, nodemon.json"
+    "next.config.js": "tsconfig.json,vercel.json,*.config.js,*.config.ts,jsconfig.json,nodemon.json"
   },
   "cSpell.enableFiletypes": [
     "!tailwindcss"

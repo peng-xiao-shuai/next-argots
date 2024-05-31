@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/vercel/projects",
-      "schedule": "40 8 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
