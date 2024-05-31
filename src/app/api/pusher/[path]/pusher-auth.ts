@@ -167,10 +167,7 @@ export const pusherAuthApi = {
         );
       }
 
-      roomId = hashSync(
-        roomName + password,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      roomId = hashSync(roomName + password, process.env.NEXT_PUBLIC_SALT!);
     }
 
     const role =
@@ -208,10 +205,7 @@ export const pusherAuthApi = {
         room = {
           roomId: roomId,
           iv,
-          houseOwnerId: hashSync(
-            nickName,
-            '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-          ),
+          houseOwnerId: hashSync(nickName, process.env.NEXT_PUBLIC_SALT!),
           hash: req.headers.get('hash') as string,
           channel: 'presence-' + roomName,
           id: new ObjectId().toString(),

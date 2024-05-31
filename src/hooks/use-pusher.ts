@@ -106,10 +106,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       const { encryptData } = useRoomStore.getState();
       const hash =
         opts.hash ||
-        hashSync(
-          encryptData.password,
-          '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-        );
+        hashSync(encryptData.password, process.env.NEXT_PUBLIC_SALT!);
 
       if (!cachePusher) {
         cachePusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {

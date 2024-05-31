@@ -54,14 +54,8 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { roomName, nickName, recordId } = input;
-      const roomId = hashSync(
-        roomName + ctx.pw,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
-      const houseOwnerId = hashSync(
-        nickName,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
+      const houseOwnerId = hashSync(nickName, process.env.NEXT_PUBLIC_SALT!);
 
       const client = await clientPromise;
       const collection = client
@@ -125,10 +119,7 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { roomName, userInfo } = input;
-      const roomId = hashSync(
-        roomName + ctx.pw,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
 
       const client = await clientPromise;
       const collection = client
@@ -172,10 +163,7 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { roomName } = input;
-      const roomId = hashSync(
-        roomName + ctx.pw,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
 
       const client = await clientPromise;
       const collection = client
@@ -206,10 +194,7 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, roomName } = input;
-      const roomId = hashSync(
-        roomName + ctx.pw,
-        '$2a$10$' + process.env.NEXT_PUBLIC_SALT!
-      );
+      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
 
       const client = await clientPromise;
       const collection = client
