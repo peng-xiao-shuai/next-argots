@@ -1,12 +1,10 @@
-import { hashSync } from 'bcryptjs';
+import { compareSync } from 'bcryptjs';
 
 /**
  * 校验header hash 字段
  */
 export const diffHash = (pwd: string, headerHash: string) => {
-  const hash = hashSync(pwd, '$2a$10$' + process.env.NEXT_PUBLIC_SALT);
-
-  return headerHash === hash;
+  return compareSync(pwd, headerHash);
 };
 
 /**
