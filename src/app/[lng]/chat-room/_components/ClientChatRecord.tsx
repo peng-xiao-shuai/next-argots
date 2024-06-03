@@ -21,7 +21,7 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<ChatMsg>> = ({
     <div className={`chat chat-${isMy ? 'end' : 'start'}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-lg">
-          {!next?.isMy && (
+          {!(next?.user.id == user.id) && (
             <ImageSvg className="w-10 h-10" name={user?.avatar}></ImageSvg>
           )}
         </div>
@@ -30,14 +30,18 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<ChatMsg>> = ({
         className={`${
           isMy ? 'chat-bubble-primary' : 'b3-opacity-6 text-base-content'
         } chat-bubble min-h-[unset] ${
-          next?.user?.nickname !== user?.nickname
+          next?.user.id !== user.id
             ? 'user-last'
             : 'before:hidden !rounded-br-box'
         }`}
       >
-        {!last?.isMy && (
-          <div className="chat-header leading-6 line-clamp-1 font-bold text-right text-ellipsis block">
-            {'cvccc' || unicodeToString(user!.nickname)}
+        {!(last?.user.id === user.id) && (
+          <div
+            className={`chat-header leading-6 line-clamp-1 font-bold text-ellipsis block ${
+              isMy ? 'text-right' : 'text-left'
+            }`}
+          >
+            {unicodeToString(user!.nickname)}
           </div>
         )}
         <div className="whitespace-break-spaces break-words">{msg}</div>
@@ -56,14 +60,7 @@ export const ClientChatRecords: FC<Chat & ExtensionRecord<Chat>> = (props) => {
         props.type === MESSAGE_TYPE.MSG && (
           <ChatRecords
             {...(props as ChatMsg & ExtensionRecord<ChatMsg>)}
-            user={
-              props.isMy
-                ? {
-                    avatar: encryptData.avatar,
-                    nickname: encryptData.nickName,
-                  }
-                : props.user
-            }
+            user={props.user}
           ></ChatRecords>
         )
       }

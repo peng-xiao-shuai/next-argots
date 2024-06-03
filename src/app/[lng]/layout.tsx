@@ -70,7 +70,7 @@ export default async function RootLayout({
 
                 <Transition
                   language={lng}
-                  className="flex-1 page-content w-full px-[var(--padding)]"
+                  className="flex-1 page-content px-[var(--padding)]"
                 >
                   {children}
                 </Transition>
