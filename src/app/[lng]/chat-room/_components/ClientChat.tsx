@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
-import { type Chat, usePusher } from '@/hooks/use-pusher';
+import { type Chat, usePusher, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { debounce } from '@/utils/debounce-throttle';
@@ -139,9 +139,14 @@ export function ClientChat() {
         data-hide="true"
         ref={ChatScroll}
       >
-        <div className="px-[var(--padding)]">
+        <div>
           {chat.map((item, index) => (
-            <ClientChatRecords key={index} {...item}></ClientChatRecords>
+            <ClientChatRecords
+              key={index}
+              {...item}
+              last={chat[index - 1]}
+              next={chat[index + 1]}
+            ></ClientChatRecords>
           ))}
         </div>
       </div>
