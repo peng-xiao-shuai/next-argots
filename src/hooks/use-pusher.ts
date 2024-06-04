@@ -42,10 +42,8 @@ export interface ChatBase {
 export interface ChatMsg extends ChatBase {
   type: MESSAGE_TYPE.MSG;
   isMy: boolean;
-  /**
-   * 发送消息则没有 user 直接去 useRoomStore 获取
-   */
-  user?: {
+  user: {
+    id: string;
     avatar: AvatarName;
     nickname: string;
   };
@@ -210,9 +208,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           );
           channel.bind(
             'pusher:subscription_succeeded',
-            ({ me: { info } }: SubscriptionSuccessMember) => {
-              const { setUserInfoData } = useRoomStore.getState();
+            ({ me: { info, id } }: SubscriptionSuccessMember) => {
+              const { setUserInfoData, setData, encryptData } =
+                useRoomStore.getState();
               setUserInfoData(info);
+              setData({ ...encryptData, id });
 
               Aes = new AES({
                 passphrase: hash,
@@ -291,6 +291,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           type: MESSAGE_TYPE.MSG,
           isMy: false,
           user: {
+            id: metadata.user_id!,
             nickname: user_info.name,
             avatar: user_info.avatar as AvatarName,
           },
@@ -318,13 +319,18 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       toast(t!(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
       return;
     }
-
+    const { encryptData } = useRoomStore.getState();
     const timestamp = Date.now();
     setChatValue({
       type: MESSAGE_TYPE.MSG,
       msg: content,
       timestamp,
       isMy: true,
+      user: {
+        id: encryptData.id,
+        avatar: encryptData.avatar,
+        nickname: encryptData.nickName,
+      },
       status: 'loading',
     });
 

@@ -4,18 +4,20 @@ import { create } from 'zustand';
 
 interface RoomStore {
   encryptData: {
+    id: string;
     avatar: AvatarName;
     roomName: string;
     nickName: string;
     password: string;
   };
   userInfo: Partial<AuthSuccessUserData['user_info']>;
-  setData: (data: RoomStore['encryptData']) => void;
+  setData: (data: Partial<RoomStore['encryptData']>) => void;
   setUserInfoData: (data: RoomStore['userInfo']) => void;
 }
 
 export const useRoomStore = create<RoomStore>()((set) => ({
   encryptData: {
+    id: '',
     avatar: '',
     roomName: '',
     nickName: '',

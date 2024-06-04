@@ -38,6 +38,9 @@ export type AuthSuccessUserData = {
  */
 export interface SubscriptionSuccessMember extends Members {
   me: {
+    /**
+     * pusher 生成id
+     */
     id: string;
     info: AuthSuccessUserData['user_info'];
   };
