@@ -232,13 +232,13 @@ export const pusherAuthApi = {
       }
 
       const presenceData: AuthSuccessUserData = {
-        user_id: nickName,
+        user_id: socket_id,
         user_info: {
           iv: room!.iv,
           role,
           avatar,
           roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
-          userId: nickName,
+          userId: socket_id,
           name: nickName,
         },
       };

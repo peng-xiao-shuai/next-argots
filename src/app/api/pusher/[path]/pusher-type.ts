@@ -39,7 +39,7 @@ export type AuthSuccessUserData = {
 export interface SubscriptionSuccessMember extends Members {
   me: {
     /**
-     * pusher 生成id
+     * pusher 生成 id
      */
     id: string;
     info: AuthSuccessUserData['user_info'];
