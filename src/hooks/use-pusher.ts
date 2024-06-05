@@ -37,6 +37,7 @@ export enum MESSAGE_TYPE {
 export interface ChatBase {
   type: MESSAGE_TYPE;
   msg: string;
+  timestamp: number;
 }
 
 export interface ChatMsg extends ChatBase {
@@ -47,12 +48,10 @@ export interface ChatMsg extends ChatBase {
     avatar: AvatarName;
     nickname: string;
   };
-  timestamp: number;
   status: 'loading' | 'success' | 'error';
 }
 export interface ChatSystem extends ChatBase {
   type: MESSAGE_TYPE.SYSTEM;
-  timestamp?: number;
   status?: 'success';
 }
 
@@ -238,6 +237,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
         setChatValue({
           type: MESSAGE_TYPE.SYSTEM,
+          timestamp: Date.now(),
           msg: `🎉🎉 ${t!(CHAT_ROOM_KEYS.MEMBER_ADDED, {
             name: unicodeToString(info.name),
           })}`,
@@ -252,6 +252,7 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
         setChatValue({
           type: MESSAGE_TYPE.SYSTEM,
+          timestamp: Date.now(),
           msg: `🔌🔌 ${
             info.role !== UserRole.HOUSE_OWNER
               ? t!(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
@@ -390,8 +391,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   ) => {
     const { encryptData } = useRoomStore.getState();
     const user_info = (channel as PresenceChannel)?.members.get(
-      encryptData.nickName
-    ).info;
+      encryptData.id
+    )?.info;
 
     if (user_info?.role === UserRole.HOUSE_OWNER) {
       mutate({
