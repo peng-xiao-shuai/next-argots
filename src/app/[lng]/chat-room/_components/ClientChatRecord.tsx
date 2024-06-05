@@ -10,18 +10,21 @@ type ExtensionRecord<T> = {
   next: T | null;
 };
 
-const ChatRecords: FC<ChatMsg & ExtensionRecord<ChatMsg>> = ({
+const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
   isMy,
   msg,
   user,
   last,
   next,
 }) => {
+  const isSystemType = (data: Chat | null) =>
+    data?.type === MESSAGE_TYPE.SYSTEM ? false : data?.user.id == user.id;
+
   return (
     <div className={`chat chat-${isMy ? 'end' : 'start'}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-lg">
-          {!(next?.user.id == user.id) && (
+          {!isSystemType(next) && (
             <ImageSvg className="w-10 h-10" name={user?.avatar}></ImageSvg>
           )}
         </div>
@@ -30,12 +33,10 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<ChatMsg>> = ({
         className={`${
           isMy ? 'chat-bubble-primary' : 'b3-opacity-6 text-base-content'
         } chat-bubble min-h-[unset] ${
-          next?.user.id !== user.id
-            ? 'user-last'
-            : 'before:hidden !rounded-br-box'
+          !isSystemType(next) ? 'user-last' : 'before:hidden !rounded-br-box'
         }`}
       >
-        {!(last?.user.id === user.id) && (
+        {!isSystemType(last) && (
           <div
             className={`chat-header leading-6 line-clamp-1 font-bold text-ellipsis block ${
               isMy ? 'text-right' : 'text-left'
@@ -51,8 +52,6 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<ChatMsg>> = ({
 };
 
 export const ClientChatRecords: FC<Chat & ExtensionRecord<Chat>> = (props) => {
-  const { encryptData } = useRoomStore();
-
   return (
     <>
       {
