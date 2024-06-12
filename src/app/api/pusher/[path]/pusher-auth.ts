@@ -151,6 +151,7 @@ export const pusherAuthApi = {
         'password',
         'roomName',
         'roomStatus',
+        'reconnection',
       ]);
       if (typeof paramsCheck !== 'boolean') {
         return res(paramsCheck, 400);
