@@ -3,11 +3,11 @@ import { useRouter } from 'next/navigation';
 import { FC, useContext, useEffect, useState } from 'react';
 import { AiOutlineRight } from 'react-icons/ai';
 import { AppContext } from '@/context';
-import { COMMON_KEYS } from '@@/locales/keys';
+import { COMMON_KEYS, LOCALES_KEYS } from '@@/locales/keys';
 
 type AboutList = {
   label: string;
-  locale: string;
+  locale: LOCALES_KEYS;
   path?: string;
   click?: (item: AboutList) => void;
 };

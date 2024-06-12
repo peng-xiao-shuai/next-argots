@@ -1,7 +1,7 @@
 'use client';
 import { AppContext } from '@/context';
 import { trpc } from '&/trpc/client';
-import { COMMON_KEYS, SETTING_KEYS } from '@@/locales/keys';
+import { COMMON_KEYS, LOCALES_KEYS, SETTING_KEYS } from '@@/locales/keys';
 import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -15,7 +15,7 @@ type FormData = {
 
 const issueType: {
   emo: string;
-  locale: string;
+  locale: LOCALES_KEYS;
   value: FormData['type'];
 }[] = [
   {

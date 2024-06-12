@@ -8,6 +8,7 @@ import {
   CHAT_ROOM_KEYS,
   COMMON_KEYS,
   HOME_KEYS,
+  LOCALES_KEYS,
   SETTING_KEYS,
 } from '@@/locales/keys';
 import { AppContext, ClientChatContext } from '@/context';
@@ -39,7 +40,7 @@ type FormData = z.infer<typeof formDataRules>;
 
 interface FormView {
   type: React.HTMLInputTypeAttribute;
-  locale: string;
+  locale: LOCALES_KEYS;
   prop: 'roomName' | 'nickName' | 'password';
   validation?: RegisterOptions<FormData>;
 }
@@ -111,7 +112,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
       if (roomStatus === RoomStatus.JOIN && !data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
-          message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.NO_ROOM_NAME}`,
+          message: `${HOME_KEYS.HOME_API_NO_ROOM_NAME}`,
         });
         throw new Error('');
       }
@@ -119,7 +120,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
       if (roomStatus === RoomStatus.ADD && data.isRoom) {
         setError('root.roomName', {
           type: 'custom',
-          message: `${HOME_KEYS.HOME_API}.${HOME_KEYS.ROOM_NAME}`,
+          message: `${HOME_KEYS.HOME_API_ROOM_NAME}`,
         });
 
         throw new Error(data.message);
@@ -232,9 +233,9 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
             } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
           >
             {t!(
-              errors[item.prop]?.message ||
+              (errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
-                ''
+                '') as LOCALES_KEYS
             )}
           </div>
         </ItemLabel>
@@ -426,9 +427,9 @@ export const ShareForm: FC<{
         } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
           >
             {t!(
-              errors[item.prop]?.message ||
+              (errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
-                ''
+                '') as LOCALES_KEYS
             )}
           </div>
         </ItemLabel>
