@@ -6,11 +6,11 @@ import { AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { Lng } from '@/locales/i18n';
-import { TFunction } from 'i18next';
+import { AppContextData } from '@/context';
 
 export type NavRightProps = {
   metadata: Meta;
-  t: TFunction<'translation', undefined>;
+  t: AppContextData['t'];
   language: Lng;
 };
 

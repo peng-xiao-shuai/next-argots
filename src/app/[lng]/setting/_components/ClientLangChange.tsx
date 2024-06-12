@@ -37,7 +37,7 @@ export const ClientLang: FC<{
             <div>
               <span className="label-text">{item.label}</span>
               {item.desc && (
-                <span className="text-xs opacity-70"> ({t!(item.desc)})</span>
+                <span className="text-xs opacity-70"> ({t(item.desc)})</span>
               )}
             </div>
 

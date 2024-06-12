@@ -44,13 +44,13 @@ export const ClientOperate: FC<{
           className="w-[43%] btn btn-outline border-base-content text-base-content"
           onClick={() => handleRoom(RoomStatus.JOIN)}
         >
-          {t!(HOME_KEYS.SELECT_ROOM)}
+          {t(HOME_KEYS.SELECT_ROOM)}
         </button>
         <button
           className="w-[43%] btn btn-primary"
           onClick={() => handleRoom(RoomStatus.ADD)}
         >
-          {t!(HOME_KEYS.CREATE_ROOM)}
+          {t(HOME_KEYS.CREATE_ROOM)}
         </button>
       </div>
       <Dialog visible={visible} setVisible={setVisible}>

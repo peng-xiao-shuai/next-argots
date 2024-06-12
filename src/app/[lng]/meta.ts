@@ -1,5 +1,5 @@
 import { Lng, useTranslation } from '../../locales/i18n';
-import { COMMON_KEYS, META } from '../../../public/locales/keys';
+import { COMMON_KEYS, LOCALES_KEYS, META } from '../../../public/locales/keys';
 import type { Metadata } from 'next';
 import { FC } from 'react';
 import { NavRightProps } from '@/components/NavbarRight';
@@ -7,13 +7,13 @@ import { ClientChatNavbar } from './chat-room/_components/ClientChatNavbar';
 
 export interface Meta extends Metadata {
   title: string;
-  locale: string;
+  locale: LOCALES_KEYS;
   isPlaceholder?: boolean;
   Navbar?: FC<{
     language: Lng;
   }>;
   rightOperateType?: 'setting' | 'complete' | 'none' | 'custom';
-  NavbarRightText?: string;
+  NavbarRightText?: LOCALES_KEYS;
   NavbarRightComponent?: FC<NavRightProps>;
 }
 

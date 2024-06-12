@@ -174,7 +174,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
         setAvatarVisible(false);
       }}
     >
-      <ItemLabel label={t!(HOME_KEYS.AVATAR)}>
+      <ItemLabel label={t(HOME_KEYS.AVATAR)}>
         <div
           className={`dropdown ${
             avatarVisible ? 'dropdown-open' : 'dropdown-close'
@@ -196,7 +196,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
             <input
               type="text"
               className="grow !bg-transparent"
-              placeholder={t!(HOME_KEYS.AVATAR)}
+              placeholder={t(HOME_KEYS.AVATAR)}
               value={avatar}
               readOnly
             />
@@ -211,10 +211,10 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
       </ItemLabel>
 
       {formView.map((item, index) => (
-        <ItemLabel key={item.prop} label={t!(item.locale)}>
+        <ItemLabel key={item.prop} label={t(item.locale)}>
           <input
             type={item.type}
-            placeholder={t!(HOME_KEYS.PLEASE_INPUT) + t!(item.locale)}
+            placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
             {...register(item.prop, item.validation)}
             maxLength={item.validation?.maxLength as number}
             className={`mb-1 ${
@@ -232,7 +232,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
                 : 'opacity-0 h-0'
             } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
           >
-            {t!(
+            {t(
               (errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
                 '') as LOCALES_KEYS
@@ -242,7 +242,7 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
       ))}
 
       <Button
-        title={t!(COMMON_KEYS.COMPLETE)}
+        title={t(COMMON_KEYS.COMPLETE)}
         attrs={{
           disabled: loading,
           type: 'submit',
@@ -317,7 +317,7 @@ export const ShareForm: FC<{
     },
     onError: (error) => {
       setLoading(false);
-      toast.error(error.message || t!(API_KEYS.PUSHER_AUTH_500));
+      toast.error(error.message || t(API_KEYS.PUSHER_AUTH_500));
     },
   });
   const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
@@ -341,7 +341,7 @@ export const ShareForm: FC<{
     if (isChannelUserExist(stringToUnicode(formData.nickName))) {
       setError('root.nickName', {
         type: 'custom',
-        message: t!(CHAT_ROOM_KEYS.NAME_EXISTS),
+        message: t(CHAT_ROOM_KEYS.NAME_EXISTS),
       });
 
       return;
@@ -364,9 +364,7 @@ export const ShareForm: FC<{
         setAvatarVisible(false);
       }}
     >
-      <ItemLabel
-        label={`${t!(HOME_KEYS.AVATAR)} (${t!(SETTING_KEYS.OPTIONAL)})`}
-      >
+      <ItemLabel label={`${t(HOME_KEYS.AVATAR)} (${t(SETTING_KEYS.OPTIONAL)})`}>
         <div
           className={`dropdown ${
             avatarVisible ? 'dropdown-open' : 'dropdown-close'
@@ -388,7 +386,7 @@ export const ShareForm: FC<{
             <input
               type="text"
               className="grow !bg-transparent"
-              placeholder={t!(HOME_KEYS.AVATAR)}
+              placeholder={t(HOME_KEYS.AVATAR)}
               value={avatar}
               readOnly
             />
@@ -405,11 +403,11 @@ export const ShareForm: FC<{
       {formView.map((item, index) => (
         <ItemLabel
           key={item.prop}
-          label={`${t!(item.locale)} (${t!(SETTING_KEYS.OPTIONAL)})`}
+          label={`${t(item.locale)} (${t(SETTING_KEYS.OPTIONAL)})`}
         >
           <input
             type={item.type}
-            placeholder={t!(HOME_KEYS.PLEASE_INPUT) + t!(item.locale)}
+            placeholder={t(HOME_KEYS.PLEASE_INPUT) + t(item.locale)}
             {...register(item.prop, item.validation)}
             maxLength={item.validation?.maxLength as number}
             className={`mb-1 ${
@@ -426,7 +424,7 @@ export const ShareForm: FC<{
             : 'opacity-0 h-0'
         } pl-2 transition-all duration-300 text-xs left-0 bottom-[0.5rem] text-error`}
           >
-            {t!(
+            {t(
               (errors[item.prop]?.message ||
                 errors.root?.[item.prop]?.message ||
                 '') as LOCALES_KEYS
@@ -438,13 +436,13 @@ export const ShareForm: FC<{
       {!Boolean(joinChannel) && (
         <div className="pb-4 px-2 text-xs">
           <GoInfo className="text-accent-content w-4 h-4 inline-block" />{' '}
-          {t!(CHAT_ROOM_KEYS.INVITATION_DESCRIPTION)}
+          {t(CHAT_ROOM_KEYS.INVITATION_DESCRIPTION)}
         </div>
       )}
 
       {Boolean(joinChannel) ? (
         <Button
-          title={t!(COMMON_KEYS.CONFIRM)}
+          title={t(COMMON_KEYS.CONFIRM)}
           attrs={{
             disabled: loading,
             type: 'submit',
@@ -456,11 +454,11 @@ export const ShareForm: FC<{
             className="flex-1 btn btn-outline mx-auto block disabled:bg-primary/50 disabled:text-neutral-400 !px-2"
             onClick={showLinkList}
           >
-            {t!(CHAT_ROOM_KEYS.LOOK_LINKS)}
+            {t(CHAT_ROOM_KEYS.LOOK_LINKS)}
           </div>
 
           <Button
-            title={t!(CHAT_ROOM_KEYS.CREATE_INVITE)}
+            title={t(CHAT_ROOM_KEYS.CREATE_INVITE)}
             attrs={{
               disabled: loading,
               type: 'submit',

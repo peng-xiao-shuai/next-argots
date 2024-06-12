@@ -29,7 +29,7 @@ export const ClientThemeChange: FC = () => {
   const handleComplete = () => {
     const dataTheme = isAuto ? 'auto' : pattern;
     setDataTheme(dataTheme);
-    toast.success(t!(COMMON_KEYS.SUCCESSFULLY_SET));
+    toast.success(t(COMMON_KEYS.SUCCESSFULLY_SET));
   };
 
   useBusWatch('complete', handleComplete);
@@ -38,9 +38,9 @@ export const ClientThemeChange: FC = () => {
     <>
       <div className="flex justify-between items-center">
         <div>
-          <div className="text-base-content">{t!(SETTING_KEYS.MODE_AUTO)}</div>
+          <div className="text-base-content">{t(SETTING_KEYS.MODE_AUTO)}</div>
           <span className="text-xs desc-color">
-            {t!(SETTING_KEYS.MODE_SWITCH)}
+            {t(SETTING_KEYS.MODE_SWITCH)}
           </span>
         </div>
 
@@ -57,7 +57,7 @@ export const ClientThemeChange: FC = () => {
       {!isAuto ? (
         <>
           <div className="_p desc-color text-left text-sm">
-            {t!(SETTING_KEYS.CHOOSE_MANUALLY)}
+            {t(SETTING_KEYS.CHOOSE_MANUALLY)}
           </div>
 
           <ul className="menu">
@@ -67,7 +67,7 @@ export const ClientThemeChange: FC = () => {
                 key={item.label}
               >
                 <label className="w-full label p-0 h-full flex items-center justify-between">
-                  <span className="label-text">{t!(item.locale)}</span>
+                  <span className="label-text">{t(item.locale)}</span>
                   <input
                     v-model="pattern"
                     type="radio"

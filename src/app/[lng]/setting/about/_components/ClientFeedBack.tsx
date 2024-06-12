@@ -39,7 +39,7 @@ export function ClientFeedBack() {
   const { t } = useContext(AppContext);
   const { mutate } = trpc.feedbackAdd.useMutation({
     onSuccess: () => {
-      toast.success(t!(SETTING_KEYS.FEEDBACK_SUCCESS));
+      toast.success(t(SETTING_KEYS.FEEDBACK_SUCCESS));
       setLoading(false);
 
       setFormData({
@@ -65,7 +65,7 @@ export function ClientFeedBack() {
 
   const handleSubmit = () => {
     if (formData.email && !verifyEmail.safeParse(formData.email).success) {
-      toast.error(t!(SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT));
+      toast.error(t(SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT));
       return;
     }
     setLoading(true);
@@ -81,7 +81,7 @@ export function ClientFeedBack() {
   return (
     <>
       <div className="mb-2 desc-color _p-x">
-        {t!(SETTING_KEYS.E_MAIL_OPTIONAL)}
+        {t(SETTING_KEYS.E_MAIL_OPTIONAL)}
       </div>
       <input
         value={formData.email}
@@ -92,15 +92,15 @@ export function ClientFeedBack() {
           }));
         }}
         // 需要提示如果不传递邮箱则无法获得反馈信息
-        placeholder={t!(SETTING_KEYS.PLEASE_E_MAIL)}
+        placeholder={t(SETTING_KEYS.PLEASE_E_MAIL)}
         className={`mb-4 input w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary`}
       />
 
-      <div className="mb-2 desc-color _p-x">{t!(SETTING_KEYS.CONTENT)}</div>
+      <div className="mb-2 desc-color _p-x">{t(SETTING_KEYS.CONTENT)}</div>
 
       <textarea
         value={formData.content}
-        placeholder={t!(SETTING_KEYS.CONTENT) + '...'}
+        placeholder={t(SETTING_KEYS.CONTENT) + '...'}
         maxLength={300}
         className="textarea resize-none h-56 mb-4 w-full transition-all duration-300 outline-none focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary"
         onChange={({ target }) => {
@@ -112,7 +112,7 @@ export function ClientFeedBack() {
       />
 
       <div className="mb-2 desc-color _p-x">
-        {t!(SETTING_KEYS.FEEDBACK_TYPES)}
+        {t(SETTING_KEYS.FEEDBACK_TYPES)}
       </div>
 
       <div className="flex flex-wrap">
@@ -132,13 +132,13 @@ export function ClientFeedBack() {
             }
           >
             <span className="text-xl inline-block mr-1">{issue.emo}</span>
-            <span className="text-xs">{t!(issue.locale)}</span>
+            <span className="text-xs">{t(issue.locale)}</span>
           </div>
         ))}
       </div>
 
       <Button
-        title={t!(COMMON_KEYS.CONFIRM)}
+        title={t(COMMON_KEYS.CONFIRM)}
         click={handleSubmit}
         className="mt-6 w-full"
         loading={loading}

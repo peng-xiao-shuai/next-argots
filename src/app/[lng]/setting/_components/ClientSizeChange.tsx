@@ -37,7 +37,7 @@ export const ClientRangeInput: FC = () => {
 
   const handleComplete = () => {
     setSize(Number(rangeValue) / 10 + BASE_SIZE);
-    toast.success(t!(COMMON_KEYS.SUCCESSFULLY_SET));
+    toast.success(t(COMMON_KEYS.SUCCESSFULLY_SET));
   };
 
   useBusWatch('complete', handleComplete);

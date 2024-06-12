@@ -56,7 +56,7 @@ export function Client() {
         })
         .catch((err) => {
           reject(err);
-          toast.error(t!(API_KEYS.PUSHER_AUTH_500));
+          toast.error(t(API_KEYS.PUSHER_AUTH_500));
           console.log('joinChannelSignin ===> ', err);
         });
     });

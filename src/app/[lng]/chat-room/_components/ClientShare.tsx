@@ -150,7 +150,7 @@ const LinkRecord: FC<{
   if (list.length == 0) {
     return (
       <div className="h-20 w-full leading-10 text-center text-neutral-content">
-        {t!(COMMON_KEYS.NO_DATA)}
+        {t(COMMON_KEYS.NO_DATA)}
       </div>
     );
   }
@@ -205,7 +205,7 @@ const LinkRecord: FC<{
                 <ImageSvg className="h-7 w-7" name={user.avatar}></ImageSvg>
                 <div className="line-clamp-1 text-sm leading-none">
                   {user.nickName === ''
-                    ? t!(CHAT_ROOM_KEYS.NO_NICKNAME)
+                    ? t(CHAT_ROOM_KEYS.NO_NICKNAME)
                     : `"${user.nickName}"`}
                 </div>
               </div>

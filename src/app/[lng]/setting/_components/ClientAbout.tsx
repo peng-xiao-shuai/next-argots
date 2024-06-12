@@ -68,7 +68,7 @@ export const ClientAboutMenu: FC = () => {
             item.path ? router.push(item.path) : item.click && item.click(item)
           }
         >
-          <span className="px-0 !bg-opacity-0">{t!(item.locale)}</span>
+          <span className="px-0 !bg-opacity-0">{t(item.locale)}</span>
           {item.path ? (
             <AiOutlineRight className="w-3 h-3 p-0 rtl:rotate-180" />
           ) : (

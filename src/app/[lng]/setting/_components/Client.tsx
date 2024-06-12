@@ -53,7 +53,7 @@ export const ClientMenu: FC = () => {
           className={`text-base-content flex-row h-12 items-center justify-between row-active rounded-lg`}
           onClick={() => debounce(() => router.push(item.path))}
         >
-          <span className="px-0">{t!(item.locale)}</span>
+          <span className="px-0">{t(item.locale)}</span>
           <AiOutlineRight className="w-3 h-3 p-0 fill-base-content rtl:rotate-180" />
         </li>
       ))}

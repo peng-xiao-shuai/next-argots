@@ -81,7 +81,7 @@ export function ClientChat() {
   const handleSendMessage = () => {
     debounce(() => {
       if (content.trim() === '') {
-        toast.warning(t!(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
+        toast.warning(t(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
         return;
       }
 
@@ -179,7 +179,7 @@ export function ClientChat() {
               <textarea
                 value={content}
                 rows={1}
-                placeholder={t!(CHAT_ROOM_KEYS.SPEAK_OUT_FREELY)}
+                placeholder={t(CHAT_ROOM_KEYS.SPEAK_OUT_FREELY)}
                 style={{
                   height: '100%',
                 }}
@@ -201,7 +201,7 @@ export function ClientChat() {
               className="btn btn-primary min-h-[2.5rem] h-10"
               onClick={handleSendMessage}
             >
-              {t!(CHAT_ROOM_KEYS.SEND)}
+              {t(CHAT_ROOM_KEYS.SEND)}
             </button>
           </div>
         </div>

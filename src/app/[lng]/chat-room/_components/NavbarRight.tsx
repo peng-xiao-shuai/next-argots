@@ -23,7 +23,7 @@ export const NavbarRightComponent = () => {
         bus.emit('complete');
       }}
     >
-      {t!(COMMON_KEYS.SHARE)}
+      {t(COMMON_KEYS.SHARE)}
     </button>
   ) : (
     <></>

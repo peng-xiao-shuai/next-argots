@@ -30,7 +30,7 @@ export const Navbar: FC<{
     if (metadata.locale === COMMON_KEYS.CHAT) {
       return unicodeToString(encryptData.roomName);
     } else {
-      return t!(metadata.locale);
+      return t(metadata.locale);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [encryptData.roomName, metadata.locale]);
@@ -92,7 +92,7 @@ export const Navbar: FC<{
             <div className="flex-none">
               <NavRight
                 metadata={metadata}
-                t={t!}
+                t={t}
                 language={language}
               ></NavRight>
             </div>
