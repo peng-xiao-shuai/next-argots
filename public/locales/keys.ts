@@ -64,6 +64,9 @@ export enum CHAT_ROOM_KEYS {
   LOOK_LINKS = 'View_build_link',
   // 生成邀请地址
   CREATE_INVITE = 'Generate_invite_address',
+
+  NAV_TITLE_NO_NETWORK = 'Loss_of_network_connection',
+  NAV_TITLE_CONNECT_UNAVAILABLE = 'Link_temporarily_unavailable',
 }
 
 export enum COMMON_KEYS {

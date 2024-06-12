@@ -17,4 +17,8 @@ export const CHAT_ROOM = {
     '1つの招待リンクには1人のユーザーしか招待できません。',
   [CHAT_ROOM_KEYS.LOOK_LINKS]: '生成リンクを見ます',
   [CHAT_ROOM_KEYS.CREATE_INVITE]: '招待先を作成します',
+
+  [CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK]: 'ネットワークが切断されました',
+  [CHAT_ROOM_KEYS.NAV_TITLE_CONNECT_UNAVAILABLE]:
+    'リンクはしばらく利用できません。',
 } as const;

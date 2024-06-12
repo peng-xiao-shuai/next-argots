@@ -17,4 +17,7 @@ export const CHAT_ROOM = {
     '每一個邀請鏈接只能邀請一個用戶，邀請成功之後無效',
   [CHAT_ROOM_KEYS.LOOK_LINKS]: '查看生成鏈接',
   [CHAT_ROOM_KEYS.CREATE_INVITE]: '生成邀請地址',
+
+  [CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK]: '網絡已斷開',
+  [CHAT_ROOM_KEYS.NAV_TITLE_CONNECT_UNAVAILABLE]: '鏈接暫時不可用',
 } as const;

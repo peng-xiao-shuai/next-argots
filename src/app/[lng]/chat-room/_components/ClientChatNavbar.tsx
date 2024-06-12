@@ -8,6 +8,9 @@ import { FC, useContext, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
 import { unicodeToString } from '@/utils/string-transform';
 import { useRouter } from 'next/navigation';
+import { useLine } from '@/hooks/use-line';
+import { useBusWatch } from '@/hooks/use-bus-watch';
+import { CHAT_ROOM_KEYS, LOCALES_KEYS } from '@@/locales/keys';
 
 export const ClientChatNavbar: FC<{
   language: Lng;
@@ -18,6 +21,18 @@ export const ClientChatNavbar: FC<{
   const [navTitle, setNavTitle] = useState(
     unicodeToString(encryptData.roomName)
   );
+
+  useBusWatch('setNavTitle', (key) => {
+    setNavTitle(t(key as LOCALES_KEYS));
+  });
+
+  useLine((e) => {
+    if (e.type === 'offline') {
+      setNavTitle(t(CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK));
+    } else {
+      setNavTitle(unicodeToString(encryptData.roomName));
+    }
+  });
 
   useEffect(() => {
     setNavTitle(unicodeToString(encryptData.roomName));

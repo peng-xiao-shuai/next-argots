@@ -17,4 +17,7 @@ export const CHAT_ROOM = {
     '每个邀请链接只能邀请一个用户，邀请成功之后无效',
   [CHAT_ROOM_KEYS.LOOK_LINKS]: '查看生成链接',
   [CHAT_ROOM_KEYS.CREATE_INVITE]: '生成邀请地址',
+
+  [CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK]: '网络已断开',
+  [CHAT_ROOM_KEYS.NAV_TITLE_CONNECT_UNAVAILABLE]: '链接暂时不可用',
 } as const;
