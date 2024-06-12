@@ -4,7 +4,6 @@ import { create } from 'zustand';
 
 interface RoomStore {
   encryptData: {
-    id: string;
     avatar: AvatarName;
     roomName: string;
     nickName: string;
@@ -17,7 +16,6 @@ interface RoomStore {
 
 export const useRoomStore = create<RoomStore>()((set) => ({
   encryptData: {
-    id: '',
     avatar: '',
     roomName: '',
     nickName: '',
