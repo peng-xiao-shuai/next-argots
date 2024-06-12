@@ -7,4 +7,4 @@ export const API = {
   [API_KEYS.PUSHER_AUTH_423]:
     'ルームはすでに存在します。別のルームをお試しください',
   [API_KEYS.PUSHER_AUTH_500]: '未知の誤りです',
-};
+} as const;

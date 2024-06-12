@@ -10,5 +10,5 @@ const lang = {
   ...HOME,
   ...COMMON,
   ...API,
-};
+} as const;
 export default lang;

@@ -32,10 +32,9 @@ export enum HOME_KEYS {
   PASSWORD = 'channel_password',
   PLEASE_INPUT = 'Please_input',
 
-  HOME_API = 'Home_Api_Tip',
-  NO_ROOM_NAME = 'Sorry_~_channel_name_not_exists!',
-  ROOM_NAME = 'Sorry_~_channel_name_already_exists!',
-  PASSWORD_ERROR = 'Password_error',
+  HOME_API_NO_ROOM_NAME = 'Sorry_~_channel_name_not_exists!',
+  HOME_API_ROOM_NAME = 'Sorry_~_channel_name_already_exists!',
+  HOME_API_PASSWORD_ERROR = 'Password_error',
   EMPTY_NICKNAME = 'Please_input_nickname_as_your_room_nickname',
   EMPTY_PASSWORD = 'Please_input_room_password_enter_the_room',
   EMPTY_ROOM_NUMBER = 'Please_input_room_number_nickname_enter_the_room',
@@ -104,3 +103,11 @@ export enum META {
   DESC = 'meta_desc',
   KEYWORDS = 'meta_keywords',
 }
+
+export type LOCALES_KEYS =
+  | SETTING_KEYS
+  | HOME_KEYS
+  | CHAT_ROOM_KEYS
+  | COMMON_KEYS
+  | API_KEYS
+  | META;

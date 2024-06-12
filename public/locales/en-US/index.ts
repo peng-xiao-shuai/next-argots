@@ -8,5 +8,5 @@ const lang = {
   ...SETTING,
   ...HOME,
   ...COMMON,
-};
+} as const;
 export default lang;

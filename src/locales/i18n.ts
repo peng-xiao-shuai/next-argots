@@ -6,30 +6,37 @@ import enUS from '../../public/locales/en-US';
 import jaJP from '../../public/locales/ja-JP';
 import zhTW from '../../public/locales/zh-TW';
 import zhCN from '../../public/locales/zh-CN';
+import { LOCALES_KEYS } from '@@/locales/keys';
 
 let cacheI18n: i18n;
 
-export const DEFAULT_NS = 'translation';
-export type Resources = {
-  [key in keyof typeof resources]: (typeof resources)[key] & {
-    [DEFAULT_NS]: Indexes;
-  };
-};
+export const DEFAULT_NS = 'translation' as const;
 export type Lng = keyof typeof resources;
 
-export const FALLBACK_LNG = 'en-US';
+export type Resources = {
+  [K in Lng]: (typeof resources)[K] & {
+    [DEFAULT_NS]: {
+      [P in LOCALES_KEYS]: P extends keyof (typeof resources)[K][typeof DEFAULT_NS]
+        ? (typeof resources)[K][typeof DEFAULT_NS][P]
+        : P extends keyof (typeof resources)[typeof FALLBACK_LNG][typeof DEFAULT_NS]
+        ? (typeof resources)[typeof FALLBACK_LNG][typeof DEFAULT_NS][P]
+        : 'undefined';
+    };
+  };
+};
+
+export const FALLBACK_LNG = 'en-US' as const;
 export const resources = {
   'ja-JP': { [DEFAULT_NS]: jaJP },
   'zh-TW': { [DEFAULT_NS]: zhTW },
-  'en-US': { [DEFAULT_NS]: {} },
-  'zh-CN': { [DEFAULT_NS]: {} },
+  'en-US': { [DEFAULT_NS]: enUS },
+  'zh-CN': { [DEFAULT_NS]: zhCN },
 };
 export const languages = Object.keys(resources) as Lng[];
 
 // 拆解中文语言 key 作为 英文
 for (const i in zhCN) {
-  (resources as Resources)['zh-CN'][DEFAULT_NS][i] = (zhCN as Indexes)[i];
-  (resources as Resources)['en-US'][DEFAULT_NS][i] =
+  (resources['en-US'][DEFAULT_NS] as any)[i] =
     (enUS as Indexes)[i] || i.replace(/\_/g, ' ');
 }
 

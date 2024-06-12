@@ -24,4 +24,4 @@ export const SETTING = {
   [SETTING_KEYS.CONTENT]: '反馈内容',
   [SETTING_KEYS.FEEDBACK_SUCCESS]: '反馈成功',
   [SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT]: `$t(${SETTING_KEYS.E_MAIL})格式不正确`,
-};
+} as const;

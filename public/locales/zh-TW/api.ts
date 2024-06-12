@@ -6,4 +6,4 @@ export const API = {
   [API_KEYS.PUSHER_AUTH_403]: '拒絕訪問',
   [API_KEYS.PUSHER_AUTH_423]: '頻道已存在，請嘗試其他',
   [API_KEYS.PUSHER_AUTH_500]: '未知錯誤',
-};
+} as const;

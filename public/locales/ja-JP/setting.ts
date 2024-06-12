@@ -22,4 +22,4 @@ export const SETTING = {
   [SETTING_KEYS.CONTENT]: 'フィードバックの内容です',
   [SETTING_KEYS.FEEDBACK_SUCCESS]: 'フィードバック成功です',
   [SETTING_KEYS.E_MAIL_FORMAT_IS_INCORRECT]: `$t(${SETTING_KEYS.E_MAIL})フォーマットが正しくありません。`,
-};
+} as const;

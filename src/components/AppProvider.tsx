@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Lng } from '@/locales/i18n';
+import { DEFAULT_NS, Lng, Resources } from '@/locales/i18n';
 import { AppContextData, AppContext, defaultData } from '@/context';
 import { useTranslation } from '@/locales/client';
 export function AppProvider({
@@ -14,7 +14,7 @@ export function AppProvider({
   const [setting, setSetting] = useState<AppContextData>({
     ...defaultData,
     language: language,
-    t,
+    t: t as AppContextData['t'],
   });
 
   useEffect(() => {
