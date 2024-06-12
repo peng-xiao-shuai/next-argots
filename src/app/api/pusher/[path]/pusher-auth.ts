@@ -20,6 +20,7 @@ type BODY = {
   avatar: AvatarName;
   hash?: string;
   roomId?: string;
+  reconnection: string;
 } & Indexes;
 
 export const pusherAuthApi = {
@@ -126,6 +127,7 @@ export const pusherAuthApi = {
       roomName,
       avatar,
       hash,
+      reconnection,
       roomId: _roomId,
     } = body as BODY;
 
@@ -190,7 +192,7 @@ export const pusherAuthApi = {
         hash: req.headers.get('hash') || '',
       });
 
-      if (roomStatus === RoomStatus.ADD) {
+      if (roomStatus === RoomStatus.ADD && reconnection === 'false') {
         // 频道号添加缺已经存在频道号
         if (roomData) {
           return res(
@@ -225,20 +227,19 @@ export const pusherAuthApi = {
             },
             401
           );
-          return;
         } else {
           room = roomData;
         }
       }
 
       const presenceData: AuthSuccessUserData = {
-        user_id: socket_id,
+        user_id: nickName,
         user_info: {
           iv: room!.iv,
           role,
           avatar,
           roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
-          userId: socket_id,
+          userId: nickName,
           name: nickName,
         },
       };
