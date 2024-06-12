@@ -27,7 +27,7 @@ export const useRoomStore = create<RoomStore>()((set) => ({
       return { encryptData: { ...state.encryptData, ...data } };
     }),
   setUserInfoData: (data) =>
-    set((state) => {
-      return { userInfo: { ...(state.userInfo || {}), ...data } };
+    set(() => {
+      return { userInfo: { ...data } };
     }),
 }));
