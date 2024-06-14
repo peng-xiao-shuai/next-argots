@@ -24,7 +24,7 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
     <div
       className={`chat chat-${
         user.nickname == userInfo.nickname ? 'end' : 'start'
-      }`}
+      } !pb-0 pt-[0.15rem] ${!isSystemType(last) ? 'pt-2' : ''}`}
     >
       <div className="chat-image avatar">
         <div className="w-10 rounded-lg">
@@ -39,8 +39,10 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
             ? 'chat-bubble-primary'
             : 'b3-opacity-6 text-base-content'
         } chat-bubble min-h-[unset] ${
-          !isSystemType(next) ? 'user-last' : 'before:hidden !rounded-br-box'
-        }`}
+          !isSystemType(next)
+            ? 'user-last rounded-tr-md'
+            : 'before:hidden rounded-r-md'
+        } ${!isSystemType(last) ? 'user-first !rounded-t-box' : ''}`}
       >
         {!isSystemType(last) && (
           <div
