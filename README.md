@@ -28,6 +28,7 @@
 - 🏠 Channel sharing function
 - 🥰 Emotional expression support
 - 💥 Chat closed to destroy data
+- 🌎 The network is reconnected and records are synchronized
 
 ### introduce
 
@@ -103,11 +104,13 @@ reference specification ([Angular](https://github.com/conventional-changelog/con
 
 ## plan （2024-3-30）
 
-- [ ] Determine network status and browser compatibility
+- [x] Determine network status and browser compatibility
 - [x] Channel sharing function, and no authorization to enter the chat room page need to prompt (chat room address with parameters more parameter judgment to join the channel, etc.)
 - [x] emo expression
 - [x] Send a message scroll to the bottom
 - [x] select an avatar
+- [x] The network is reconnected and records are synchronized
+- [ ] Delete a certain (one or more) chat history of all people
 
 **Other functions can be `issues` propose**
 
