@@ -497,21 +497,27 @@ export const usePusher = (
           );
           recordChannels.bind(
             'pusher:subscription_count',
-            (data: { subscription_count: number }) => {
+            async (data: { subscription_count: number }) => {
               if (data.subscription_count === 2) {
+                const encryptedValue = await Aes?.encrypt(
+                  JSON.stringify(lastChatHistory)
+                );
                 /**
                  * 发送获取聊天记录请求
                  */
                 recordChannels!.trigger(CustomEvent.GET_RECORDS_REQ, {
-                  chat: lastChatHistory,
+                  chatStr: encryptedValue,
                 });
               }
             }
           );
           recordChannels.bind(
             CustomEvent.GET_RECORDS_RES,
-            async ({ chats }: { chats: Chat[] }, metadata: Metadata) => {
-              setChatValue((state) => state.concat(chats));
+            async ({ chatsStr }: { chatsStr: string }, metadata: Metadata) => {
+              const decodeChats = JSON.parse(
+                (await Aes?.decrypt(chatsStr)) || '[]'
+              ) as Chat[];
+              setChatValue((state) => state.concat(decodeChats));
 
               recordChannels!.unbind_all();
               recordChannels?.cancelSubscription();
@@ -543,15 +549,21 @@ export const usePusher = (
       );
       recordChannels.bind(
         CustomEvent.GET_RECORDS_REQ,
-        ({ chat }: { chat: Chat }) => {
+        async ({ chatStr }: { chatStr: string }) => {
+          const decodeChat = JSON.parse(
+            (await Aes?.decrypt(chatStr)) || '{}'
+          ) as unknown as Chat;
           const lastIndex = chatDataCopy.current.findIndex(
-            (item) => item.timestamp === chat.timestamp
+            (item) => item.timestamp === decodeChat.timestamp
           );
           /**
            * 发送聊天记录
            */
+          const encryptedChats = await Aes?.encrypt(
+            JSON.stringify([...chatDataCopy.current].splice(lastIndex + 1))
+          );
           recordChannels.trigger(CustomEvent.GET_RECORDS_RES, {
-            chats: [...chatDataCopy.current].splice(lastIndex + 1),
+            chatsStr: encryptedChats,
           });
           recordChannels.unbind_all();
           cachePusher?.unsubscribe(
