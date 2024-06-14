@@ -1,5 +1,3 @@
-import CryptoJS from 'crypto-js';
-
 export default class AES {
   private worker: Worker;
   private ivHexString: string;
@@ -11,6 +9,8 @@ export default class AES {
     this.ivHexString = options.ivHexString;
     this.passphrase = options.passphrase;
     this.salt = process.env.NEXT_PUBLIC_SALT!;
+
+    this.deriveKey();
   }
 
   private deriveKey(): Promise<string> {
