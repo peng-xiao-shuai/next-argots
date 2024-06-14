@@ -11,17 +11,21 @@ type ExtensionRecord<T> = {
 };
 
 const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
-  isMy,
   msg,
   user,
   last,
   next,
 }) => {
+  const { userInfo } = useRoomStore();
   const isSystemType = (data: Chat | null) =>
     data?.type === MESSAGE_TYPE.SYSTEM ? false : data?.user.id == user.id;
 
   return (
-    <div className={`chat chat-${isMy ? 'end' : 'start'}`}>
+    <div
+      className={`chat chat-${
+        user.nickname == userInfo.nickname ? 'end' : 'start'
+      }`}
+    >
       <div className="chat-image avatar">
         <div className="w-10 rounded-lg">
           {!isSystemType(next) && (
@@ -31,7 +35,9 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
       </div>
       <div
         className={`${
-          isMy ? 'chat-bubble-primary' : 'b3-opacity-6 text-base-content'
+          user.nickname == userInfo.nickname
+            ? 'chat-bubble-primary'
+            : 'b3-opacity-6 text-base-content'
         } chat-bubble min-h-[unset] ${
           !isSystemType(next) ? 'user-last' : 'before:hidden !rounded-br-box'
         }`}
@@ -39,7 +45,7 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
         {!isSystemType(last) && (
           <div
             className={`chat-header leading-6 line-clamp-1 font-bold text-ellipsis block ${
-              isMy ? 'text-right' : 'text-left'
+              user.nickname == userInfo.nickname ? 'text-right' : 'text-left'
             }`}
           >
             {unicodeToString(user!.nickname)}

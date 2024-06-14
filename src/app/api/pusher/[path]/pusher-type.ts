@@ -48,7 +48,7 @@ export type AuthSuccessUserData = {
     roomRecordId?: string;
     role: UserRole;
     iv: string;
-    name: string;
+    nickname: string;
   };
 };
 

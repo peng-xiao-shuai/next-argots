@@ -44,7 +44,6 @@ export interface ChatBase {
 
 export interface ChatMsg extends ChatBase {
   type: MESSAGE_TYPE.MSG;
-  isMy: boolean;
   user: {
     id: string;
     avatar: AvatarName;
@@ -263,7 +262,7 @@ export const usePusher = (
           type: MESSAGE_TYPE.SYSTEM,
           timestamp: Date.now(),
           msg: `🎉🎉 ${t(CHAT_ROOM_KEYS.MEMBER_ADDED, {
-            name: unicodeToString(info.name),
+            name: unicodeToString(info.nickname),
           })}`,
         });
 
@@ -280,10 +279,10 @@ export const usePusher = (
           msg: `🔌🔌 ${
             info.role !== UserRole.HOUSE_OWNER
               ? t(CHAT_ROOM_KEYS.MEMBER_REMOVED, {
-                  name: unicodeToString(info.name),
+                  name: unicodeToString(info.nickname),
                 })
               : t(CHAT_ROOM_KEYS.OWNER_MEMBER_REMOVED, {
-                  name: unicodeToString(info.name),
+                  name: unicodeToString(info.nickname),
                 })
           }`,
         });
@@ -314,10 +313,9 @@ export const usePusher = (
 
         setChatValue({
           type: MESSAGE_TYPE.MSG,
-          isMy: false,
           user: {
             id: metadata.user_id!,
-            nickname: user_info.name,
+            nickname: user_info.nickname,
             avatar: user_info.avatar as AvatarName,
           },
           timestamp,
@@ -353,7 +351,6 @@ export const usePusher = (
       type: MESSAGE_TYPE.MSG,
       msg: content,
       timestamp,
-      isMy: true,
       user: {
         id: userInfo.userId!,
         avatar: encryptData.avatar,

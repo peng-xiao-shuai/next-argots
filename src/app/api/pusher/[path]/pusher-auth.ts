@@ -252,7 +252,7 @@ export const pusherAuthApi = {
           socket_id,
           roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
           userId: nickName,
-          name: nickName,
+          nickname: nickName,
         },
       };
 
