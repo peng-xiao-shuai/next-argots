@@ -42,7 +42,7 @@ type Body = {
 /**
  * 生成 pusher http 请求签名
  */
-function createPusherSignature({ method, path, params, secret }: Body) {
+export function createPusherSignature({ method, path, params, secret }: Body) {
   // 将参数按键排序并格式化为查询字符串
   const sortedParams = Object.keys(params)
     .sort()

@@ -28,6 +28,7 @@ import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
 import { AppContext } from '@/context';
 import emitter from '@/utils/bus';
+import { createPusherSignature } from '@/app/api/utils';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -116,7 +117,7 @@ export const usePusher = (
   }) => {
     return new Promise<string>((resolve, reject) => {
       const { encryptData } = useRoomStore.getState();
-      const hash =
+      const pwdHash =
         opts.hash ||
         hashSync(encryptData.password, process.env.NEXT_PUBLIC_SALT!);
 
@@ -127,25 +128,47 @@ export const usePusher = (
           userAuthentication: {
             endpoint: API_URL.PUSHER_SIGNIN,
             transport: 'ajax',
-            paramsProvider: () => ({
-              roomStatus: opts.roomStatus,
-              ...encryptData,
-              reconnection: !!useRoomStore.getState().userInfo.userId,
-            }),
-            headers: {
-              hash,
+            paramsProvider: () => {
+              const data = {
+                roomStatus: opts.roomStatus,
+                ...encryptData,
+                pwdHash,
+                reconnection: (!!useRoomStore.getState().userInfo
+                  .userId).toString(),
+              };
+              const hash = createPusherSignature({
+                method: 'POST',
+                path: API_URL.PUSHER_SIGNIN,
+                params: data,
+                secret: process.env.NEXT_PUBLIC_SALT!,
+              });
+              return {
+                data: JSON.stringify(data),
+                hash,
+              };
             },
           },
           channelAuthorization: {
             endpoint: API_URL.PUSHER_AUTH,
             transport: 'ajax',
-            paramsProvider: () => ({
-              ...opts,
-              ...encryptData,
-              reconnection: !!useRoomStore.getState().userInfo.userId,
-            }),
-            headers: {
-              hash,
+            paramsProvider: () => {
+              const data = {
+                ...opts,
+                ...encryptData,
+                pwdHash,
+                reconnection: (!!useRoomStore.getState().userInfo
+                  .userId).toString(),
+              };
+              const hash = createPusherSignature({
+                method: 'POST',
+                path: API_URL.PUSHER_AUTH,
+                params: data,
+                secret: process.env.NEXT_PUBLIC_SALT!,
+              });
+              return {
+                data: JSON.stringify(data),
+                hash,
+              };
             },
           },
         });
@@ -200,8 +223,6 @@ export const usePusher = (
           channel.bind(
             'pusher:subscription_error',
             ({ status }: { type: string; status: number; error: string }) => {
-              console.log(status);
-
               switch (status) {
                 case 400:
                   toast.error(t(API_KEYS.PUSHER_AUTH_400));
@@ -224,21 +245,21 @@ export const usePusher = (
               // 断开连接并且清除缓存的pusher 否则会导致无法重新签名
               cachePusher?.disconnect();
               cachePusher = null;
-              reject(new Error());
+              reject(new Error(status.toString()));
             }
           );
           channel.bind(
             'pusher:subscription_succeeded',
             ({ me: { info, id } }: SubscriptionSuccessMember) => {
-              const { setUserInfoData, setData } = useRoomStore.getState();
+              const { setUserInfoData } = useRoomStore.getState();
               setUserInfoData(info);
 
               Aes = new AES({
-                passphrase: hash,
+                passphrase: pwdHash,
                 ivHexString: info.iv,
               });
               channel.unbind('pusher:subscription_succeeded');
-              resolve(hash);
+              resolve(pwdHash);
             }
           );
         }
@@ -304,13 +325,14 @@ export const usePusher = (
   const receiveInformation = () => {
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
-      async ({ msg, timestamp }: ChatMsg, metadata: Metadata) => {
+      async (dataStr: string, metadata: Metadata) => {
         const user_info = (channel as PresenceChannel)?.members.get(
           metadata.user_id!
         ).info as AuthSuccessUserData['user_info'];
 
-        const decryptedValue = await Aes?.decrypt(msg);
-
+        const decryptedValue = JSON.parse(
+          (await Aes?.decrypt(dataStr)) || ''
+        ) as ChatMsg;
         setChatValue({
           type: MESSAGE_TYPE.MSG,
           user: {
@@ -318,9 +340,9 @@ export const usePusher = (
             nickname: user_info.nickname,
             avatar: user_info.avatar as AvatarName,
           },
-          timestamp,
+          timestamp: decryptedValue.timestamp,
           msg:
-            decryptedValue ||
+            decryptedValue.msg ||
             t(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
               origin:
                 process.env.NEXT_PUBLIC_SERVER_URL +
@@ -345,7 +367,13 @@ export const usePusher = (
     const { encryptData, userInfo } = useRoomStore.getState();
     const timestamp = Date.now();
 
-    const encryptedValue = await Aes?.encrypt(content);
+    const encryptedValue = await Aes?.encrypt(
+      JSON.stringify({
+        type: MESSAGE_TYPE.MSG,
+        msg: content,
+        timestamp,
+      })
+    );
 
     setChatValue({
       type: MESSAGE_TYPE.MSG,
@@ -361,11 +389,10 @@ export const usePusher = (
 
     cb?.();
 
-    const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
-      type: MESSAGE_TYPE.MSG,
-      msg: encryptedValue,
-      timestamp,
-    });
+    const triggered = channel.trigger(
+      CustomEvent.RECEIVE_INFORMATION,
+      encryptedValue
+    );
 
     setChatValue((state) => {
       const copyState = [...state];

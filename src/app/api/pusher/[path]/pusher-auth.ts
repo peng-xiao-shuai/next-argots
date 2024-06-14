@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { RoomStatus, UserRole } from '&/enum';
+import { API_URL, RoomStatus, UserRole } from '&/enum';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
 import { AuthSuccessUserData, SigninSuccessUserData } from './pusher-type';
@@ -8,19 +8,44 @@ import { NextRequest } from 'next/server';
 import clientPromise from '@/server/db';
 import { ObjectId } from 'mongodb';
 import { diffHash, isPresence } from '@/utils/server-utils';
-import { isChannelUserExistApi, requestPusherApi, res } from '../../utils';
+import {
+  createPusherSignature,
+  isChannelUserExistApi,
+  requestPusherApi,
+  res,
+} from '../../utils';
 import type { AvatarName } from '@/components';
+
+interface BaseData {
+  roomStatus: RoomStatus;
+  reconnection: 'true' | 'false';
+  nickName: string;
+  roomName: string;
+  avatar: AvatarName;
+  [s: string]: string | undefined;
+}
+
+interface AddJoinData extends BaseData {
+  roomStatus: RoomStatus.JOIN | RoomStatus.ADD;
+  password: string;
+  pwdHash: string;
+  [s: string]: string;
+}
+
+interface LinkJoinData extends BaseData {
+  roomStatus: RoomStatus.LINK_JOIN;
+  hash: string;
+  roomId: string;
+  [s: string]: string;
+}
 
 type BODY = {
   socket_id: string;
-  nickName: string;
-  password?: string;
-  roomName: string;
-  roomStatus: RoomStatus;
-  avatar: AvatarName;
-  hash?: string;
-  roomId?: string;
-  reconnection: 'true' | 'false';
+  /**
+   * AddJoinData | LinkJoinData 类型的 json 字符串
+   */
+  data: string;
+  hash: string;
 } & Indexes;
 
 export const pusherAuthApi = {
@@ -35,14 +60,32 @@ export const pusherAuthApi = {
       body[key] = item;
     });
 
-    const {
-      socket_id,
-      nickName,
-      roomStatus,
-      password,
-      roomName,
-      reconnection,
-    } = body as BODY;
+    const { socket_id, hash } = body as BODY;
+    const data = JSON.parse(body.data) as AddJoinData | LinkJoinData;
+
+    const _hash = createPusherSignature({
+      method: 'POST',
+      path: API_URL.PUSHER_SIGNIN,
+      params: data,
+      secret: process.env.NEXT_PUBLIC_SALT!,
+    });
+
+    /**
+     * 校验数据完整性
+     */
+    if (_hash !== hash) {
+      const authResponse = pusher.authenticateUser(socket_id, {
+        id: socket_id,
+        user_info: {
+          code: '403',
+          message: 'decryption failure',
+        },
+      });
+      return res(authResponse, 200);
+    }
+
+    const { nickName, roomStatus, password, roomName, reconnection, pwdHash } =
+      data;
 
     const user: SigninSuccessUserData = {
       id: socket_id,
@@ -65,9 +108,10 @@ export const pusherAuthApi = {
     /**
      * 参数校验
      */
-    const paramsCheck = isPresence(body, [
+    const paramsCheck = isPresence(data, [
       'nickName',
       'password',
+      'pwdHash',
       'roomName',
       'roomStatus',
       'reconnection',
@@ -80,7 +124,7 @@ export const pusherAuthApi = {
       /**
        * 校验
        */
-      if (!diffHash(password!, req.headers.get('hash') as string)) {
+      if (!diffHash(password!, pwdHash)) {
         user.user_info.code = '403';
         user.user_info.message = 'decryption failure';
         const authResponse = pusher.authenticateUser(socket_id, user);
@@ -129,16 +173,44 @@ export const pusherAuthApi = {
     });
     const {
       socket_id,
+      channel_name: channel,
+      hash: dataHash,
+    } = body as BODY & {
+      channel_name: string;
+    };
+    const data = JSON.parse(body.data) as AddJoinData | LinkJoinData;
+
+    const _hash = createPusherSignature({
+      method: 'POST',
+      path: API_URL.PUSHER_AUTH,
+      params: data,
+      secret: process.env.NEXT_PUBLIC_SALT!,
+    });
+
+    /**
+     * 校验数据完整性
+     */
+    if (_hash !== dataHash) {
+      return res(
+        {
+          message: 'decryption failure',
+          data: {},
+        },
+        403
+      );
+    }
+
+    const {
       nickName,
       password,
       roomStatus,
       roomName,
+      pwdHash,
       avatar,
       hash,
       reconnection,
-      channel_name: channel,
       roomId: _roomId,
-    } = body as BODY;
+    } = data;
 
     /**
      * 使用 密码加频道号组成id，避免某种情况下 pusher 没有 roomName 数据库集合中存在 roomName 导致无法创建房间
@@ -155,9 +227,10 @@ export const pusherAuthApi = {
       /**
        * 参数校验
        */
-      const paramsCheck = isPresence(body, [
+      const paramsCheck = isPresence(data, [
         'nickName',
         'password',
+        'pwdHash',
         'roomName',
         'roomStatus',
         'reconnection',
@@ -169,7 +242,7 @@ export const pusherAuthApi = {
       /**
        * 校验
        */
-      if (!diffHash(password!, req.headers.get('hash') as string)) {
+      if (!diffHash(password!, pwdHash)) {
         return res(
           {
             message: 'decryption failure',
@@ -199,7 +272,7 @@ export const pusherAuthApi = {
        */
       const roomData = await collection.findOne({
         roomId: roomId,
-        hash: req.headers.get('hash') || '',
+        hash: pwdHash || '',
       });
 
       if (roomStatus === RoomStatus.ADD && reconnection === 'false') {
@@ -218,7 +291,7 @@ export const pusherAuthApi = {
           roomId: roomId,
           iv,
           houseOwnerId: hashSync(nickName, process.env.NEXT_PUBLIC_SALT!),
-          hash: req.headers.get('hash') as string,
+          hash: pwdHash,
           channel: 'presence-' + roomName,
           id: new ObjectId().toString(),
           createdAt: new Date().toISOString(),
