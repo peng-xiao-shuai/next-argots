@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   useContext,
+  useRef,
 } from 'react';
 import Pusher from 'pusher-js';
 import type { Channel, PresenceChannel } from 'pusher-js';
@@ -68,15 +69,29 @@ export type MemberInfo = {
 let channel: PresenceChannel | Channel;
 let cachePusher: Pusher | null;
 let Aes: AES | null;
+let lastChatHistory: Chat;
+
 Pusher.logToConsole = process.env.NODE_ENV === 'development';
-export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
+export const usePusher = (
+  setChat?: Dispatch<SetStateAction<Chat[]>>,
+  chat?: Chat[]
+) => {
   const { replace } = useRouter();
   const { t, language } = useContext(AppContext);
+  const chatDataCopy = useRef<Chat[]>([]);
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
 
   useEffect(() => {
+    if (channel && window.location.pathname.includes('/chat-room') && chat) {
+      lastChatHistory = chat[chat.length - 1] || [];
+      chatDataCopy.current = chat;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chat]);
+
+  useEffect(() => {
     if (channel && window.location.pathname.includes('/chat-room') && setChat) {
-      ObserveEntryOrExit();
+      observeEntryOrExit();
       receiveInformation();
 
       return () => {
@@ -113,10 +128,11 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           userAuthentication: {
             endpoint: API_URL.PUSHER_SIGNIN,
             transport: 'ajax',
-            params: {
+            paramsProvider: () => ({
               roomStatus: opts.roomStatus,
               ...encryptData,
-            },
+              reconnection: !!useRoomStore.getState().userInfo.userId,
+            }),
             headers: {
               hash,
             },
@@ -124,11 +140,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
           channelAuthorization: {
             endpoint: API_URL.PUSHER_AUTH,
             transport: 'ajax',
-            params: {
+            paramsProvider: () => ({
               ...opts,
               ...encryptData,
-            },
-            paramsProvider: () => ({
               reconnection: !!useRoomStore.getState().userInfo.userId,
             }),
             headers: {
@@ -139,10 +153,13 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
 
         setPusher(cachePusher);
 
-        cachePusher.bind_global((...arg: any) => {
-          // 订阅成功
-          console.log('全局监听', arg);
-        });
+        if (process.env.NODE_ENV === 'development') {
+          cachePusher.bind_global((...arg: any) => {
+            // 订阅成功
+            console.log('全局监听', arg);
+          });
+        }
+
         cachePusher?.connection.bind('state_change', (error: any) => {
           if (
             error.previous === 'connecting' &&
@@ -231,10 +248,10 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   };
 
   /**
-   * 观察用户进入频道或者离开频道
+   * 观察用户进入频道或者离开频道,订阅成功
    */
-  const ObserveEntryOrExit = () => {
-    console.log('开启监听');
+  const observeEntryOrExit = () => {
+    console.log('重新监听');
 
     /**
      * 重连也会触发加入和删除
@@ -249,14 +266,14 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
             name: unicodeToString(info.name),
           })}`,
         });
+
+        DistributionHistory(info);
       }
     );
 
     channel.bind(
       'pusher:member_removed',
       ({ info }: { info: AuthSuccessUserData['user_info'] }) => {
-        console.log(info);
-
         setChatValue({
           type: MESSAGE_TYPE.SYSTEM,
           timestamp: Date.now(),
@@ -322,13 +339,16 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
   /**
    * 客户端发送
    */
-  const ClientSendMessage = async (content: string, cb?: () => void) => {
+  const clientSendMessage = async (content: string, cb?: () => void) => {
     if (!cachePusher || !channel) {
       toast(t(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
       return;
     }
     const { encryptData, userInfo } = useRoomStore.getState();
     const timestamp = Date.now();
+
+    const encryptedValue = await Aes?.encrypt(content);
+
     setChatValue({
       type: MESSAGE_TYPE.MSG,
       msg: content,
@@ -343,7 +363,6 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     });
 
     cb?.();
-    const encryptedValue = await Aes?.encrypt(content);
 
     const triggered = channel.trigger(CustomEvent.RECEIVE_INFORMATION, {
       type: MESSAGE_TYPE.MSG,
@@ -366,11 +385,9 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
    * 清除更改chat的监听
    */
   const removeObserve = () => {
-    console.log('removeObserve');
+    console.log('断开监听');
 
-    channel?.unbind('pusher:member_removed');
-    channel?.unbind('pusher:member_added');
-    channel?.unbind(CustomEvent.RECEIVE_INFORMATION);
+    channel?.unbind_all();
   };
 
   /**
@@ -420,8 +437,8 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
     setUserInfoData({});
 
     removeObserve();
-    cachePusher?.unsubscribe('presence-' + encryptData.roomName);
     cachePusher?.disconnect();
+    cachePusher?.unsubscribe('presence-' + encryptData.roomName);
     cachePusher = null;
     Aes = null;
   };
@@ -434,13 +451,108 @@ export const usePusher = (setChat?: Dispatch<SetStateAction<Chat[]>>) => {
       nickName
     );
 
+  /**
+   * 发起聊天记录读取请求（非频道主才会使用）
+   */
+  const getChatHistory = async () => {
+    const { encryptData } = useRoomStore.getState();
+    cachePusher!.connect();
+
+    /**
+     * 如果存在聊天则读取记录（非频道主）
+     */
+    if (lastChatHistory) {
+      cachePusher?.bind(
+        'pusher:signin_success',
+        ({ user_data }: { user_data: string }) => {
+          const data = JSON.parse(user_data) as SigninSuccessUserData;
+          console.log('订阅 recordChannels', data);
+
+          let recordChannels: Channel | null = cachePusher!.subscribe(
+            'private-' + encryptData.roomName + data.id
+          );
+          recordChannels.bind(
+            'pusher:subscription_count',
+            (data: { subscription_count: number }) => {
+              if (data.subscription_count === 2) {
+                /**
+                 * 发送获取聊天记录请求
+                 */
+                recordChannels!.trigger(CustomEvent.GET_RECORDS_REQ, {
+                  chat: lastChatHistory,
+                });
+              }
+            }
+          );
+          recordChannels.bind(
+            CustomEvent.GET_RECORDS_RES,
+            async ({ chats }: { chats: Chat[] }, metadata: Metadata) => {
+              setChatValue((state) => state.concat(chats));
+
+              recordChannels!.unbind_all();
+              recordChannels?.cancelSubscription();
+              cachePusher?.unsubscribe(
+                'private-' + encryptData.roomName + data.id
+              );
+              console.log('退订 recordChannels', recordChannels);
+            }
+          );
+        }
+      );
+    }
+  };
+
+  /**
+   * 频道主分发聊天记录
+   */
+  const DistributionHistory = (
+    info: SubscriptionSuccessMember['me']['info']
+  ) => {
+    const { userInfo, encryptData } = useRoomStore.getState();
+
+    /**
+     * 频道主分配记录给重连用户
+     */
+    if (info.reconnection === 'true' && userInfo.roomRecordId) {
+      const recordChannels = cachePusher!.subscribe(
+        'private-' + encryptData.roomName + info.socket_id
+      );
+      recordChannels.bind(
+        CustomEvent.GET_RECORDS_REQ,
+        ({ chat }: { chat: Chat }) => {
+          const lastIndex = chatDataCopy.current.findIndex(
+            (item) => item.timestamp === chat.timestamp
+          );
+          /**
+           * 发送聊天记录
+           */
+          recordChannels.trigger(CustomEvent.GET_RECORDS_RES, {
+            chats: [...chatDataCopy.current].splice(lastIndex + 1),
+          });
+          recordChannels.unbind_all();
+          cachePusher?.unsubscribe(
+            'private-' + encryptData.roomName + info.socket_id
+          );
+        }
+      );
+    }
+  };
+  /**
+   * 主动断开连接
+   */
+  const disconnect = () => {
+    cachePusher?.disconnect();
+  };
+
   return {
     pusher,
     signin,
     isChannelUserExist,
-    ClientSendMessage,
-    ObserveEntryOrExit,
+    clientSendMessage,
+    observeEntryOrExit,
     exitRoom,
     unsubscribe,
+    disconnect,
+    getChatHistory,
   };
 };

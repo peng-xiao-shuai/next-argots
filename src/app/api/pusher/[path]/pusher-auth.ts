@@ -20,7 +20,7 @@ type BODY = {
   avatar: AvatarName;
   hash?: string;
   roomId?: string;
-  reconnection: string;
+  reconnection: 'true' | 'false';
 } & Indexes;
 
 export const pusherAuthApi = {
@@ -35,8 +35,14 @@ export const pusherAuthApi = {
       body[key] = item;
     });
 
-    const { socket_id, nickName, roomStatus, password, roomName } =
-      body as BODY;
+    const {
+      socket_id,
+      nickName,
+      roomStatus,
+      password,
+      roomName,
+      reconnection,
+    } = body as BODY;
 
     const user: SigninSuccessUserData = {
       id: socket_id,
@@ -64,25 +70,13 @@ export const pusherAuthApi = {
       'password',
       'roomName',
       'roomStatus',
+      'reconnection',
     ]);
     if (typeof paramsCheck !== 'boolean') {
       return res(paramsCheck, 400);
     }
 
     try {
-      /**
-       * 加入频道判断是否存在同名用户
-       */
-      if (roomStatus === RoomStatus.JOIN) {
-        const isUser = await isChannelUserExistApi(roomName, nickName);
-
-        if (isUser) {
-          user.user_info.code = '403';
-          user.user_info.message = 'The user name already exists';
-          const authResponse = pusher.authenticateUser(socket_id, user);
-          return res(authResponse, 200);
-        }
-      }
       /**
        * 校验
        */
@@ -91,6 +85,20 @@ export const pusherAuthApi = {
         user.user_info.message = 'decryption failure';
         const authResponse = pusher.authenticateUser(socket_id, user);
         return res(authResponse, 200);
+      }
+
+      /**
+       * 加入频道判断是否存在同名用户
+       */
+      if (roomStatus === RoomStatus.JOIN && reconnection === 'false') {
+        const isUser = await isChannelUserExistApi(roomName, nickName);
+
+        if (isUser) {
+          user.user_info.code = '403';
+          user.user_info.message = 'The user name already exists';
+          const authResponse = pusher.authenticateUser(socket_id, user);
+          return res(authResponse, 200);
+        }
       }
 
       user.user_info.code = '200';
@@ -128,6 +136,7 @@ export const pusherAuthApi = {
       avatar,
       hash,
       reconnection,
+      channel_name: channel,
       roomId: _roomId,
     } = body as BODY;
 
@@ -239,17 +248,15 @@ export const pusherAuthApi = {
           iv: room!.iv,
           role,
           avatar,
+          reconnection,
+          socket_id,
           roomRecordId: roomStatus === RoomStatus.ADD ? room!.id : '',
           userId: nickName,
           name: nickName,
         },
       };
 
-      const auth = pusher.authorizeChannel(
-        socket_id,
-        `presence-${roomName}`,
-        presenceData
-      );
+      const auth = pusher.authorizeChannel(socket_id, channel, presenceData);
       return res(auth, 200);
     } catch (error: any) {
       console.log(error);

@@ -20,7 +20,10 @@ export type SigninSuccessUserData = {
  * 授权连接成功返回的用户信息，由 cachePusher!.subscribe('presence-' + encryptData.roomName); 触发 API_URL.PUSHER_AUTH 接口
  */
 export type AuthSuccessUserData = {
-  user_id: SigninSuccessUserData['id'];
+  /**
+   * id 会存入 pusher 服务中用于频道查找用户
+   */
+  user_id: string;
   user_info: {
     /**
      * 用户名
@@ -31,6 +34,14 @@ export type AuthSuccessUserData = {
      * 头像
      */
     avatar: string;
+    /**
+     * 重连标识符
+     */
+    reconnection: 'true' | 'false';
+    /**
+     * 通道id
+     */
+    socket_id: string;
     /**
      * 頻道主才会有
      */

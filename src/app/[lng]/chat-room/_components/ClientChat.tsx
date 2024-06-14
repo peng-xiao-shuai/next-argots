@@ -17,6 +17,7 @@ import { AppContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
 import Cookies from 'js-cookie';
+import { useLine } from '@/hooks/use-line';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -27,7 +28,13 @@ export function ClientChat() {
   const isMobile = useRef(false);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { ClientSendMessage, exitRoom, unsubscribe } = usePusher(setChat);
+  const {
+    clientSendMessage,
+    exitRoom,
+    unsubscribe,
+    getChatHistory,
+    disconnect,
+  } = usePusher(setChat, chat);
   const { mutate } = trpc.removeRoom.useMutation({
     onSuccess: () => {
       Cookies.remove('pw-256');
@@ -38,6 +45,18 @@ export function ClientChat() {
       console.log(err, v);
     },
   });
+
+  /**
+   * 断网重连，并且同步数据
+   */
+  useLine((e) => {
+    if (e.type === 'offline') {
+      disconnect();
+    } else {
+      getChatHistory();
+    }
+  });
+
   // 自动增长高度
   const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (target.value.trim().length === 0) {
@@ -85,7 +104,7 @@ export function ClientChat() {
         return;
       }
 
-      ClientSendMessage(content.trim());
+      clientSendMessage(content.trim());
       setContent('');
 
       if (!visibleEmoji) {
@@ -101,8 +120,6 @@ export function ClientChat() {
     key,
     shiftKey,
   }: KeyboardEvent<HTMLTextAreaElement>) => {
-    console.log(key === 'Enter', shiftKey, isMobile.current);
-
     if (key === 'Enter' && !shiftKey && !isMobile.current) {
       handleSendMessage();
     }
