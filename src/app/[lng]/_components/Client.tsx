@@ -7,6 +7,7 @@ import { Lng } from '@/locales/i18n';
 import { Dialog, HomeForm } from '../../../components';
 import { AppContext } from '@/context';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 export const ClientOperate: FC<{
   lng: Lng;
@@ -34,6 +35,9 @@ export const ClientOperate: FC<{
       toast.error(msg);
       history.replaceState(null, '', `/${lng}`);
     }
+
+    Cookies.remove('pw-256');
+    Cookies.remove('hash');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
