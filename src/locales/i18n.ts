@@ -27,9 +27,9 @@ export type Resources = {
 
 export const FALLBACK_LNG = 'en-US' as const;
 export const resources = {
+  'en-US': { [DEFAULT_NS]: enUS },
   'ja-JP': { [DEFAULT_NS]: jaJP },
   'zh-TW': { [DEFAULT_NS]: zhTW },
-  'en-US': { [DEFAULT_NS]: enUS },
   'zh-CN': { [DEFAULT_NS]: zhCN },
 };
 export const languages = Object.keys(resources) as Lng[];
@@ -45,7 +45,7 @@ const initI18next = async (lng: Lng, ns: string = DEFAULT_NS) => {
   await i18nInstance
     .use(initReactI18next)
     .use(resourcesToBackend(resources))
-    .init(getOptions(lng, ns));
+    .init(getOptions(FALLBACK_LNG, ns));
   return i18nInstance;
 };
 

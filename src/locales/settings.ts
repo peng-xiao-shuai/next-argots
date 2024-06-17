@@ -11,7 +11,8 @@ export function getOptions(lng: Lng = FALLBACK_LNG, ns: string = DEFAULT_NS) {
     fallbackLng: FALLBACK_LNG,
     lng,
     fallbackNS: DEFAULT_NS,
+    load: 'currentOnly',
     defaultNS: DEFAULT_NS,
     ns,
-  };
+  } as const;
 }
