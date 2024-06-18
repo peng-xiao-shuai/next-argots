@@ -1,12 +1,6 @@
 'use client';
 import Image from 'next/image';
-import {
-  ComponentType,
-  Dispatch,
-  FC,
-  FunctionComponent,
-  SetStateAction,
-} from 'react';
+import { ComponentType, Dispatch, FC, SetStateAction, memo } from 'react';
 
 export type AvatarName =
   | 'Aries'
@@ -45,7 +39,7 @@ const avatars: AvatarName[] = [
   'Tiger',
   'Wolf',
 ];
-export const ImageSvg: FC<{
+const ImageSvg: FC<{
   name?: AvatarName;
   className?: string;
 }> = ({ name, className }) => {
@@ -70,6 +64,9 @@ export const ImageSvg: FC<{
     </div>
   );
 };
+
+const MemoizedImageSvg = memo(ImageSvg);
+MemoizedImageSvg.displayName = 'ImageSvg';
 
 const GridAvatar: ComponentType<{
   setAvatar: Dispatch<SetStateAction<AvatarName>>;
@@ -96,5 +93,7 @@ const GridAvatar: ComponentType<{
     </ul>
   );
 };
+
+export { MemoizedImageSvg as ImageSvg };
 
 export default GridAvatar;
