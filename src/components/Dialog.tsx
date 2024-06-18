@@ -34,26 +34,36 @@ export const Dialog: FC<{
     });
 
   return (
-    <>
+    <DialogMask visible={visible} onClose={handleClose}>
       <div
-        className={`dialog fixed w-full z-50 h-[100vh] left-0 top-0 transition-all duration-[300ms] ${
-          visible ? 'opacity-1' : 'opacity-0 pointer-events-none'
-        }`}
+        className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-300 transform scale-50 ${
+          boxVisible ? '!scale-100 opacity-95' : 'opacity-0'
+        } ${contentClassName || 'bg-base-100'}`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className={`flex justify-center items-center w-full h-[100vh] bg-black/60`}
-          onClick={handleClose}
-        >
-          <div
-            className={`text-lg _p rounded-lg max-w-[90vw] min-w-[128px] transition-all duration-300 transform scale-50 ${
-              boxVisible ? '!scale-100 opacity-95' : 'opacity-0'
-            } ${contentClassName || 'bg-base-100'}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {children}
-          </div>
-        </div>
+        {children}
       </div>
-    </>
+    </DialogMask>
+  );
+};
+
+export const DialogMask: FC<{
+  visible: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}> = ({ visible, children, onClose }) => {
+  return (
+    <div
+      className={`dialog fixed w-full z-50 h-[100vh] left-0 top-0 transition-all duration-300 ${
+        visible ? 'opacity-1' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      <div
+        className={`flex justify-center items-center w-full h-[100vh] bg-black/60`}
+        onClick={onClose}
+      ></div>
+
+      {children}
+    </div>
   );
 };
