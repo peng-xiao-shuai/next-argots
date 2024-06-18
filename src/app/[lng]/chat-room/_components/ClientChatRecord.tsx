@@ -1,9 +1,10 @@
 'use client';
 import { ImageSvg } from '@/components';
+import { ChatPopoverContext } from '@/context';
 import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { unicodeToString } from '@/utils/string-transform';
-import { FC } from 'react';
+import { FC, MouseEvent, useCallback, useContext } from 'react';
 
 type ExtensionRecord<T> = {
   last: T | null;
@@ -17,17 +18,32 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
   next,
 }) => {
   const { userInfo } = useRoomStore();
-  const isSystemType = (data: Chat | null) =>
-    data?.type === MESSAGE_TYPE.SYSTEM ? false : data?.user.id == user.id;
+  const isUserMessage = user.nickname === userInfo.nickname;
+  const { setReferenceElement, setVisible, visible } =
+    useContext(ChatPopoverContext);
+  const isSystemType = useCallback(
+    (data: Chat | null) =>
+      data?.type === MESSAGE_TYPE.SYSTEM ? false : data?.user.id == user.id,
+    [user.id]
+  );
+  const handleClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      setReferenceElement(e.currentTarget);
+      setVisible(true);
+    },
+    [setReferenceElement, setVisible]
+  );
 
   return (
     <div
-      className={`chat chat-${
-        user.nickname == userInfo.nickname ? 'end' : 'start'
-      } !pb-0 pt-[0.15rem] ${!isSystemType(last) ? 'pt-2' : ''}`}
+      className={`chat
+      chat-${isUserMessage ? 'end' : 'start'}
+      !pb-0 pt-[0.15rem] *:transition-all *:duration-1000 *:relative *:z-[100] 
+      ${!isSystemType(last) ? 'pt-2' : ''}
+      ${visible ? '*:!bg-base-100' : ''}`}
     >
-      <div className="chat-image avatar">
-        <div className="w-10 rounded-lg">
+      <div className="chat-image avatar rounded-lg overflow-hidden">
+        <div className="w-10">
           {!isSystemType(next) && (
             <ImageSvg className="w-10 h-10" name={user?.avatar}></ImageSvg>
           )}
@@ -35,7 +51,7 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
       </div>
       <div
         className={`${
-          user.nickname == userInfo.nickname
+          isUserMessage
             ? 'chat-bubble-primary'
             : 'b3-opacity-6 text-base-content'
         } chat-bubble min-h-[unset] ${
@@ -43,11 +59,12 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
             ? 'user-last rounded-tr-md'
             : 'before:hidden rounded-r-md'
         } ${!isSystemType(last) ? 'user-first !rounded-t-box' : ''}`}
+        onClick={handleClick}
       >
         {!isSystemType(last) && (
           <div
             className={`chat-header leading-6 line-clamp-1 font-bold text-ellipsis block ${
-              user.nickname == userInfo.nickname ? 'text-right' : 'text-left'
+              isUserMessage ? 'text-right' : 'text-left'
             }`}
           >
             {unicodeToString(user!.nickname)}
@@ -59,27 +76,32 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
   );
 };
 
-export const ClientChatRecords: FC<Chat & ExtensionRecord<Chat>> = (props) => {
+export const ClientChatRecords: FC<{ chat: Chat[] }> = ({ chat }) => {
   return (
     <>
-      {
-        // 文字类型
-        props.type === MESSAGE_TYPE.MSG && (
-          <ChatRecords
-            {...(props as ChatMsg & ExtensionRecord<ChatMsg>)}
-            user={props.user}
-          ></ChatRecords>
-        )
-      }
+      {chat.map((item, index) => {
+        if (item.type === MESSAGE_TYPE.MSG)
+          return (
+            <ChatRecords
+              key={index}
+              {...(item as ChatMsg & ExtensionRecord<ChatMsg>)}
+              user={item.user}
+            ></ChatRecords>
+          );
 
-      {
         // 系统通知
-        props.type === MESSAGE_TYPE.SYSTEM && (
-          <div className="py-2 text-center text-base-content text-opacity-60 text-sm w-full">
-            {props.msg}
-          </div>
-        )
-      }
+        if (item.type === MESSAGE_TYPE.SYSTEM)
+          return (
+            <div
+              className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+              key={index}
+            >
+              {item.msg}
+            </div>
+          );
+
+        return <></>;
+      })}
     </>
   );
 };
