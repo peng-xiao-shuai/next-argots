@@ -1,2 +1,3 @@
 export * from './AppContext';
-export * from './ClientContext';
+export * from './ClientsContext';
+export * from './PopoversContext';
