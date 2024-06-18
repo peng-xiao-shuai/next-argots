@@ -13,21 +13,31 @@ import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { debounce } from '@/utils/debounce-throttle';
 import { toast } from 'sonner';
-import { AppContext } from '@/context';
+import { AppContext, ChatPopoverContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
-import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
+
 import Cookies from 'js-cookie';
 import { useLine } from '@/hooks/use-line';
+import { ClientChatSendMsg } from './ClientChatSendMsg';
+import Popover from '@/components/Popover';
+import { Dialog, DialogMask } from '@/components';
 
 export function ClientChat() {
   const pathname = usePathname();
-  const { t } = useContext(AppContext);
-  const [content, setContent] = useState('');
-  const [chat, setChat] = useState<Chat[]>([]);
-  const [visibleEmoji, setVisibleEmoji] = useState(false);
-  const isMobile = useRef(false);
+  const [chat, setChat] = useState<Chat[]>([
+    {
+      type: MESSAGE_TYPE.MSG,
+      msg: 'xxxx',
+      timestamp: 28198291739201,
+      user: {
+        id: 'xxx',
+        avatar: '',
+        nickname: '_u600b',
+      },
+      status: 'success',
+    },
+  ]);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     clientSendMessage,
     exitRoom,
@@ -46,6 +56,13 @@ export function ClientChat() {
     },
   });
 
+  // popover prop
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
+    null
+  );
+  const [visible, setPopoverVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+
   /**
    * 断网重连，并且同步数据
    */
@@ -56,17 +73,6 @@ export function ClientChat() {
       getChatHistory();
     }
   });
-
-  // 自动增长高度
-  const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (target.value.trim().length === 0) {
-      if (content.length === 0) return;
-      setContent('');
-      return;
-    }
-
-    setContent(target.value);
-  };
 
   /**
    * 发送信息或者接受信息滚动到底部
@@ -94,42 +100,6 @@ export function ClientChat() {
     requestAnimationFrame(animateScroll);
   };
 
-  /**
-   * send message
-   */
-  const handleSendMessage = () => {
-    debounce(() => {
-      if (content.trim() === '') {
-        toast.warning(t(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
-        return;
-      }
-
-      clientSendMessage(content.trim());
-      setContent('');
-
-      if (!visibleEmoji) {
-        textAreaRef.current?.focus();
-      }
-    });
-  };
-
-  /**
-   * 聚焦按键事件
-   */
-  const handleKeyDown = ({
-    key,
-    shiftKey,
-  }: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (key === 'Enter' && !shiftKey && !isMobile.current) {
-      handleSendMessage();
-    }
-  };
-
-  /**
-   * 聚焦
-   */
-  const handleFocus = () => {};
-
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
@@ -142,94 +112,98 @@ export function ClientChat() {
     handleScrollBottom();
   }, [chat]);
 
-  useEffect(() => {
-    textAreaRef.current?.focus();
-    isMobile.current = /iPhone|iPad|iPod|Android|Mobile/i.test(
-      navigator.userAgent
-    );
-  }, []);
+  const handleClose = () => {
+    setVisible(false);
+  };
+  const setVisible = (value: React.SetStateAction<boolean>) => {
+    setPopoverVisible(value);
+    setDialogVisible(value);
+  };
 
   return (
     <>
-      <div
-        className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
-        data-hide="true"
-        ref={ChatScroll}
+      <ChatPopoverContext.Provider
+        value={{
+          setReferenceElement,
+          visible,
+          setVisible,
+        }}
       >
-        <div>
-          {chat.map((item, index) => (
-            <ClientChatRecords
-              key={index}
-              {...item}
-              last={chat[index - 1]}
-              next={chat[index + 1]}
-            ></ClientChatRecords>
-          ))}
-        </div>
-      </div>
-
-      <div className="b3-opacity-6">
-        <div className="flex items-end w-full p-[var(--padding)] ">
-          <ClientSwapSvg
-            visibleEmoji={visibleEmoji}
-            setVisibleEmoji={setVisibleEmoji}
-          ></ClientSwapSvg>
-
-          {/* textarea */}
-          <div className="textarea b3-opacity-6 flex-1 max-h-40 min-h-[2.5rem] h-auto p-2 box-border transition-all duration-300 border-primary shadow-sm shadow-primary">
-            <div className="relative overflow-hidden max-h-[9rem] min-h-[1.4rem] h-auto">
-              {/* 站位 */}
-              <div className="max-h-[9rem] min-h-[1.4rem] w-full text-base box-border overflow-hidden whitespace-pre-wrap break-all invisible">
-                {content.split('\n').map(function (item, index) {
-                  if (item.length === 0) {
-                    return (
-                      <React.Fragment key={`${index}-${item}`}>
-                        <div>{item}</div>
-                        <br />
-                      </React.Fragment>
-                    );
-                  }
-                  return <div key={`${index}-item`}>{item}</div>;
-                })}
-              </div>
-              {/* absolute bottom-0  防止光标到最底部导致看不到 */}
-              <textarea
-                value={content}
-                rows={1}
-                placeholder={t(CHAT_ROOM_KEYS.SPEAK_OUT_FREELY)}
-                style={{
-                  height: '100%',
-                }}
-                className="absolute bottom-0 w-full box-border !bg-opacity-0 text-base block caret-primary overflow-hidden resize-none outline-none"
-                onChange={autoResize}
-                onKeyDown={handleKeyDown}
-                onFocus={handleFocus}
-                onClick={() => {
-                  setVisibleEmoji(false);
-                }}
-                ref={textAreaRef}
-              />
-            </div>
-          </div>
-
-          {/* 按钮 */}
-          <div className="ml-4">
-            <button
-              className="btn btn-primary min-h-[2.5rem] h-10"
-              onClick={handleSendMessage}
-            >
-              {t(CHAT_ROOM_KEYS.SEND)}
-            </button>
-          </div>
+        <div
+          className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
+          data-hide="true"
+          ref={ChatScroll}
+        >
+          <ClientChatRecords chat={chat}></ClientChatRecords>
         </div>
 
-        <ClientEmojiPicker
-          setContent={setContent}
-          textAreaRef={textAreaRef}
-          visibleEmoji={visibleEmoji}
-          setVisibleEmoji={setVisibleEmoji}
-        ></ClientEmojiPicker>
-      </div>
+        <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
+
+        <DialogMask visible={dialogVisible} onClose={handleClose}>
+          <Popover
+            referenceElement={referenceElement}
+            visible={visible}
+            onClose={handleClose}
+          >
+            <ul className="menu !bg-base-100 rounded-box">
+              <li>
+                <a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </Popover>
+        </DialogMask>
+      </ChatPopoverContext.Provider>
     </>
   );
 }
