@@ -4,7 +4,11 @@ import type { Lng } from '@/locales/i18n';
 import type { JoinLinkType } from '@/app/api/join-link/route';
 import { ClientShare } from './ClientShare';
 import { stringToUnicode } from '@/utils/string-transform';
-import type { AvatarName, ShareFormDataRules } from '@/components';
+import {
+  ChatPopoverProviders,
+  type AvatarName,
+  type ShareFormDataRules,
+} from '@/components';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { RoomStatus } from '@/server/enum';
 import { useBusWatch } from '@/hooks/use-bus-watch';
@@ -111,7 +115,7 @@ export const ClientContext: FC<{
         lng: props.lng,
       }}
     >
-      {props.children}
+      <ChatPopoverProviders>{props.children}</ChatPopoverProviders>
     </ClientChatContext.Provider>
   );
 };

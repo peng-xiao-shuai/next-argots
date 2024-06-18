@@ -11,15 +11,15 @@ type ExtensionRecord<T> = {
   next: T | null;
 };
 
-const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
-  msg,
-  user,
-  last,
-  next,
-}) => {
+const ChatRecords: FC<
+  {
+    chatObj: ChatMsg;
+  } & ExtensionRecord<Chat>
+> = ({ chatObj, last, next }) => {
+  const { user, msg, timestamp } = chatObj;
   const { userInfo } = useRoomStore();
   const isUserMessage = user.nickname === userInfo.nickname;
-  const { setReferenceElement, setVisible, visible } =
+  const { setReferenceElement, setVisible, setCurrent, current } =
     useContext(ChatPopoverContext);
   const isSystemType = useCallback(
     (data: Chat | null) =>
@@ -30,17 +30,19 @@ const ChatRecords: FC<ChatMsg & ExtensionRecord<Chat>> = ({
     (e: MouseEvent<HTMLDivElement>) => {
       setReferenceElement(e.currentTarget);
       setVisible(true);
+
+      setCurrent(chatObj);
     },
-    [setReferenceElement, setVisible]
+    [chatObj, setCurrent, setReferenceElement, setVisible]
   );
 
   return (
     <div
       className={`chat
       chat-${isUserMessage ? 'end' : 'start'}
-      !pb-0 pt-[0.15rem] *:transition-all *:duration-1000 *:relative *:z-[100] 
+      !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative *:z-[100] 
       ${!isSystemType(last) ? 'pt-2' : ''}
-      ${visible ? '*:!bg-base-100' : ''}`}
+      ${current?.timestamp === timestamp ? '*:!bg-base-100' : ''}`}
     >
       <div className="chat-image avatar rounded-lg overflow-hidden">
         <div className="w-10">
@@ -84,8 +86,10 @@ export const ClientChatRecords: FC<{ chat: Chat[] }> = ({ chat }) => {
           return (
             <ChatRecords
               key={index}
-              {...(item as ChatMsg & ExtensionRecord<ChatMsg>)}
-              user={item.user}
+              {...(item as ChatMsg)}
+              last={chat[index - 1]}
+              next={chat[index + 1]}
+              chatObj={item}
             ></ChatRecords>
           );
 

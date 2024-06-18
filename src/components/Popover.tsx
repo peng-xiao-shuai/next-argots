@@ -29,7 +29,6 @@ const Popover: React.FC<PopoverProps> = ({
       className="popover px-2"
     >
       <div>{children}</div>
-      <button onClick={onClose}>Close</button>
     </div>
   );
 };
