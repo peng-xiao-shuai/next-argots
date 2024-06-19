@@ -26,9 +26,14 @@ import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
-import { AppContext } from '@/context';
+import { AppContext, ChatPopoverContextData, CommandChatMsg } from '@/context';
 import emitter from '@/utils/bus';
 import { createPusherSignature } from '@/app/api/utils';
+import {
+  COMMAND,
+  CommandType,
+} from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
+import { isTypeProtect } from '@/utils/type';
 
 export enum MESSAGE_TYPE {
   PING = 'ping',
@@ -40,6 +45,9 @@ export enum MESSAGE_TYPE {
 export interface ChatBase {
   type: MESSAGE_TYPE;
   msg: string;
+  /**
+   * 作为id
+   */
   timestamp: number;
 }
 
@@ -50,6 +58,15 @@ export interface ChatMsg extends ChatBase {
     avatar: AvatarName;
     nickname: string;
   };
+  isEdit: '0' | '1';
+  reply?: {
+    timestamp: ChatBase['timestamp'];
+    user: ChatMsg['user'];
+  };
+  /**
+   * 操作时间，包括回复时间，编辑信息时间
+   */
+  operateTimestamp?: ChatBase['timestamp'];
   status: 'loading' | 'success' | 'error';
 }
 export interface ChatSystem extends ChatBase {
@@ -74,20 +91,31 @@ let lastChatHistory: Chat;
 Pusher.logToConsole = process.env.NODE_ENV === 'development';
 export const usePusher = (
   setChat?: Dispatch<SetStateAction<Chat[]>>,
-  chat?: Chat[]
+  chats?: Chat[]
 ) => {
   const { replace } = useRouter();
   const { t, language } = useContext(AppContext);
   const chatDataCopy = useRef<Chat[]>([]);
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
+  // const decryptionFailure = useMemo(
+  //   () =>
+  //     t(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
+  //       origin:
+  //         process.env.NEXT_PUBLIC_SERVER_URL +
+  //         '/' +
+  //         language +
+  //         '/setting/about/feedback',
+  //     }).replace(/&#x2F;/g, '/'),
+  //   [language]
+  // );
 
   useEffect(() => {
-    if (channel && window.location.pathname.includes('/chat-room') && chat) {
-      lastChatHistory = chat[chat.length - 1] || [];
-      chatDataCopy.current = chat;
+    if (channel && window.location.pathname.includes('/chat-room') && chats) {
+      lastChatHistory = chats[chats.length - 1] || [];
+      chatDataCopy.current = chats;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat]);
+  }, [chats]);
 
   useEffect(() => {
     if (channel && window.location.pathname.includes('/chat-room') && setChat) {
@@ -323,6 +351,44 @@ export const usePusher = (
    * 绑定自定义接受信息事件
    */
   const receiveInformation = () => {
+    const handleCommand = (
+      decryptedValue: CommandChatMsg,
+      user: ChatMsg['user']
+    ) => {
+      let setFun: Parameters<typeof setChatValue>[0] = (state) => state;
+      const { command, chat } = decryptedValue;
+      switch (command) {
+        case COMMAND.DELETE:
+          setFun = (state) =>
+            state.filter((item) => item.timestamp !== chat.timestamp);
+          break;
+        case COMMAND.EDIT:
+          setFun = (state) => {
+            const data = state.find(
+              (item) => item.timestamp === chat.timestamp
+            ) as ChatMsg;
+            data.isEdit = '1';
+            data.msg = chat.msg;
+            data.operateTimestamp = chat.operateTimestamp;
+
+            return state;
+          };
+          break;
+        case COMMAND.REPLY:
+          setFun = {
+            timestamp: chat.timestamp,
+            msg: chat.msg,
+            type: MESSAGE_TYPE.MSG,
+            user,
+            reply: chat.reply,
+            isEdit: '0',
+            status: 'success',
+          };
+          break;
+      }
+
+      setChatValue(setFun);
+    };
     channel.bind(
       CustomEvent.RECEIVE_INFORMATION,
       async (dataStr: string, metadata: Metadata) => {
@@ -332,32 +398,64 @@ export const usePusher = (
 
         const decryptedValue = JSON.parse(
           (await Aes?.decrypt(dataStr)) || ''
-        ) as ChatMsg;
-        setChatValue({
-          type: MESSAGE_TYPE.MSG,
-          user: {
+        ) as ChatMsg | CommandChatMsg | CommandChatMsg[];
+
+        console.log('解密后数据', decryptedValue);
+
+        /**
+         * ChatMsg 类型则是普通发送信息
+         */
+        if (
+          isTypeProtect<typeof decryptedValue, ChatMsg>(decryptedValue, (obj) =>
+            Boolean(obj.type)
+          )
+        ) {
+          setChatValue({
+            timestamp: decryptedValue.timestamp,
+            msg: decryptedValue.msg,
+            type: MESSAGE_TYPE.MSG,
+            user: {
+              id: metadata.user_id!,
+              nickname: user_info.nickname,
+              avatar: user_info.avatar as AvatarName,
+            },
+            isEdit: '0',
+            status: 'success',
+          });
+          /**
+           * CommandChatMsg 指令类型消息
+           */
+        } else if (
+          isTypeProtect<typeof decryptedValue, CommandChatMsg>(
+            decryptedValue,
+            (obj) => !Array.isArray(obj)
+          )
+        ) {
+          handleCommand(decryptedValue, {
             id: metadata.user_id!,
             nickname: user_info.nickname,
             avatar: user_info.avatar as AvatarName,
-          },
-          timestamp: decryptedValue.timestamp,
-          msg:
-            decryptedValue.msg ||
-            t(CHAT_ROOM_KEYS.DECRYPTION_FAILURE, {
-              origin:
-                process.env.NEXT_PUBLIC_SERVER_URL +
-                '/' +
-                language +
-                '/setting/about/feedback',
-            }).replace(/&#x2F;/g, '/'),
-          status: 'success',
-        });
+          });
+          /**
+           * 批量操作类型信息
+           */
+        } else {
+          decryptedValue.forEach((item) => {
+            handleCommand(item, {
+              id: metadata.user_id!,
+              nickname: user_info.nickname,
+              avatar: user_info.avatar as AvatarName,
+            });
+          });
+        }
       }
     );
   };
 
   /**
    * 客户端发送
+   * @param {string} content 内容
+   * @param {(() => void) | undefined} cb
    */
   const clientSendMessage = async (content: string, cb?: () => void) => {
     if (!cachePusher || !channel) {
@@ -384,6 +482,7 @@ export const usePusher = (
         avatar: encryptData.avatar,
         nickname: encryptData.nickName,
       },
+      isEdit: '0',
       status: 'loading',
     });
 
@@ -403,6 +502,52 @@ export const usePusher = (
 
       return copyState;
     });
+  };
+
+  /**
+   * 客户端聊天记录操作
+   * @param {ChatPopoverContextData['current']} current
+   * @param {((triggered: boolean) => void) | undefined} cb
+   */
+  const clientOperateMessage = async (
+    current: ChatPopoverContextData['current'],
+    cb?: (triggered: boolean) => void
+  ) => {
+    if (!cachePusher || !channel) {
+      toast(t(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
+      return;
+    }
+    const timestamp = Date.now();
+
+    const encryptedValue = await Aes?.encrypt(
+      JSON.stringify({
+        command: current?.command,
+        chat: {
+          ...current?.chat,
+          operateTimestamp: timestamp,
+        },
+      } as CommandChatMsg)
+    );
+    let triggered: boolean = false;
+    let setFun: (state: Chat[]) => Chat[] = (state) => state;
+    switch (current?.command) {
+      case COMMAND.DELETE:
+        triggered = channel.trigger(
+          CustomEvent.RECEIVE_INFORMATION,
+          encryptedValue
+        );
+        setFun = (state) =>
+          state.filter((item) => item.timestamp !== current?.chat.timestamp);
+        break;
+    }
+
+    cb?.(triggered);
+
+    if (triggered) {
+      setChatValue(setFun);
+    } else {
+      current?.command && toast(t(current?.command));
+    }
   };
 
   /**
@@ -585,6 +730,7 @@ export const usePusher = (
     signin,
     isChannelUserExist,
     clientSendMessage,
+    clientOperateMessage,
     observeEntryOrExit,
     exitRoom,
     unsubscribe,
