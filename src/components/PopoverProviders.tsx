@@ -1,6 +1,6 @@
 'use client';
 
-import { ChatPopoverContext } from '@/context';
+import { ChatPopoverContext, ChatPopoverContextData } from '@/context';
 import React, { useState } from 'react';
 
 export const ChatPopoverProviders = ({
@@ -8,18 +8,26 @@ export const ChatPopoverProviders = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
-    null
-  );
-  const [visible, setPopoverVisible] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [current, setCurrent] = useState(null);
-  const setVisible = (value: React.SetStateAction<boolean>) => {
+  const [referenceElement, setReferenceElement] =
+    useState<ChatPopoverContextData['referenceElement']>(null);
+  const [visible, setPopoverVisible] =
+    useState<ChatPopoverContextData['visible']>(false);
+  const [dialogVisible, setDialogVisible] =
+    useState<ChatPopoverContextData['dialogVisible']>(false);
+  const [current, setCurrent] =
+    useState<ChatPopoverContextData['current']>(null);
+  const setVisible: ChatPopoverContextData['setVisible'] = (value) => {
     setPopoverVisible(value);
     setDialogVisible(value);
   };
-  const handleClose = () => {
+  const handleClose: ChatPopoverContextData['handleClose'] = (
+    clearCurrent = false
+  ) => {
     setVisible(false);
+
+    if (clearCurrent) {
+      setCurrent(null);
+    }
   };
 
   return (
