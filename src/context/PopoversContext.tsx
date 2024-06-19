@@ -1,14 +1,28 @@
 'use client';
 
+import type { CommandType } from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
 import type { ChatMsg } from '@/hooks/use-pusher';
 import type React from 'react';
 import { createContext } from 'react';
 
+export type CommandChatMsg = {
+  /**
+   * 当前指令，点击复制或者编辑指令后，存储到 command
+   */
+  command: CommandType['command'] | '';
+  /**
+   * 当前记录，点击哪条记录时，存储到 chat
+   */
+  chat: ChatMsg;
+};
+
 export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
-  current: ChatMsg | null;
-  setCurrent: React.Dispatch<React.SetStateAction<any>>;
+  current: CommandChatMsg | null;
+  setCurrent: React.Dispatch<
+    React.SetStateAction<ChatPopoverContextData['current']>
+  >;
   visible: boolean;
   setVisible: (value: boolean) => void;
   /**

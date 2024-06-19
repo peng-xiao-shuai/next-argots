@@ -31,7 +31,10 @@ const ChatRecords: FC<
       setReferenceElement(e.currentTarget);
       setVisible(true);
 
-      setCurrent(chatObj);
+      setCurrent({
+        command: '',
+        chat: chatObj,
+      });
     },
     [chatObj, setCurrent, setReferenceElement, setVisible]
   );
@@ -42,7 +45,7 @@ const ChatRecords: FC<
       chat-${isUserMessage ? 'end' : 'start'}
       !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative *:z-[100] 
       ${!isSystemType(last) ? 'pt-2' : ''}
-      ${current?.timestamp === timestamp ? '*:!bg-base-100' : ''}`}
+      ${current?.chat.timestamp === timestamp ? '*:!bg-base-100' : ''}`}
     >
       <div className="chat-image avatar rounded-lg overflow-hidden">
         <div className="w-10">
