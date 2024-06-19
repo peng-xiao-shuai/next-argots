@@ -92,6 +92,12 @@ export enum COMMON_KEYS {
 
   SHARE = 'Share',
   NO_DATA = 'No_Data',
+
+  REPLY = 'REPLY',
+  EDIT = 'EDIT',
+  COPY_TEXT = 'COPY_TEXT',
+  DELETE = 'DELETE',
+  SELECT = 'SELECT',
 }
 
 export enum API_KEYS {
