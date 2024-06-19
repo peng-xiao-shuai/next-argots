@@ -1,26 +1,24 @@
 'use client';
 import '../style.css';
-import React, {
-  KeyboardEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { CHAT_ROOM_KEYS } from '@@/locales/keys';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { type Chat, usePusher, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
-import { debounce } from '@/utils/debounce-throttle';
-import { toast } from 'sonner';
-import { AppContext, ChatPopoverContext } from '@/context';
+import { ChatPopoverContext } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 
 import Cookies from 'js-cookie';
 import { useLine } from '@/hooks/use-line';
 import { ClientChatSendMsg } from './ClientChatSendMsg';
 import Popover from '@/components/Popover';
-import { Dialog, DialogMask } from '@/components';
+import { DialogMask } from '@/components';
+import {
+  COMMAND,
+  CommandType,
+  MemoPopoverContent,
+} from './ClientChatPopoverContent';
+import { copyText } from '@/utils/string-transform';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -34,12 +32,14 @@ export function ClientChat() {
         avatar: '',
         nickname: '_u600b',
       },
+      isEdit: '1',
       status: 'success',
     },
   ]);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
   const {
     clientSendMessage,
+    clientOperateMessage,
     exitRoom,
     unsubscribe,
     getChatHistory,
@@ -55,14 +55,17 @@ export function ClientChat() {
       console.log(err, v);
     },
   });
-
-  // popover prop
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
-    null
-  );
-  const [visible, setPopoverVisible] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-
+  /**
+   * 获取 popover 上下文
+   */
+  const {
+    current,
+    dialogVisible,
+    handleClose,
+    setCurrent,
+    referenceElement,
+    visible,
+  } = useContext(ChatPopoverContext);
   /**
    * 断网重连，并且同步数据
    */
@@ -112,98 +115,54 @@ export function ClientChat() {
     handleScrollBottom();
   }, [chat]);
 
-  const handleClose = () => {
-    setVisible(false);
-  };
-  const setVisible = (value: React.SetStateAction<boolean>) => {
-    setPopoverVisible(value);
-    setDialogVisible(value);
+  /**
+   * 指令操作
+   */
+  const handleCommand = (command: CommandType['command']) => {
+    setCurrent((state) => ({
+      chat: state?.chat!,
+      command,
+    }));
+
+    switch (command) {
+      case COMMAND.DELETE:
+        clientOperateMessage(current!, (triggered: boolean) => {
+          if (triggered) {
+            handleClose(true);
+          }
+        });
+        break;
+      case COMMAND.COPY_TEXT:
+        copyText(current?.chat.msg || '');
+        handleClose(true);
+        break;
+    }
   };
 
   return (
     <>
-      <ChatPopoverContext.Provider
-        value={{
-          setReferenceElement,
-          visible,
-          setVisible,
-        }}
+      <div
+        className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
+        data-hide="true"
+        ref={ChatScroll}
       >
-        <div
-          className="overflow-y-auto w-full flex-1 px-[var(--padding)]"
-          data-hide="true"
-          ref={ChatScroll}
+        <ClientChatRecords chat={chat}></ClientChatRecords>
+      </div>
+
+      <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
+
+      <DialogMask visible={dialogVisible} onClose={handleClose}>
+        <Popover
+          referenceElement={referenceElement}
+          visible={visible}
+          onClose={handleClose}
         >
-          <ClientChatRecords chat={chat}></ClientChatRecords>
-        </div>
-
-        <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
-
-        <DialogMask visible={dialogVisible} onClose={handleClose}>
-          <Popover
-            referenceElement={referenceElement}
-            visible={visible}
-            onClose={handleClose}
-          >
-            <ul className="menu !bg-base-100 rounded-box">
-              <li>
-                <a>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </a>
-              </li>
-            </ul>
-          </Popover>
-        </DialogMask>
-      </ChatPopoverContext.Provider>
+          <MemoPopoverContent
+            cb={handleCommand}
+            current={current}
+          ></MemoPopoverContent>
+        </Popover>
+      </DialogMask>
     </>
   );
 }
