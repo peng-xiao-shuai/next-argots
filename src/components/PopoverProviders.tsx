@@ -26,8 +26,8 @@ export const ChatPopoverProviders = ({
   ) => {
     setVisible(false);
 
-    if (clearCurrent) {
-      setCurrent(null);
+    if (clearCurrent === true) {
+      setCurrentData(null);
     }
   };
 
@@ -38,7 +38,7 @@ export const ChatPopoverProviders = ({
       syncCurrent.current = value(syncCurrent.current);
     } else syncCurrent.current = value;
 
-    setCurrent(syncCurrent.current);
+    setCurrent(value);
   };
 
   return (

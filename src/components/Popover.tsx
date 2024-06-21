@@ -4,14 +4,12 @@ import { usePopper } from 'react-popper';
 interface PopoverProps {
   referenceElement: HTMLElement | null;
   visible: boolean;
-  onClose: () => void;
   children: React.ReactNode;
 }
 
 const Popover: React.FC<PopoverProps> = ({
   referenceElement,
   visible,
-  onClose,
   children,
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
