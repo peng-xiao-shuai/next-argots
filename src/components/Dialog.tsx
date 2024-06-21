@@ -61,9 +61,9 @@ export const DialogMask: FC<{
       <div
         className={`flex justify-center items-center w-full h-[100vh] bg-black/60`}
         onClick={onClose}
-      ></div>
-
-      {children}
+      >
+        {children}
+      </div>
     </div>
   );
 };
