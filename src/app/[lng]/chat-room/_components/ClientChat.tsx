@@ -119,21 +119,22 @@ export function ClientChat() {
    * 指令操作
    */
   const handleCommand = (command: CommandType['command']) => {
-    setCurrent((state) => ({
-      chat: state?.chat!,
-      command,
-    }));
+    const currentData: typeof current = {
+      chat: current?.chat!,
+      command: command,
+    };
+    setCurrent(currentData);
 
     switch (command) {
       case COMMAND.DELETE:
-        clientOperateMessage(current!, (triggered: boolean) => {
+        clientOperateMessage((triggered: boolean) => {
           if (triggered) {
             handleClose(true);
           }
         });
         break;
       case COMMAND.COPY_TEXT:
-        copyText(current?.chat.msg || '');
+        copyText(currentData?.chat.msg || '');
         handleClose(true);
         break;
     }
@@ -151,12 +152,8 @@ export function ClientChat() {
 
       <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
 
-      <DialogMask visible={dialogVisible} onClose={handleClose}>
-        <Popover
-          referenceElement={referenceElement}
-          visible={visible}
-          onClose={handleClose}
-        >
+      <DialogMask visible={dialogVisible} onClose={() => handleClose(false)}>
+        <Popover referenceElement={referenceElement} visible={visible}>
           <MemoPopoverContent
             cb={handleCommand}
             current={current}
