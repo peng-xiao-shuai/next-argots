@@ -34,12 +34,9 @@ export const ChatPopoverProviders = ({
   const setCurrentData = (
     value: React.SetStateAction<ChatPopoverContextData['current']>
   ) => {
-    console.log(value);
-
     if (typeof value === 'function') {
       syncCurrent.current = value(syncCurrent.current);
     } else syncCurrent.current = value;
-    console.log(syncCurrent.current, 'syncCurrent.current');
 
     setCurrent(syncCurrent.current);
   };
