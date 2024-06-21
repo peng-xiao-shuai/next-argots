@@ -1,13 +1,14 @@
 'use client';
 
 import { ChatPopoverContext, ChatPopoverContextData } from '@/context';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 export const ChatPopoverProviders = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
+  const syncCurrent = useRef<ChatPopoverContextData['current']>(null);
   const [referenceElement, setReferenceElement] =
     useState<ChatPopoverContextData['referenceElement']>(null);
   const [visible, setPopoverVisible] =
@@ -30,14 +31,28 @@ export const ChatPopoverProviders = ({
     }
   };
 
+  const setCurrentData = (
+    value: React.SetStateAction<ChatPopoverContextData['current']>
+  ) => {
+    console.log(value);
+
+    if (typeof value === 'function') {
+      syncCurrent.current = value(syncCurrent.current);
+    } else syncCurrent.current = value;
+    console.log(syncCurrent.current, 'syncCurrent.current');
+
+    setCurrent(syncCurrent.current);
+  };
+
   return (
     <ChatPopoverContext.Provider
       value={{
         referenceElement,
         setReferenceElement,
         dialogVisible,
+        syncCurrent: syncCurrent,
         current,
-        setCurrent,
+        setCurrent: setCurrentData,
         visible,
         setVisible,
         handleClose,

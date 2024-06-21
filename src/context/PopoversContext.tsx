@@ -3,7 +3,7 @@
 import type { CommandType } from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
 import type { ChatMsg } from '@/hooks/use-pusher';
 import type React from 'react';
-import { createContext } from 'react';
+import { MutableRefObject, createContext } from 'react';
 
 export type CommandChatMsg = {
   /**
@@ -20,6 +20,7 @@ export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
   current: CommandChatMsg | null;
+  syncCurrent: MutableRefObject<CommandChatMsg | null>;
   setCurrent: React.Dispatch<
     React.SetStateAction<ChatPopoverContextData['current']>
   >;
@@ -47,6 +48,10 @@ export const ChatPopoverContext = createContext<ChatPopoverContextData>({
   visible: false,
   setVisible: () => false,
   current: null,
+  /**
+   * 调用setCurrent会立即改变
+   */
+  syncCurrent: { current: null },
   setCurrent: () => null,
 
   /**
