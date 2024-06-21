@@ -36,6 +36,9 @@ export const ClientChatSendMsg: FC<{
     debounce(() => {
       if (content.trim() === '') {
         toast.warning(t(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
+        if (!visibleEmoji) {
+          textAreaRef.current?.focus();
+        }
         return;
       }
 
@@ -55,7 +58,11 @@ export const ClientChatSendMsg: FC<{
     key,
     shiftKey,
   }: KeyboardEvent<HTMLTextAreaElement>) => {
+    console.log(isMobile.current, shiftKey);
+
     if (key === 'Enter' && !shiftKey && !isMobile.current) {
+      handleSendMessage();
+    } else if (isMobile.current && key === 'Enter' && shiftKey) {
       handleSendMessage();
     }
   };
