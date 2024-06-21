@@ -1,16 +1,19 @@
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
 import { debounce } from '@/utils/debounce-throttle';
 import { toast } from 'sonner';
-import { AppContext } from '@/context';
+import { AppContext, ChatPopoverContext } from '@/context';
 import React, {
   FC,
   KeyboardEvent,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
+import { COMMAND, CommandType, commands } from './ClientChatPopoverContent';
+import { RiCloseLine } from 'react-icons/ri';
 
 export const ClientChatSendMsg: FC<{
   sendMsg: (content: string, cb?: (() => void) | undefined) => Promise<void>;
@@ -19,6 +22,7 @@ export const ClientChatSendMsg: FC<{
   const [visibleEmoji, setVisibleEmoji] = useState(false);
   const [content, setContent] = useState('');
   const { t } = useContext(AppContext);
+  const { current, setCurrent } = useContext(ChatPopoverContext);
   const isMobile = useRef(false);
 
   useEffect(() => {
@@ -28,6 +32,11 @@ export const ClientChatSendMsg: FC<{
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const currentCommandData = useMemo(() => {
+    textAreaRef.current?.focus();
+    return commands.find((item) => item.command === current?.command);
+  }, [current]);
 
   /**
    * send message
@@ -84,8 +93,32 @@ export const ClientChatSendMsg: FC<{
   };
 
   return (
-    <div className="b3-opacity-6">
-      <div className="flex items-end w-full p-[var(--padding)] ">
+    <div className="b3-opacity-6 relative">
+      {currentCommandData &&
+      (
+        [COMMAND.EDIT, COMMAND.REPLY] as unknown as CommandType['command']
+      ).includes(currentCommandData?.command) ? (
+        <div className="absolute top-0 -translate-y-full w-full b3-opacity-6 p-[var(--padding)] pb-0 flex items-center">
+          <currentCommandData.icon className="mr-[var(--padding)] size-5 text-primary" />
+
+          <div>
+            <strong className="text-primary">
+              {currentCommandData.text}
+              {current?.chat.user.nickname}
+            </strong>
+            <div>{current?.chat.msg}</div>
+          </div>
+
+          <RiCloseLine
+            className="absolute right-[var(--padding)] size-6"
+            onClick={() => setCurrent(null)}
+          ></RiCloseLine>
+        </div>
+      ) : (
+        <></>
+      )}
+
+      <div className="flex items-end w-full p-[var(--padding)]">
         <ClientSwapSvg
           visibleEmoji={visibleEmoji}
           setVisibleEmoji={setVisibleEmoji}
