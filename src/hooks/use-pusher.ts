@@ -26,7 +26,7 @@ import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
-import { AppContext, ChatPopoverContextData, CommandChatMsg } from '@/context';
+import { AppContext, ChatPopoverContext, CommandChatMsg } from '@/context';
 import emitter from '@/utils/bus';
 import { createPusherSignature } from '@/app/api/utils';
 import {
@@ -95,6 +95,7 @@ export const usePusher = (
 ) => {
   const { replace } = useRouter();
   const { t, language } = useContext(AppContext);
+  const { syncCurrent, setCurrent } = useContext(ChatPopoverContext);
   const chatDataCopy = useRef<Chat[]>([]);
   const [pusher, setPusher] = useState<typeof cachePusher>(cachePusher);
   // const decryptionFailure = useMemo(
@@ -364,14 +365,20 @@ export const usePusher = (
           break;
         case COMMAND.EDIT:
           setFun = (state) => {
-            const data = state.find(
+            const CopyState = [...state];
+            const index = state.findIndex(
               (item) => item.timestamp === chat.timestamp
-            ) as ChatMsg;
-            data.isEdit = '1';
-            data.msg = chat.msg;
-            data.operateTimestamp = chat.operateTimestamp;
+            );
 
-            return state;
+            const data = CopyState[index] as ChatMsg;
+
+            if (data) {
+              data.isEdit = '1';
+              data.msg = chat.msg;
+              data.operateTimestamp = chat.operateTimestamp;
+            }
+
+            return CopyState;
           };
           break;
         case COMMAND.REPLY:
@@ -464,27 +471,91 @@ export const usePusher = (
     }
     const { encryptData, userInfo } = useRoomStore.getState();
     const timestamp = Date.now();
-
-    const encryptedValue = await Aes?.encrypt(
-      JSON.stringify({
+    /**
+     * 需要加密的信息, 当正常发消息没有指令时，只需要加密 chat 对象
+     */
+    const chatData: CommandChatMsg = {
+      command: '',
+      chat: {
         type: MESSAGE_TYPE.MSG,
         msg: content,
         timestamp,
-      })
-    );
-
-    setChatValue({
-      type: MESSAGE_TYPE.MSG,
-      msg: content,
-      timestamp,
-      user: {
-        id: userInfo.userId!,
-        avatar: encryptData.avatar,
-        nickname: encryptData.nickName,
+        user: {
+          id: userInfo.userId!,
+          avatar: encryptData.avatar,
+          nickname: encryptData.nickName,
+        },
+        isEdit: '0',
+        status: 'loading',
       },
-      isEdit: '0',
-      status: 'loading',
-    });
+    };
+    /**
+     * 发送过去的 加密信息
+     */
+    let encryptedValue: string | undefined = '';
+    let setFun: Parameters<typeof setChatValue>[0] = (state) => state;
+
+    if (syncCurrent.current?.command) {
+      chatData.command = syncCurrent.current?.command;
+      switch (syncCurrent.current!.command) {
+        case COMMAND.EDIT:
+          setFun = (state) => {
+            const CopyState = [...state];
+            const index = state.findIndex(
+              (item) => item.timestamp === syncCurrent.current?.chat.timestamp
+            );
+
+            const data = CopyState[index] as ChatMsg;
+
+            if (data) {
+              data.isEdit = '1';
+              data.msg = content;
+              data.operateTimestamp = timestamp;
+            }
+
+            return CopyState;
+          };
+          chatData.chat = {
+            ...syncCurrent.current!.chat,
+            msg: content,
+            isEdit: '1',
+            status: 'loading',
+            operateTimestamp: timestamp,
+          };
+          break;
+        case COMMAND.REPLY:
+          setFun = (state) => {
+            const CopyState = [...state];
+            const index = state.findIndex(
+              (item) => item.timestamp === syncCurrent.current?.chat.timestamp
+            );
+
+            const data = CopyState[index] as ChatMsg;
+
+            if (data) {
+              data.reply = {
+                user: syncCurrent.current!.chat.user,
+                timestamp: syncCurrent.current!.chat.timestamp,
+              };
+              data.operateTimestamp = timestamp;
+            }
+
+            return CopyState;
+          };
+          chatData.chat.reply = {
+            timestamp: syncCurrent.current.chat.timestamp,
+            user: syncCurrent.current.chat.user,
+          };
+          chatData.chat.operateTimestamp = timestamp;
+          break;
+      }
+
+      encryptedValue = await Aes?.encrypt(JSON.stringify(chatData));
+    } else {
+      setFun = chatData.chat;
+      encryptedValue = await Aes?.encrypt(JSON.stringify(chatData.chat));
+    }
+    setChatValue(setFun);
 
     cb?.();
 
@@ -493,9 +564,23 @@ export const usePusher = (
       encryptedValue
     );
 
+    /**
+     * 清除当前的操作指令信息
+     */
+    setCurrent(null);
+
     setChatValue((state) => {
       const copyState = [...state];
-      const index = copyState.findIndex((item) => item.timestamp == timestamp);
+      let index: number | undefined;
+
+      if (syncCurrent.current?.command) {
+        index = copyState.findIndex(
+          (item) => (item as ChatMsg).operateTimestamp == timestamp
+        );
+      } else {
+        index = copyState.findIndex((item) => item.timestamp == timestamp);
+      }
+
       if (index >= 0) {
         copyState[index].status = triggered ? 'success' : 'error';
       }
@@ -506,48 +591,47 @@ export const usePusher = (
 
   /**
    * 客户端聊天记录操作
-   * @param {ChatPopoverContextData['current']} current
    * @param {((triggered: boolean) => void) | undefined} cb
    */
-  const clientOperateMessage = async (
-    current: ChatPopoverContextData['current'],
-    cb?: (triggered: boolean) => void
-  ) => {
+  const clientOperateMessage = async (cb?: (triggered: boolean) => void) => {
     if (!cachePusher || !channel) {
       toast(t(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
       return;
     }
+
     const timestamp = Date.now();
 
     const encryptedValue = await Aes?.encrypt(
       JSON.stringify({
-        command: current?.command,
+        command: syncCurrent.current?.command,
         chat: {
-          ...current?.chat,
+          ...syncCurrent.current?.chat,
           operateTimestamp: timestamp,
         },
       } as CommandChatMsg)
     );
     let triggered: boolean = false;
     let setFun: (state: Chat[]) => Chat[] = (state) => state;
-    switch (current?.command) {
+    switch (syncCurrent.current?.command) {
       case COMMAND.DELETE:
         triggered = channel.trigger(
           CustomEvent.RECEIVE_INFORMATION,
           encryptedValue
         );
         setFun = (state) =>
-          state.filter((item) => item.timestamp !== current?.chat.timestamp);
+          state.filter(
+            (item) => item.timestamp !== syncCurrent.current?.chat.timestamp
+          );
         break;
     }
-
-    cb?.(triggered);
 
     if (triggered) {
       setChatValue(setFun);
     } else {
-      current?.command && toast(t(current?.command));
+      syncCurrent.current?.command && toast(t(syncCurrent.current?.command));
     }
+
+    cb?.(triggered);
   };
 
   /**
