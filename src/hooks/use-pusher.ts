@@ -499,6 +499,8 @@ export const usePusher = (
       chatData.command = syncCurrent.current?.command;
       switch (syncCurrent.current!.command) {
         case COMMAND.EDIT:
+          if (syncCurrent.current?.chat.msg === content) return;
+
           setFun = (state) => {
             const CopyState = [...state];
             const index = state.findIndex(
