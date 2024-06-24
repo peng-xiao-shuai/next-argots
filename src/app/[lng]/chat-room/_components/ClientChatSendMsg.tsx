@@ -35,6 +35,11 @@ export const ClientChatSendMsg: FC<{
 
   const currentCommandData = useMemo(() => {
     textAreaRef.current?.focus();
+
+    if (current?.command === COMMAND.EDIT) {
+      setContent(current?.chat.msg);
+    }
+
     return commands.find((item) => item.command === current?.command);
   }, [current]);
 
