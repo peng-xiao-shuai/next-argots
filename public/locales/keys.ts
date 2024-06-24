@@ -87,6 +87,7 @@ export enum COMMON_KEYS {
   CLOSE = 'Close',
   OPEN = 'Open',
   CONFIRM = 'Confirm',
+  CANCEL = 'Cancel',
   COMPLETE = 'Complete',
   SUCCESSFULLY_SET = 'Successfully_set',
 
