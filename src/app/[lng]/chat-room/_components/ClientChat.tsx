@@ -22,20 +22,7 @@ import { copyText } from '@/utils/string-transform';
 
 export function ClientChat() {
   const pathname = usePathname();
-  const [chat, setChat] = useState<Chat[]>([
-    {
-      type: MESSAGE_TYPE.MSG,
-      msg: 'xxxx',
-      timestamp: 28198291739201,
-      user: {
-        id: 'xxx',
-        avatar: '',
-        nickname: '_u600b',
-      },
-      isEdit: '1',
-      status: 'success',
-    },
-  ]);
+  const [chat, setChat] = useState<Chat[]>([]);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
   const {
     clientSendMessage,
@@ -147,7 +134,7 @@ export function ClientChat() {
         data-hide="true"
         ref={ChatScroll}
       >
-        <ClientChatRecords chat={chat}></ClientChatRecords>
+        <ClientChatRecords chats={chat}></ClientChatRecords>
       </div>
 
       <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
