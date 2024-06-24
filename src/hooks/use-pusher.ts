@@ -519,34 +519,19 @@ export const usePusher = (
             ...syncCurrent.current!.chat,
             msg: content,
             isEdit: '1',
-            status: 'loading',
             operateTimestamp: timestamp,
           };
           break;
         case COMMAND.REPLY:
-          setFun = (state) => {
-            const CopyState = [...state];
-            const index = state.findIndex(
-              (item) => item.timestamp === syncCurrent.current?.chat.timestamp
-            );
-
-            const data = CopyState[index] as ChatMsg;
-
-            if (data) {
-              data.reply = {
-                user: syncCurrent.current!.chat.user,
-                timestamp: syncCurrent.current!.chat.timestamp,
-              };
-              data.operateTimestamp = timestamp;
-            }
-
-            return CopyState;
-          };
           chatData.chat.reply = {
             timestamp: syncCurrent.current.chat.timestamp,
             user: syncCurrent.current.chat.user,
           };
           chatData.chat.operateTimestamp = timestamp;
+          setFun = {
+            ...chatData.chat,
+          };
+
           break;
       }
 
