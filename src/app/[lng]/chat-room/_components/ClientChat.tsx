@@ -2,7 +2,12 @@
 import '../style.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import { type Chat, usePusher, MESSAGE_TYPE } from '@/hooks/use-pusher';
+import {
+  type Chat,
+  usePusher,
+  MESSAGE_TYPE,
+  ChatMsg,
+} from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
 import { ChatPopoverContext } from '@/context';
@@ -19,6 +24,7 @@ import {
   MemoPopoverContent,
 } from './ClientChatPopoverContent';
 import { copyText } from '@/utils/string-transform';
+import { isTypeProtect } from '@/utils/type';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -121,7 +127,29 @@ export function ClientChat() {
         });
         break;
       case COMMAND.COPY_TEXT:
-        copyText(currentData?.chat.msg || '');
+        /**
+         * 需要复制的消息
+         */
+        const msgString = () => {
+          if (
+            isTypeProtect<typeof currentData.chat, ChatMsg>(
+              currentData.chat,
+              (obj) => !Array.isArray(obj)
+            )
+          ) {
+            return currentData?.chat.msg;
+          } else
+            return currentData?.chat
+              .map(
+                (item) => `
+      ${item.user.nickname} \n
+      ${item.msg} \n
+      \n
+      `
+              )
+              .join(',');
+        };
+        copyText(msgString() || '');
         handleClose(true);
         break;
     }

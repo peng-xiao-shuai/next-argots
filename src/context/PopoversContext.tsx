@@ -13,14 +13,14 @@ export type CommandChatMsg = {
   /**
    * 当前记录，点击哪条记录时，存储到 chat
    */
-  chat: ChatMsg;
+  chat: ChatMsg | ChatMsg[];
 };
 
 export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
   current: CommandChatMsg | null;
-  syncCurrent: MutableRefObject<CommandChatMsg | null>;
+  syncCurrent: MutableRefObject<ChatPopoverContextData['current'] | null>;
   setCurrent: React.Dispatch<
     React.SetStateAction<ChatPopoverContextData['current']>
   >;

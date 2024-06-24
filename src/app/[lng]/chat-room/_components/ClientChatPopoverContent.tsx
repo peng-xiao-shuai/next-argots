@@ -6,11 +6,12 @@ import {
   RiFileCopy2Line,
   RiReplyAllLine,
 } from 'react-icons/ri';
-import React, { FC, MouseEvent, memo } from 'react';
+import React, { FC, MouseEvent, memo, useCallback } from 'react';
 import type { ChatMsg } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { ChatPopoverContextData } from '@/context';
+import { isTypeProtect } from '@/utils/type';
 
 export const COMMAND = {
   [COMMON_KEYS.REPLY]: COMMON_KEYS.REPLY,
@@ -68,14 +69,26 @@ const PopoverContent: FC<{
       cb(command);
     }
   };
+  /**
+   * 当前内容是否可以显示指令
+   */
+  const isSelect = useCallback(() => {
+    if (current?.chat) {
+      if (
+        isTypeProtect<typeof current.chat, ChatMsg>(
+          current.chat,
+          (obj) => !Array.isArray(obj)
+        )
+      ) {
+        return current.chat.user.nickname === userInfo.userId;
+      } else return true;
+    }
+    return false;
+  }, [current, userInfo.userId]);
   return (
     <ul className="menu !bg-base-100 rounded-box" onClick={handleClick}>
       {commands
-        .filter((item) =>
-          item.role && item.role == 'my'
-            ? current?.chat.user.nickname === userInfo.userId
-            : true
-        )
+        .filter((item) => (item.role && item.role == 'my' ? isSelect() : true))
         .map((item, index) => (
           <li key={index} data-command={item.command}>
             <a className="px-2">

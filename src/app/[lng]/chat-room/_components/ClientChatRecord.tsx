@@ -5,6 +5,8 @@ import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { unicodeToString } from '@/utils/string-transform';
 import { FC, MouseEvent, useCallback, useContext, useMemo } from 'react';
+import { COMMAND } from './ClientChatPopoverContent';
+import { isTypeProtect } from '@/utils/type';
 
 type ExtensionRecord<T> = {
   last: T | null;
@@ -29,6 +31,10 @@ const ChatRecords: FC<
   );
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
+      if (current?.command === COMMAND.SELECT) {
+        return;
+      }
+
       setReferenceElement(e.currentTarget);
       setVisible(true);
 
@@ -37,16 +43,32 @@ const ChatRecords: FC<
         chat: chatObj,
       });
     },
-    [chatObj, setCurrent, setReferenceElement, setVisible]
+    [chatObj, current?.command, setCurrent, setReferenceElement, setVisible]
   );
+  /**
+   * 当前内容是否被选中
+   */
+  const isSelect = useMemo(() => {
+    if (current?.chat) {
+      if (
+        isTypeProtect<typeof current.chat, ChatMsg>(
+          current.chat,
+          (obj) => !Array.isArray(obj)
+        )
+      ) {
+        return current.chat.timestamp === timestamp;
+      } else return !!current.chat.find((item) => item.timestamp === timestamp);
+    }
+    return false;
+  }, [current, timestamp]);
 
   return (
     <div
       className={`chat
       chat-${isUserMessage ? 'end' : 'start'}
       !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]
-      ${!isSystemType(last) ? 'pt-2' : ''}
-      ${current?.chat.timestamp === timestamp ? '*:z-[100]' : ''}`}
+      ${!isSystemType(last) ? '!pt-2' : ''}
+      ${isSelect ? '*:z-[100]' : ''}`}
     >
       <div
         className={`
