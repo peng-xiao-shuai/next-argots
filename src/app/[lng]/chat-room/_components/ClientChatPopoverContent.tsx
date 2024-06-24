@@ -78,7 +78,7 @@ const PopoverContent: FC<{
         )
         .map((item, index) => (
           <li key={index} data-command={item.command}>
-            <a>
+            <a className="px-2">
               <item.icon className="pointer-events-none"></item.icon>
               <span className="pointer-events-none">{item.text}</span>
             </a>

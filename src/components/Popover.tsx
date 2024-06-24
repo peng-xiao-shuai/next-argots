@@ -14,7 +14,7 @@ const Popover: React.FC<PopoverProps> = ({
 }) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'left' || 'right',
+    placement: 'auto',
   });
 
   if (!visible) return null;
@@ -24,7 +24,7 @@ const Popover: React.FC<PopoverProps> = ({
       ref={setPopperElement}
       style={styles.popper}
       {...attributes.popper}
-      className="popover px-2"
+      className="popover p-2"
     >
       <div>{children}</div>
     </div>
