@@ -13,12 +13,13 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { RoomStatus } from '@/server/enum';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { FC, useContext, useEffect, useState } from 'react';
-import { AppContext, ClientChatContext } from '@/context';
+import { AppContext, ChatPopoverContext, ClientChatContext } from '@/context';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_KEYS } from '@@/locales/keys';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import { ClientChat } from './ClientChat';
+import emitter from '@/utils/bus';
 
 export type LinkUserInfo = {
   nickName: string;
@@ -28,6 +29,7 @@ export type LinkUserInfo = {
 
 export function Client() {
   const { joinData, lng } = useContext(ClientChatContext);
+  const { setCurrent } = useContext(ChatPopoverContext);
   const { t } = useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
@@ -84,8 +86,16 @@ export function Client() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinData]);
 
-  useBusWatch('complete', () => {
-    setVisible(true);
+  /**
+   * 多选情况下点击 cancel type = CANCEL
+   */
+  useBusWatch('complete', (type) => {
+    if (type === 'CANCEL') {
+      setCurrent(null);
+      emitter.emit('setSelectChat', null);
+    } else {
+      setVisible(true);
+    }
   });
 
   return (

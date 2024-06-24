@@ -38,7 +38,7 @@ export const ChatPopoverProviders = ({
       syncCurrent.current = value(syncCurrent.current);
     } else syncCurrent.current = value;
 
-    setCurrent(value);
+    setCurrent(syncCurrent.current);
   };
 
   return (

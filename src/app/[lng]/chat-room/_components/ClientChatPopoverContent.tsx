@@ -31,28 +31,28 @@ export const commands: CommandType[] = [
   {
     icon: RiReplyAllLine,
     text: '回复',
-    command: COMMAND.REPLY,
+    command: COMMAND[COMMON_KEYS.REPLY],
   },
   {
     icon: RiEditLine,
     text: '编辑',
-    command: COMMAND.EDIT,
+    command: COMMAND[COMMON_KEYS.EDIT],
     role: 'my',
   },
   {
     icon: RiFileCopy2Line,
     text: '复制文本',
-    command: COMMAND.COPY_TEXT,
+    command: COMMAND[COMMON_KEYS.COPY_TEXT],
   },
   {
     icon: RiDeleteBin5Line,
     text: '删除消息',
-    command: COMMAND.DELETE,
+    command: COMMAND[COMMON_KEYS.DELETE],
   },
   {
     icon: RiCheckboxCircleLine,
     text: '选择此消息',
-    command: COMMAND.SELECT,
+    command: COMMAND[COMMON_KEYS.SELECT],
   },
 ];
 const PopoverContent: FC<{
