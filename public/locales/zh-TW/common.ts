@@ -18,8 +18,15 @@ export const COMMON = {
   [COMMON_KEYS.CLOSE]: '關閉',
   [COMMON_KEYS.OPEN]: '打開',
   [COMMON_KEYS.CONFIRM]: '確認',
+  [COMMON_KEYS.CANCEL]: '取消',
   [COMMON_KEYS.COMPLETE]: '完成',
   [COMMON_KEYS.SUCCESSFULLY_SET]: '修改成功',
+
+  [COMMON_KEYS.REPLY]: '回復',
+  [COMMON_KEYS.EDIT]: '編輯',
+  [COMMON_KEYS.COPY_TEXT]: '複製文字',
+  [COMMON_KEYS.DELETE]: '刪除',
+  [COMMON_KEYS.SELECT]: '選中此消息',
 
   [COMMON_KEYS.SHARE]: '分享',
   [COMMON_KEYS.NO_DATA]: '暫無數據',

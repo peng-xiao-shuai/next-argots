@@ -18,11 +18,18 @@ export const COMMON = {
   [COMMON_KEYS.CLOSE]: '关闭',
   [COMMON_KEYS.OPEN]: '打开',
   [COMMON_KEYS.CONFIRM]: '确认',
+  [COMMON_KEYS.CANCEL]: '取消',
   [COMMON_KEYS.COMPLETE]: '完成',
   [COMMON_KEYS.SUCCESSFULLY_SET]: '修改成功',
 
   [COMMON_KEYS.SHARE]: '分享',
   [COMMON_KEYS.NO_DATA]: '暂无数据',
+
+  [COMMON_KEYS.REPLY]: '回复',
+  [COMMON_KEYS.EDIT]: '编辑',
+  [COMMON_KEYS.COPY_TEXT]: '复制文字',
+  [COMMON_KEYS.DELETE]: '删除',
+  [COMMON_KEYS.SELECT]: '选择此消息',
 
   [META.DESC]:
     '自由的聊天平台，全程加密对话信息，保护您的安全隐私。不会收集您的任何信息，不需要您的任何权限。聊天结束清除所有记录。',

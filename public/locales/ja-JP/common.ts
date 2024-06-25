@@ -22,6 +22,12 @@ export const COMMON = {
   [COMMON_KEYS.SHARE]: '裾分け',
   [COMMON_KEYS.NO_DATA]: '仮無数の根拠です',
 
+  [COMMON_KEYS.REPLY]: 'メッセージを返信します。',
+  [COMMON_KEYS.EDIT]: '編集する',
+  [COMMON_KEYS.COPY_TEXT]: '文字を複製します',
+  [COMMON_KEYS.DELETE]: 'メッセージを削除します',
+  [COMMON_KEYS.SELECT]: 'このメッセージを選択します',
+
   [META.DESC]:
     '自由なチャットプラットフォームで、すべての会話を暗号化して、あなたの安全なプライバシーを保護します。あなたの情報を収集することはなく、あなたの権限を必要としません。チャット終了後にすべての記録を消去します。',
   [META.KEYWORDS]:
