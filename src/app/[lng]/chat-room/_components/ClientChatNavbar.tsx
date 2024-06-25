@@ -64,7 +64,7 @@ export const ClientChatNavbar: FC<{
                 onClick={() => {
                   router.back();
                 }}
-                className="transition-all duration-300 flex-1 inline-flex line-clamp-1"
+                className="transition-all duration-300 flex-1 inline-flex items-center line-clamp-1 h-8"
               >
                 <div className="flex-none leading-none">
                   <AiOutlineLeft className="svg-icon swap-off rtl:rotate-180" />

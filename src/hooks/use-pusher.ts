@@ -29,10 +29,7 @@ import { AvatarName } from '@/components/ImageSvg';
 import { AppContext, ChatPopoverContext, CommandChatMsg } from '@/context';
 import emitter from '@/utils/bus';
 import { createPusherSignature } from '@/app/api/utils';
-import {
-  COMMAND,
-  CommandType,
-} from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
+import { COMMAND } from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
 import { isTypeProtect } from '@/utils/type';
 
 export enum MESSAGE_TYPE {
@@ -352,8 +349,12 @@ export const usePusher = (
    * 绑定自定义接受信息事件
    */
   const receiveInformation = () => {
+    interface DecryptedValue extends CommandChatMsg {
+      chat: ChatMsg[];
+    }
+
     const handleCommand = (
-      decryptedValue: CommandChatMsg,
+      decryptedValue: DecryptedValue,
       user: ChatMsg['user']
     ) => {
       let setFun: Parameters<typeof setChatValue>[0] = (state) => state;
@@ -361,21 +362,26 @@ export const usePusher = (
       switch (command) {
         case COMMAND.DELETE:
           setFun = (state) =>
-            state.filter((item) => item.timestamp !== chat.timestamp);
+            state.filter(
+              (item) => !chat.map((c) => c.timestamp).includes(item.timestamp)
+            );
           break;
         case COMMAND.EDIT:
           setFun = (state) => {
             const CopyState = [...state];
+            /**
+             * edit 和 reply chat 只会有一个所以直接使用 0 下标
+             */
             const index = state.findIndex(
-              (item) => item.timestamp === chat.timestamp
+              (item) => item.timestamp === chat[0].timestamp
             );
 
             const data = CopyState[index] as ChatMsg;
 
             if (data) {
               data.isEdit = '1';
-              data.msg = chat.msg;
-              data.operateTimestamp = chat.operateTimestamp;
+              data.msg = chat[0].msg;
+              data.operateTimestamp = chat[0].operateTimestamp;
             }
 
             return CopyState;
@@ -383,11 +389,11 @@ export const usePusher = (
           break;
         case COMMAND.REPLY:
           setFun = {
-            timestamp: chat.timestamp,
-            msg: chat.msg,
+            timestamp: chat[0].timestamp,
+            msg: chat[0].msg,
             type: MESSAGE_TYPE.MSG,
             user,
-            reply: chat.reply,
+            reply: chat[0].reply,
             isEdit: '0',
             status: 'success',
           };
@@ -405,7 +411,7 @@ export const usePusher = (
 
         const decryptedValue = JSON.parse(
           (await Aes?.decrypt(dataStr)) || ''
-        ) as ChatMsg | CommandChatMsg | CommandChatMsg[];
+        ) as ChatMsg[] | DecryptedValue;
 
         console.log('解密后数据', decryptedValue);
 
@@ -413,13 +419,23 @@ export const usePusher = (
          * ChatMsg 类型则是普通发送信息
          */
         if (
-          isTypeProtect<typeof decryptedValue, ChatMsg>(decryptedValue, (obj) =>
-            Boolean(obj.type)
+          isTypeProtect<typeof decryptedValue, DecryptedValue>(
+            decryptedValue,
+            (obj) => Boolean(obj.command)
           )
         ) {
+          /**
+           * CommandChatMsg 指令类型消息
+           */
+          handleCommand(decryptedValue, {
+            id: metadata.user_id!,
+            nickname: user_info.nickname,
+            avatar: user_info.avatar as AvatarName,
+          });
+        } else {
           setChatValue({
-            timestamp: decryptedValue.timestamp,
-            msg: decryptedValue.msg,
+            timestamp: decryptedValue[0].timestamp,
+            msg: decryptedValue[0].msg,
             type: MESSAGE_TYPE.MSG,
             user: {
               id: metadata.user_id!,
@@ -428,31 +444,6 @@ export const usePusher = (
             },
             isEdit: '0',
             status: 'success',
-          });
-          /**
-           * CommandChatMsg 指令类型消息
-           */
-        } else if (
-          isTypeProtect<typeof decryptedValue, CommandChatMsg>(
-            decryptedValue,
-            (obj) => !Array.isArray(obj)
-          )
-        ) {
-          handleCommand(decryptedValue, {
-            id: metadata.user_id!,
-            nickname: user_info.nickname,
-            avatar: user_info.avatar as AvatarName,
-          });
-          /**
-           * 批量操作类型信息
-           */
-        } else {
-          decryptedValue.forEach((item) => {
-            handleCommand(item, {
-              id: metadata.user_id!,
-              nickname: user_info.nickname,
-              avatar: user_info.avatar as AvatarName,
-            });
           });
         }
       }
@@ -472,22 +463,25 @@ export const usePusher = (
     const { encryptData, userInfo } = useRoomStore.getState();
     const timestamp = Date.now();
     /**
-     * 需要加密的信息, 当正常发消息没有指令时，只需要加密 chat 对象
+     * 需要加密的信息, 当正常发消息没有指令时，只需要加密 chat 数组
      */
+
     const chatData: CommandChatMsg = {
       command: '',
-      chat: {
-        type: MESSAGE_TYPE.MSG,
-        msg: content,
-        timestamp,
-        user: {
-          id: userInfo.userId!,
-          avatar: encryptData.avatar,
-          nickname: encryptData.nickName,
+      chat: [
+        {
+          type: MESSAGE_TYPE.MSG,
+          msg: content,
+          timestamp,
+          user: {
+            id: userInfo.userId!,
+            avatar: encryptData.avatar,
+            nickname: encryptData.nickName,
+          },
+          isEdit: '0',
+          status: 'loading',
         },
-        isEdit: '0',
-        status: 'loading',
-      },
+      ],
     };
     /**
      * 发送过去的 加密信息
@@ -498,13 +492,17 @@ export const usePusher = (
     if (syncCurrent.current?.command) {
       chatData.command = syncCurrent.current?.command;
       switch (syncCurrent.current!.command) {
+        /**
+         * COMMAND.EDIT | COMMAND.REPLY 指令时 syncCurrent.current.chat 只有一个对象，所以大胆使用 [0]
+         */
         case COMMAND.EDIT:
-          if (syncCurrent.current?.chat.msg === content) return;
+          if (syncCurrent.current?.chat[0].msg === content) return;
 
           setFun = (state) => {
             const CopyState = [...state];
             const index = state.findIndex(
-              (item) => item.timestamp === syncCurrent.current?.chat.timestamp
+              (item) =>
+                item.timestamp === syncCurrent.current?.chat[0].timestamp
             );
 
             const data = CopyState[index] as ChatMsg;
@@ -517,29 +515,28 @@ export const usePusher = (
 
             return CopyState;
           };
-          chatData.chat = {
-            ...syncCurrent.current!.chat,
-            msg: content,
-            isEdit: '1',
-            operateTimestamp: timestamp,
-          };
+          chatData.chat = [
+            {
+              ...syncCurrent.current!.chat[0],
+              msg: content,
+              isEdit: '1',
+              operateTimestamp: timestamp,
+            },
+          ];
           break;
         case COMMAND.REPLY:
-          chatData.chat.reply = {
-            timestamp: syncCurrent.current.chat.timestamp,
-            user: syncCurrent.current.chat.user,
+          chatData.chat[0].reply = {
+            timestamp: syncCurrent.current.chat[0].timestamp,
+            user: syncCurrent.current.chat[0].user,
           };
-          chatData.chat.operateTimestamp = timestamp;
-          setFun = {
-            ...chatData.chat,
-          };
-
+          chatData.chat[0].operateTimestamp = timestamp;
+          setFun = chatData.chat[0];
           break;
       }
 
       encryptedValue = await Aes?.encrypt(JSON.stringify(chatData));
     } else {
-      setFun = chatData.chat;
+      setFun = chatData.chat[0];
       encryptedValue = await Aes?.encrypt(JSON.stringify(chatData.chat));
     }
     setChatValue(setFun);
@@ -585,17 +582,19 @@ export const usePusher = (
       toast(t(CHAT_ROOM_KEYS.UNCONNECTED_CHANNEL));
       return;
     }
+    if (!syncCurrent.current) return;
 
     const timestamp = Date.now();
+    const chatData: ChatMsg[] = syncCurrent.current.chat.map((item) => ({
+      ...item,
+      operateTimestamp: timestamp,
+    }));
 
     const encryptedValue = await Aes?.encrypt(
       JSON.stringify({
-        command: syncCurrent.current?.command,
-        chat: {
-          ...syncCurrent.current?.chat,
-          operateTimestamp: timestamp,
-        },
-      } as CommandChatMsg)
+        command: syncCurrent.current!.command,
+        chat: chatData,
+      })
     );
     let triggered: boolean = false;
     let setFun: (state: Chat[]) => Chat[] = (state) => state;
@@ -607,7 +606,7 @@ export const usePusher = (
         );
         setFun = (state) =>
           state.filter(
-            (item) => item.timestamp !== syncCurrent.current?.chat.timestamp
+            (item) => !chatData.map((c) => c.timestamp).includes(item.timestamp)
           );
         break;
     }

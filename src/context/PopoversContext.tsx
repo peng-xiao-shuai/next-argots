@@ -5,7 +5,7 @@ import type { ChatMsg } from '@/hooks/use-pusher';
 import type React from 'react';
 import { MutableRefObject, createContext } from 'react';
 
-export type CommandChatMsg = {
+export interface CommandChatMsg {
   /**
    * 当前指令，点击复制或者编辑指令后，存储到 command
    */
@@ -13,8 +13,8 @@ export type CommandChatMsg = {
   /**
    * 当前记录，点击哪条记录时，存储到 chat
    */
-  chat: ChatMsg | ChatMsg[];
-};
+  chat: ChatMsg[];
+}
 
 export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;

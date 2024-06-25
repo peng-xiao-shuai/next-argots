@@ -37,7 +37,7 @@ export const ClientChatSendMsg: FC<{
     textAreaRef.current?.focus();
 
     if (current?.command === COMMAND.EDIT) {
-      setContent(current?.chat.msg);
+      setContent(current?.chat[0].msg);
     }
 
     return commands.find((item) => item.command === current?.command);
@@ -72,8 +72,6 @@ export const ClientChatSendMsg: FC<{
     key,
     shiftKey,
   }: KeyboardEvent<HTMLTextAreaElement>) => {
-    console.log(isMobile.current, shiftKey);
-
     if (key === 'Enter' && !shiftKey && !isMobile.current) {
       handleSendMessage();
     } else if (isMobile.current && key === 'Enter' && shiftKey) {
@@ -109,9 +107,9 @@ export const ClientChatSendMsg: FC<{
           <div>
             <strong className="text-primary">
               {currentCommandData.text}
-              {current?.chat.user.nickname}
+              {current?.chat[0].user.nickname}
             </strong>
-            <div>{current?.chat.msg}</div>
+            <div>{current?.chat[0].msg}</div>
           </div>
 
           <RiCloseLine

@@ -1,12 +1,14 @@
 'use client';
 import { ImageSvg } from '@/components';
-import { ChatPopoverContext } from '@/context';
+import { AppContext, ChatPopoverContext, CommandChatMsg } from '@/context';
 import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { unicodeToString } from '@/utils/string-transform';
 import { FC, MouseEvent, useCallback, useContext, useMemo } from 'react';
 import { COMMAND } from './ClientChatPopoverContent';
 import { isTypeProtect } from '@/utils/type';
+import emitter from '@/utils/bus';
+import { COMMON_KEYS } from '@@/locales/keys';
 
 type ExtensionRecord<T> = {
   last: T | null;
@@ -19,6 +21,7 @@ const ChatRecords: FC<
     replyMsg: string | undefined;
   } & ExtensionRecord<Chat>
 > = ({ chatObj, replyMsg, last, next }) => {
+  const { t } = useContext(AppContext);
   const { user, msg, timestamp, isEdit, reply } = chatObj;
   const { userInfo } = useRoomStore();
   const isUserMessage = user.nickname === (userInfo.nickname || '_u600b');
@@ -31,7 +34,36 @@ const ChatRecords: FC<
   );
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
-      if (current?.command === COMMAND.SELECT) {
+      if (current?.command === COMMAND[COMMON_KEYS.SELECT]) {
+        setCurrent((state) => {
+          const newState = { ...state!, command: COMMAND[COMMON_KEYS.SELECT] };
+
+          if (Array.isArray(newState.chat)) {
+            const index = newState.chat.findIndex(
+              (item) => item.timestamp === chatObj.timestamp
+            );
+
+            if (index === -1) {
+              newState.chat = newState.chat.concat(chatObj);
+            } else {
+              newState.chat.splice(index, 1);
+            }
+          } else {
+            newState.chat = [newState.chat!, chatObj];
+          }
+
+          /**
+           * 如果 newState.chat 全部清空后则返回 null
+           */
+          if (Array.isArray(newState.chat) && newState.chat.length === 0) {
+            emitter.emit('setSelectChat', null);
+            return null;
+          }
+
+          emitter.emit('setSelectChat', newState);
+
+          return newState;
+        });
         return;
       }
 
@@ -40,7 +72,7 @@ const ChatRecords: FC<
 
       setCurrent({
         command: '',
-        chat: chatObj,
+        chat: [chatObj],
       });
     },
     [chatObj, current?.command, setCurrent, setReferenceElement, setVisible]
@@ -50,14 +82,7 @@ const ChatRecords: FC<
    */
   const isSelect = useMemo(() => {
     if (current?.chat) {
-      if (
-        isTypeProtect<typeof current.chat, ChatMsg>(
-          current.chat,
-          (obj) => !Array.isArray(obj)
-        )
-      ) {
-        return current.chat.timestamp === timestamp;
-      } else return !!current.chat.find((item) => item.timestamp === timestamp);
+      return !!current.chat.find((item) => item.timestamp === timestamp);
     }
     return false;
   }, [current, timestamp]);
@@ -65,10 +90,11 @@ const ChatRecords: FC<
   return (
     <div
       className={`chat
-      chat-${isUserMessage ? 'end' : 'start'}
-      !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]
-      ${!isSystemType(last) ? '!pt-2' : ''}
-      ${isSelect ? '*:z-[100]' : ''}`}
+        chat-${isUserMessage ? 'end' : 'start'}
+        !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]
+        ${!isSystemType(last) ? '!pt-2' : ''}
+        ${isSelect ? '*:z-[100]' : ''}
+      `}
     >
       <div
         className={`
@@ -91,7 +117,9 @@ const ChatRecords: FC<
         className={`
         chat-bubble min-h-[unset]
         ${
-          visible
+          isSelect && current?.command === COMMAND.SELECT
+            ? 'chat-bubble-primary'
+            : visible
             ? '!bg-base-100 text-base-content'
             : 'bg-base-300 text-base-content/80'
         }
@@ -127,7 +155,7 @@ const ChatRecords: FC<
         )}
         <div className="whitespace-break-spaces break-words">{msg}</div>
         {isEdit === '1' ? (
-          <div className="text-right text-sm">已编辑</div>
+          <div className="text-right text-sm">{t(COMMON_KEYS.EDIT)}</div>
         ) : (
           <></>
         )}

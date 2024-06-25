@@ -10,7 +10,7 @@ import {
 } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
-import { ChatPopoverContext } from '@/context';
+import { ChatPopoverContext, CommandChatMsg } from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 
 import Cookies from 'js-cookie';
@@ -23,8 +23,9 @@ import {
   CommandType,
   MemoPopoverContent,
 } from './ClientChatPopoverContent';
-import { copyText } from '@/utils/string-transform';
-import { isTypeProtect } from '@/utils/type';
+import { copyText, unicodeToString } from '@/utils/string-transform';
+import emitter from '@/utils/bus';
+import { useBusWatch } from '@/hooks/use-bus-watch';
 
 export function ClientChat() {
   const pathname = usePathname();
@@ -69,6 +70,12 @@ export function ClientChat() {
       getChatHistory();
     }
   });
+  /**
+   * 监听导航栏删除和复制点击
+   */
+  useBusWatch('commandOperate', (e) => {
+    handleCommand(e as CommandType['command']);
+  });
 
   /**
    * 发送信息或者接受信息滚动到底部
@@ -112,7 +119,7 @@ export function ClientChat() {
    * 指令操作
    */
   const handleCommand = (command: CommandType['command']) => {
-    const currentData: typeof current = {
+    const currentData: CommandChatMsg = {
       chat: current?.chat!,
       command: command,
     };
@@ -123,6 +130,7 @@ export function ClientChat() {
         clientOperateMessage((triggered: boolean) => {
           if (triggered) {
             handleClose(true);
+            emitter.emit('setSelectChat', null);
           }
         });
         break;
@@ -131,26 +139,20 @@ export function ClientChat() {
          * 需要复制的消息
          */
         const msgString = () => {
-          if (
-            isTypeProtect<typeof currentData.chat, ChatMsg>(
-              currentData.chat,
-              (obj) => !Array.isArray(obj)
-            )
-          ) {
-            return currentData?.chat.msg;
-          } else
+          if (currentData?.chat.length > 1) {
             return currentData?.chat
               .map(
-                (item) => `
-      ${item.user.nickname} \n
-      ${item.msg} \n
-      \n
-      `
+                (item) => `${unicodeToString(item.user.nickname)}\n${item.msg}`
               )
-              .join(',');
+              .join(',\n\n');
+          } else return currentData?.chat[0].msg;
         };
         copyText(msgString() || '');
         handleClose(true);
+        emitter.emit('setSelectChat', null);
+        break;
+      case COMMAND.SELECT:
+        emitter.emit('setSelectChat', currentData);
         break;
     }
   };

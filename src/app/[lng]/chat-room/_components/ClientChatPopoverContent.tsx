@@ -6,11 +6,11 @@ import {
   RiFileCopy2Line,
   RiReplyAllLine,
 } from 'react-icons/ri';
-import React, { FC, MouseEvent, memo, useCallback } from 'react';
+import React, { FC, MouseEvent, memo, useCallback, useContext } from 'react';
 import type { ChatMsg } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { COMMON_KEYS } from '@@/locales/keys';
-import { ChatPopoverContextData } from '@/context';
+import { AppContext, ChatPopoverContextData } from '@/context';
 import { isTypeProtect } from '@/utils/type';
 
 export const COMMAND = {
@@ -23,35 +23,35 @@ export const COMMAND = {
 
 export type CommandType = {
   icon: IconType;
-  text: string;
+  text: COMMON_KEYS;
   command: keyof typeof COMMAND;
   role?: 'my' | 'other';
 };
 export const commands: CommandType[] = [
   {
     icon: RiReplyAllLine,
-    text: '回复',
+    text: COMMON_KEYS.REPLY,
     command: COMMAND[COMMON_KEYS.REPLY],
   },
   {
     icon: RiEditLine,
-    text: '编辑',
+    text: COMMON_KEYS.EDIT,
     command: COMMAND[COMMON_KEYS.EDIT],
     role: 'my',
   },
   {
     icon: RiFileCopy2Line,
-    text: '复制文本',
+    text: COMMON_KEYS.COPY_TEXT,
     command: COMMAND[COMMON_KEYS.COPY_TEXT],
   },
   {
     icon: RiDeleteBin5Line,
-    text: '删除消息',
+    text: COMMON_KEYS.DELETE,
     command: COMMAND[COMMON_KEYS.DELETE],
   },
   {
     icon: RiCheckboxCircleLine,
-    text: '选择此消息',
+    text: COMMON_KEYS.SELECT,
     command: COMMAND[COMMON_KEYS.SELECT],
   },
 ];
@@ -59,6 +59,7 @@ const PopoverContent: FC<{
   cb: (command: CommandType['command']) => void;
   current: ChatPopoverContextData['current'];
 }> = ({ cb, current }) => {
+  const { t } = useContext(AppContext);
   const { userInfo } = useRoomStore();
   const handleClick = (e: MouseEvent<HTMLUListElement>) => {
     const liElement = (e.target as HTMLElement).offsetParent as HTMLElement;
@@ -74,14 +75,7 @@ const PopoverContent: FC<{
    */
   const isSelect = useCallback(() => {
     if (current?.chat) {
-      if (
-        isTypeProtect<typeof current.chat, ChatMsg>(
-          current.chat,
-          (obj) => !Array.isArray(obj)
-        )
-      ) {
-        return current.chat.user.nickname === userInfo.userId;
-      } else return true;
+      return current.chat[0].user.nickname === userInfo.userId;
     }
     return false;
   }, [current, userInfo.userId]);
@@ -93,7 +87,7 @@ const PopoverContent: FC<{
           <li key={index} data-command={item.command}>
             <a className="px-2">
               <item.icon className="pointer-events-none"></item.icon>
-              <span className="pointer-events-none">{item.text}</span>
+              <span className="pointer-events-none">{t(item.text)}</span>
             </a>
           </li>
         ))}
