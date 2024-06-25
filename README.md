@@ -110,7 +110,7 @@ reference specification ([Angular](https://github.com/conventional-changelog/con
 - [x] Send a message scroll to the bottom
 - [x] select an avatar
 - [x] The network is reconnected and records are synchronized
-- [ ] Delete a certain (one or more) chat history of all people
+- [x] Edit, reply to a chat record for all people, delete, copy (one/more) chat records
 
 **Other functions can be `issues` propose**
 
