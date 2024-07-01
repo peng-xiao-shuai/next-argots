@@ -2,7 +2,7 @@
 import bus from '@/utils/bus';
 import { FC } from 'react';
 import type { Meta } from '../app/[lng]/meta';
-import { AiOutlineSetting } from 'react-icons/ai';
+import { AiFillGithub, AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { Lng } from '@/locales/i18n';
@@ -23,9 +23,14 @@ export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
   return (
     <>
       {metadata.rightOperateType === 'setting' ? (
-        <Link href={`/${language}/setting`}>
-          <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
-        </Link>
+        <>
+          <Link href={`https://github.com/peng-xiao-shuai/next-argots`}>
+            <AiFillGithub className="mr-3 svg-icon fill-base-content" />
+          </Link>
+          <Link href={`/${language}/setting`}>
+            <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
+          </Link>
+        </>
       ) : metadata.rightOperateType === 'complete' ? (
         <button className="btn btn-primary btn-sm" onClick={handleComplete}>
           {t(metadata.NavbarRightText || COMMON_KEYS.COMPLETE)}
