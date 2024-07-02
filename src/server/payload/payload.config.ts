@@ -6,29 +6,47 @@
 
 import path from 'path';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
-import { webpackBundler } from '@payloadcms/bundler-webpack';
+import { buildConfig } from 'payload';
+import sharp from 'sharp';
+import { en } from 'payload/i18n/en';
+import { zh } from 'payload/i18n/zh';
+import { ja } from 'payload/i18n/ja';
+import { fileURLToPath } from 'url';
 import { slateEditor } from '@payloadcms/richtext-slate';
-import { buildConfig } from 'payload/config';
-import { Feedback } from '../collections/Feedback';
-import { Room } from '../collections/Room';
-import { InviteLink } from '../collections/InviteLink';
+import { Feedback } from './collections/Feedback';
+import { Room } from './collections/Room';
+import { InviteLink } from './collections/InviteLink';
+import { Users } from './collections/User';
 
-/**
- * 这里没有用到 payload 了 所以不需要用环境变了，但是可以用 payload 生成类型
- */
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL?.replace(
-  '$PORT',
-  process.env.PORT || '3000'
-);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 export default buildConfig({
-  // 设置服务器的 URL，从环境变量 NEXT_PUBLIC_SERVER_URL 获取。
-  serverURL: serverURL,
-  collections: [Feedback, Room, InviteLink],
+  editor: slateEditor({}),
+  collections: [Users, Feedback, Room, InviteLink],
+
+  secret: process.env.PAYLOAD_SECRET || '',
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  debug: process.env.NODE_ENV === 'production' ? false : true,
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL!,
+    connectOptions: {
+      dbName: process.env.DATABASE_DB || 'test',
+    },
+  }),
+
+  /**
+   * Payload can now accept specific translations from 'payload/i18n/en'
+   * This is completely optional and will default to English if not provided
+   */
+  i18n: {
+    supportedLanguages: { en, zh, ja },
+  },
+
   admin: {
-    // 设置用于 Payload CMS 管理界面的打包工具，这里使用了
-    bundler: webpackBundler(),
-    // 配置管理系统 Meta
+    user: 'users',
     meta: {
       titleSuffix: 'Payload manage',
     },
@@ -37,26 +55,29 @@ export default buildConfig({
       password: 'test',
       prefillOnly: true,
     },
-    components: {
-      views: {},
-    },
-    // css: path.resolve(__dirname, '../../styles/payload-tailwindcss.css'),
   },
-  debug: process.env.NODE_ENV === 'production' ? false : true,
-  // 定义路由，例如管理界面的路由。
-  routes: {
-    admin: '/admin',
+  async onInit(payload) {
+    const existingUsers = await payload.find({
+      collection: 'users',
+      limit: 1,
+    });
+
+    if (existingUsers.docs.length === 0) {
+      await payload.create({
+        collection: 'users',
+        data: {
+          email: '1612565136@qq.com',
+          role: 'user',
+          password: 'test',
+        },
+      });
+    }
   },
-  // 设置富文本编辑器，这里使用了 Slate 编辑器。
-  editor: slateEditor({}),
-  typescript: {
-    outputFile: path.resolve(__dirname, 'payload-types.ts'),
-  },
-  rateLimit: {
-    max: 500,
-    trustProxy: false,
-  },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URL!,
-  }),
+  // Sharp is now an optional dependency -
+  // if you want to resize images, crop, set focal point, etc.
+  // make sure to install it and pass it to the config.
+
+  // This is temporary - we may make an adapter pattern
+  // for this before reaching 3.0 stable
+  sharp,
 });

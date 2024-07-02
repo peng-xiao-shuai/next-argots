@@ -51,8 +51,8 @@ export function Client() {
 
       signin({
         roomStatus: RoomStatus.LINK_JOIN,
-        roomId: joinData?.roomId,
-        hash: joinData?.roomData[0].hash,
+        roomId: joinData?.roomData.roomId,
+        hash: joinData?.roomData.hash,
       })
         .then((hash) => {
           Cookies.set('hash', hash);

@@ -185,7 +185,7 @@ const LinkRecord: FC<{
         return (
           <div
             key={item.id}
-            className={`relative box-border w-full py-2 px-4 mb-2 flex justify-between items-center rounded-lg overflow-hidden ${
+            className={`relative box-border w-full py-2 px-4 mb-2 last-of-type:mb-0 flex justify-between items-center rounded-lg overflow-hidden ${
               item.status != '1'
                 ? 'bg-gradient-to-l from-primary/25 to-base-200'
                 : 'b3-opacity-6'

@@ -1,5 +1,5 @@
 'use client';
-import meta from '../app/[lng]/meta';
+import meta from '../app/(app)/[lng]/meta';
 import { Lng, languages } from '@/locales/i18n';
 import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai';
 import { usePathname, useRouter } from 'next/navigation';

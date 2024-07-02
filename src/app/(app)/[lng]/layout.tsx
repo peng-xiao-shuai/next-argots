@@ -1,4 +1,4 @@
-import { Transition, AppProvider, TrpcProviders } from '../../components';
+import { Transition, AppProvider, TrpcProviders } from '@/components';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { dir } from 'i18next';
@@ -7,7 +7,7 @@ import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
 import dynamic from 'next/dynamic';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { COOKIE } from '@/server/enum';
 import { Viewport } from 'next';
 const Navbar = dynamic(() => import('@/components/Navbar'));
@@ -35,7 +35,7 @@ export function generateViewport(): Viewport {
 }
 
 const inter = localFont({
-  src: '../../../public/Helvetica-Neue.ttf',
+  src: '../../../../public/Helvetica-Neue.ttf',
 });
 
 export default async function RootLayout({

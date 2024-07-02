@@ -71,11 +71,6 @@ export function ClientFeedBack() {
     setLoading(true);
 
     mutate(formData);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    // })
   };
 
   return (

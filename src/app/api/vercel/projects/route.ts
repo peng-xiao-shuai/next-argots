@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import clientPromise from '@/server/db';
 import { Room } from '@/server/payload/payload-types';
+import payloadPromise from '@/server/payload/get-payload';
 
 const handleSetSALT = async (req: Request) => {
   // 使用 Vercel 的 API 更新环境变量
@@ -18,17 +18,16 @@ const handleSetSALT = async (req: Request) => {
   // 生成新的 salt
   const newSalt = await bcrypt.genSalt(10);
 
-  const client = await clientPromise;
-  const collection = client
-    .db(process.env.DATABASE_DB)
-    .collection<Room>('rooms');
+  const payload = await payloadPromise;
 
-  const data = await collection.countDocuments();
+  const data = await payload.count({
+    collection: 'rooms',
+  });
 
   /**
    * 集合中没有文档才更新
    */
-  if (data === 0) {
+  if (data.totalDocs === 0) {
     const response = await fetch(
       `https://api.vercel.com/v9/projects/${projectId}/env/vX80WDhItfPi7IhC`,
       {

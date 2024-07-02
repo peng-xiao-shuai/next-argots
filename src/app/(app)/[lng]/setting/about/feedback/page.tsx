@@ -1,4 +1,4 @@
-import { GenerateMetadata } from '@/app/[lng]/meta';
+import { GenerateMetadata } from '@/app/(app)/[lng]/meta';
 import { ClientFeedBack } from '../_components/ClientFeedBack';
 export const generateMetadata = async ({
   params: { lng },

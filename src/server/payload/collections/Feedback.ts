@@ -1,10 +1,10 @@
 /**
  * 反馈
  */
-import { CollectionBeforeChangeHook, CollectionConfig } from 'payload/types';
-import { FeedbackRecord } from '../payload/payload-types';
+import type { CollectionConfig, CollectionBeforeChangeHook } from 'payload';
+import type { FeedbackRecord } from '../payload-types';
 import { Resend } from 'resend';
-import { slateToHtml } from '../payload/payload-utils';
+import { slateToHtml } from '../payload-utils';
 
 const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
   data,
@@ -43,7 +43,7 @@ export const Feedback: CollectionConfig = {
       name: 'email',
       type: 'text',
       access: {
-        read: ({ req: { user } }) => user.role === 'admin',
+        read: ({ req: { user } }) => user?.role === 'admin',
       },
       admin: {
         readOnly: true,
@@ -111,6 +111,6 @@ export const Feedback: CollectionConfig = {
     read: () => true,
     delete: () => false,
     create: () => false,
-    update: ({ req: { user } }) => user.role === 'admin',
+    update: ({ req: { user } }) => user?.role === 'admin',
   },
 };

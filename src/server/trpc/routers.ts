@@ -1,19 +1,8 @@
-/*
- * @Author: peng-xiao-shuai
- * @Date: 2024-01-11 15:30:42
- * @LastEditors: peng-xiao-shuai
- * @LastEditTime: 2024-01-12 10:24:23
- * @Description:
- */
 import { z } from 'zod';
 import { authProcedure, procedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
-import { requestPusherApi } from '../../app/api/utils';
-import pusher from '../../app/api/pusher/[path]/get-pusher';
-import clientPromise from '../db';
-import { FeedbackRecord, InviteLink, Room } from '../payload/payload-types';
+import payloadPromise from '../payload/get-payload';
 
 export const appRouter = router({
   feedbackAdd: procedure
@@ -25,17 +14,14 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<FeedbackRecord>('feedback-records');
+      const payload = await payloadPromise;
 
       try {
-        await collection.insertOne({
-          ...input,
-          id: new ObjectId().toString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+        await payload.create({
+          collection: 'feedback-record',
+          data: {
+            ...input,
+          },
         });
       } catch (error: any) {
         throw new TRPCError({
@@ -57,41 +43,26 @@ export const appRouter = router({
       const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
       const houseOwnerId = hashSync(nickName, process.env.NEXT_PUBLIC_SALT!);
 
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<Room>('rooms');
+      const payload = await payloadPromise;
 
-      const linkCollection = client
-        .db(process.env.DATABASE_DB)
-        .collection<InviteLink>('invite-link');
       try {
-        // 清除邀请记录
-        linkCollection.deleteMany({
-          roomId,
-        });
-
-        const room = await collection.findOneAndDelete({
-          id: recordId,
-          houseOwnerId,
-          roomId,
+        const room = await payload.delete({
+          collection: 'rooms',
+          where: {
+            id: { equals: recordId },
+            roomId: { equals: roomId },
+            houseOwnerId: { equals: houseOwnerId },
+          },
+          context: {
+            roomName: roomName,
+            roomId,
+          },
         });
 
         /**
          * 是否存在频道号
          */
-        if (room.ok) {
-          const data = await requestPusherApi<{ users: { id: string }[] }>(
-            `/apps/${process.env.PUSHER_APP_ID}/channels/presence-${roomName}/users`
-          );
-
-          if (data?.users?.length) {
-            // 断开所有用户
-            data.users.forEach((user) => {
-              pusher.terminateUserConnections(user.id);
-            });
-          }
-
+        if (room.docs.length) {
           return;
         } else {
           throw new TRPCError({
@@ -119,28 +90,35 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { roomName, userInfo } = input;
-      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
+      const roomRecordId = hashSync(
+        roomName + ctx.pw,
+        process.env.NEXT_PUBLIC_SALT!
+      );
 
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<InviteLink>('invite-link');
+      const payload = await payloadPromise;
+
       try {
-        const id = new ObjectId().toString();
-        const data = await collection.insertOne({
-          roomId,
-          userInfo: JSON.stringify({
-            ...userInfo,
-            roomName,
-          }),
-          id,
-          status: '0',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+        const { docs: roomData } = await payload.find({
+          collection: 'rooms',
+          where: {
+            roomId: { equals: roomRecordId },
+          },
         });
 
-        if (data.acknowledged) {
-          return id;
+        const data = await payload.create({
+          collection: 'invite-link',
+          data: {
+            roomId: roomData[0].id,
+            userInfo: JSON.stringify({
+              ...userInfo,
+              roomName,
+            }),
+            status: '0',
+          },
+        });
+
+        if (data.id) {
+          return data.id;
         } else {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
@@ -163,20 +141,18 @@ export const appRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { roomName } = input;
-      const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
 
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<InviteLink>('invite-link');
+      const payload = await payloadPromise;
+
       try {
-        const data = await collection
-          .find({
-            roomId,
-          })
-          .toArray();
+        const data = await payload.find({
+          collection: 'invite-link',
+          where: {
+            userInfo: { contains: '"roomName":"' + roomName },
+          },
+        });
 
-        return data;
+        return data.docs;
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -196,17 +172,18 @@ export const appRouter = router({
       const { id, roomName } = input;
       const roomId = hashSync(roomName + ctx.pw, process.env.NEXT_PUBLIC_SALT!);
 
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<InviteLink>('invite-link');
+      const payload = await payloadPromise;
+
       try {
-        const data = await collection.deleteOne({
-          id,
-          roomId,
+        const data = await payload.delete({
+          collection: 'invite-link',
+          where: {
+            id: { equals: id },
+            roomId: { equals: roomId },
+          },
         });
 
-        return data.acknowledged;
+        return Boolean(data.docs.length);
       } catch (error: any) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

@@ -3,10 +3,8 @@ import { API_URL, RoomStatus, UserRole } from '&/enum';
 import { hashSync } from 'bcryptjs';
 import pusher from './get-pusher';
 import { AuthSuccessUserData, SigninSuccessUserData } from './pusher-type';
-import { Room } from '&/payload/payload-types';
+import { Room } from '@/server/payload/payload-types';
 import { NextRequest } from 'next/server';
-import clientPromise from '@/server/db';
-import { ObjectId } from 'mongodb';
 import { diffHash, isPresence } from '@/utils/server-utils';
 import {
   createPusherSignature,
@@ -15,6 +13,7 @@ import {
   res,
 } from '../../utils';
 import type { AvatarName } from '@/components';
+import payloadPromise from '@/server/payload/get-payload';
 
 interface BaseData {
   roomStatus: RoomStatus;
@@ -259,10 +258,7 @@ export const pusherAuthApi = {
       roomStatus === RoomStatus.ADD ? UserRole.HOUSE_OWNER : UserRole.MEMBER;
 
     try {
-      const client = await clientPromise;
-      const collection = client
-        .db(process.env.DATABASE_DB)
-        .collection<Room>('rooms');
+      const payload = await payloadPromise;
 
       let iv = crypto.randomBytes(128 / 8).toString('hex');
       let room: Room;
@@ -270,14 +266,17 @@ export const pusherAuthApi = {
       /**
        * 判断是否存在频道，避免非浏览器发起请求时，没有走 API_URL.GET_CHANNEL
        */
-      const roomData = await collection.findOne({
-        roomId: roomId,
-        hash: pwdHash || '',
+      const { docs: roomData } = await payload.find({
+        collection: 'rooms',
+        where: {
+          roomId: { equals: roomId },
+          hash: { equals: pwdHash || '' },
+        },
       });
 
       if (roomStatus === RoomStatus.ADD && reconnection === 'false') {
-        // 频道号添加缺已经存在频道号
-        if (roomData) {
+        // 频道号添加却已经存在频道号
+        if (roomData.length) {
           return res(
             {
               message: 'Do not create rooms',
@@ -287,22 +286,21 @@ export const pusherAuthApi = {
           );
         }
 
-        room = {
-          roomId: roomId,
-          iv,
-          houseOwnerId: hashSync(nickName, process.env.NEXT_PUBLIC_SALT!),
-          hash: pwdHash,
-          channel: 'presence-' + roomName,
-          id: new ObjectId().toString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        await collection.insertOne(room);
+        room = await payload.create({
+          collection: 'rooms',
+          data: {
+            roomId,
+            iv,
+            houseOwnerId: hashSync(nickName, process.env.NEXT_PUBLIC_SALT!),
+            hash: pwdHash,
+            channel: 'presence-' + roomName,
+          },
+        });
       } else {
         /**
          * 这里只能有一个数据
          */
-        if (!roomData) {
+        if (!roomData.length) {
           return res(
             {
               message: 'Incorrect password',
@@ -311,7 +309,7 @@ export const pusherAuthApi = {
             401
           );
         } else {
-          room = roomData;
+          room = roomData[0];
         }
       }
 

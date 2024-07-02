@@ -8,15 +8,41 @@
 
 export interface Config {
   collections: {
+    users: User;
     'feedback-record': FeedbackRecord;
     rooms: Room;
     'invite-link': InviteLink;
-    users: User;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   globals: {};
+  locale: null;
+  user: User & {
+    collection: 'users';
+  };
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  role: 'admin' | 'user';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "feedback-record".
+ */
 export interface FeedbackRecord {
   id: string;
   email?: string | null;
@@ -31,40 +57,36 @@ export interface FeedbackRecord {
   updatedAt: string;
   createdAt: string;
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rooms".
+ */
 export interface Room {
-  channel: string;
   id: string;
   roomId: string;
   houseOwnerId: string;
+  channel: string;
   hash: string;
   iv: string;
   updatedAt: string;
   createdAt: string;
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invite-link".
+ */
 export interface InviteLink {
   id: string;
   roomId: string | Room;
-  /**
-   * {nickName: '', roomName: '', avatar: ''} 转 JSON 字符串
-   */
   userInfo: string;
   status?: ('0' | '1') | null;
   updatedAt: string;
   createdAt: string;
 }
-export interface User {
-  id: string;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password: string | null;
-}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences".
+ */
 export interface PayloadPreference {
   id: string;
   user: {
@@ -84,6 +106,10 @@ export interface PayloadPreference {
   updatedAt: string;
   createdAt: string;
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations".
+ */
 export interface PayloadMigration {
   id: string;
   name?: string | null;
@@ -91,6 +117,7 @@ export interface PayloadMigration {
   updatedAt: string;
   createdAt: string;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

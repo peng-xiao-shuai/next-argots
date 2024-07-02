@@ -46,6 +46,8 @@ export function ClientChat() {
       unsubscribe();
     },
     onError: (err, v) => {
+      Cookies.remove('pw-256');
+      Cookies.remove('hash');
       console.log(err, v);
     },
   });

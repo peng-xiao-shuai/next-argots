@@ -1,7 +1,7 @@
 'use server';
 import './style.css';
 import Image from 'next/image';
-import pck from '../../../../../package.json';
+import pck from '../../../../../../package.json';
 import { useTranslation } from '@/locales/i18n';
 import { ClientAboutMenu } from '../_components/ClientAbout';
 import { GenerateMetadata } from '../../meta';

@@ -29,7 +29,7 @@ import { AvatarName } from '@/components/ImageSvg';
 import { AppContext, ChatPopoverContext, CommandChatMsg } from '@/context';
 import emitter from '@/utils/bus';
 import { createPusherSignature } from '@/app/api/utils';
-import { COMMAND } from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
+import { COMMAND } from '@/app/(app)/[lng]/chat-room/_components/ClientChatPopoverContent';
 import { isTypeProtect } from '@/utils/type';
 
 export enum MESSAGE_TYPE {

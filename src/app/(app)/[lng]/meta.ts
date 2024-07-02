@@ -1,5 +1,5 @@
-import { Lng, useTranslation } from '../../locales/i18n';
-import { COMMON_KEYS, LOCALES_KEYS, META } from '../../../public/locales/keys';
+import { Lng, useTranslation } from '@/locales/i18n';
+import { COMMON_KEYS, LOCALES_KEYS, META } from '@@/locales/keys';
 import type { Metadata } from 'next';
 import { FC } from 'react';
 import { NavRightProps } from '@/components/NavbarRight';
