@@ -24,7 +24,7 @@ import { GoInfo } from 'react-icons/go';
 import Cookies from 'js-cookie';
 import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
-import { JoinChannel } from '@/app/[lng]/chat-room/_components/ClientShare';
+import { JoinChannel } from '@/app/(app)/[lng]/chat-room/_components/ClientShare';
 import dynamic from 'next/dynamic';
 import { Button } from './Button';
 let GridAvatar: typeof import('./ImageSvg').default;
@@ -306,6 +306,7 @@ export const ShareForm: FC<{
     register,
     handleSubmit,
     setError,
+    setFocus,
     formState: { errors },
   } = useForm<ShareFormDataRules>();
   const { t } = useContext(AppContext);
@@ -353,6 +354,15 @@ export const ShareForm: FC<{
       userInfo: { ...formData, avatar: avatar },
     });
   };
+  useEffect(() => {
+    if (!Boolean(GridAvatar)) {
+      GridAvatar = dynamic(() => import('./ImageSvg').then((m) => m.default), {
+        ssr: false,
+      });
+    }
+    setFocus('nickName');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<AvatarName>(userInfo?.avatar || '');
   const [avatarVisible, setAvatarVisible] = useState(false);
@@ -373,6 +383,8 @@ export const ShareForm: FC<{
           <div
             role="button"
             onClick={(e) => {
+              console.log('触发');
+
               e.preventDefault();
               setAvatarVisible(true);
             }}

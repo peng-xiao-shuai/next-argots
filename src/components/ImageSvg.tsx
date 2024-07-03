@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { ComponentType, Dispatch, FC, SetStateAction, memo } from 'react';
+import logo from '@@/logo.svg';
 
 export type AvatarName =
   | 'Aries'
@@ -50,7 +51,7 @@ const ImageSvg: FC<{
       }`}
     >
       <Image
-        src={name ? `/avatar/${name}.svg` : '/logo.svg'}
+        src={name ? `/avatar/${name}.svg` : logo}
         alt={name || 'avatar'}
         width={30}
         height={30}
