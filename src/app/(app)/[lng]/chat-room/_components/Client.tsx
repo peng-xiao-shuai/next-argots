@@ -27,8 +27,10 @@ export type LinkUserInfo = {
   roomName: string;
 };
 
+export type setUserInfoType = (userInfo: LinkUserInfo) => void;
+
 export function Client() {
-  const { joinData, lng } = useContext(ClientChatContext);
+  const { joinData, lng, setUserInfo } = useContext(ClientChatContext);
   const { setCurrent } = useContext(ChatPopoverContext);
   const { t } = useContext(AppContext);
   const [visible, setVisible] = useState(false);
@@ -56,6 +58,15 @@ export function Client() {
       })
         .then((hash) => {
           Cookies.set('hash', hash);
+
+          /**
+           * 加入后修改用户信息
+           */
+          setUserInfo?.({
+            nickName: formData?.nickName || userInfo.nickName,
+            avatar: (formData?.avatar || userInfo.avatar) as AvatarName,
+            roomName: userInfo.roomName,
+          });
           resolve(hash);
           setVisible(false);
           setChatVisible(true);
@@ -113,12 +124,14 @@ export function Client() {
 export const ClientContext: FC<{
   joinData?: JoinLinkType['data'];
   lng: Lng;
+  setUserInfo?: setUserInfoType;
   children: React.ReactNode;
 }> = (props) => {
   return (
     <ClientChatContext.Provider
       value={{
         joinData: props.joinData,
+        setUserInfo: props.setUserInfo,
         userInfo: props.joinData
           ? JSON.parse(props.joinData?.userInfo!)
           : undefined,
