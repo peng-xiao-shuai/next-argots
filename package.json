@@ -1,6 +1,6 @@
 {
   "name": "argots",
-  "version": "0.0.0",
+  "version": "2.0.0-fc-20240704",
   "private": true,
   "scripts": {
     "dev": "cross-env PORT=4000 next",

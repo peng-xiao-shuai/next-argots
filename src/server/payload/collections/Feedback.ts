@@ -14,10 +14,11 @@ const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
 
     try {
       const response = await resend.emails.send({
-        from: 'Privacy Chat <reply@resend.dev>',
+        from: 'Peng Xiao Shuai <send@argots.cn>',
         to: [data.email],
         subject: '[Feed Back] ' + data.content?.substring(0, 10) + '...',
         html: slateToHtml(data.replyContent),
+        reply_to: 'pxs1612565136@gmail.com',
       });
 
       if (response.error) {
