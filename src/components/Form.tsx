@@ -322,6 +322,8 @@ export const ShareForm: FC<{
     },
   });
   const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
+    setLoading(true);
+
     if (joinChannel) {
       const data = await joinChannel(
         {
@@ -335,6 +337,8 @@ export const ShareForm: FC<{
           type: 'custom',
           message: data.msg,
         });
+
+        setLoading(false);
       }
       return;
     }
@@ -345,10 +349,10 @@ export const ShareForm: FC<{
         message: t(CHAT_ROOM_KEYS.NAME_EXISTS),
       });
 
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
     mutate({
       roomName: encryptData.roomName,
       userInfo: { ...formData, avatar: avatar },
@@ -403,7 +407,7 @@ export const ShareForm: FC<{
               readOnly
             />
           </div>
-          {Boolean(GridAvatar) && (
+          {Boolean(GridAvatar) && userInfo?.avatar === '' && (
             <GridAvatar
               setAvatar={setAvatar}
               setAvatarVisible={setAvatarVisible}
