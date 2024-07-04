@@ -118,6 +118,7 @@ reference specification ([Angular](https://github.com/conventional-changelog/con
 - [x] select an avatar
 - [x] The network is reconnected and records are synchronized
 - [x] Edit, reply to a chat record for all people, delete, copy (one/more) chat records
+- [x] Cache static files using service workers
 
 **Other functions can be `issues` propose**
 
