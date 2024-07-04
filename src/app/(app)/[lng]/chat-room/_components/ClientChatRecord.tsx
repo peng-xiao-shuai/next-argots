@@ -6,9 +6,9 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { unicodeToString } from '@/utils/string-transform';
 import { FC, MouseEvent, useCallback, useContext, useMemo } from 'react';
 import { COMMAND } from './ClientChatPopoverContent';
-import { isTypeProtect } from '@/utils/type';
 import emitter from '@/utils/bus';
 import { COMMON_KEYS } from '@@/locales/keys';
+import { cn } from '@/utils/utils';
 
 type ExtensionRecord<T> = {
   last: T | null;
@@ -87,49 +87,49 @@ const ChatRecords: FC<
     return false;
   }, [current, timestamp]);
 
+  const ImageFC = useMemo(
+    () => (
+      <ImageSvg
+        className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
+        name={user?.avatar}
+      ></ImageSvg>
+    ),
+    [user?.avatar]
+  );
+
   return (
     <div
-      className={`chat
-        chat-${isUserMessage ? 'end' : 'start'}
-        !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]
-        ${!isSystemType(last) ? '!pt-2' : ''}
-        ${isSelect ? '*:z-[100]' : ''}
-      `}
+      className={cn(
+        'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
+        `chat-${isUserMessage ? 'end' : 'start'}`,
+        !isSystemType(last) && '!pt-2',
+        isSelect && '*:z-[100]'
+      )}
     >
       <div
-        className={`
-        chat-image avatar rounded-lg overflow-hidden
-        ${visible && !isSystemType(next) ? 'bg-base-100' : ''}
-        `}
+        className={cn(
+          'chat-image avatar rounded-lg',
+          visible && !isSystemType(next) && 'bg-base-100'
+        )}
       >
-        <div className="w-10">
-          {!isSystemType(next) && (
-            <ImageSvg className="w-10 h-10" name={user?.avatar}></ImageSvg>
-          )}
-        </div>
+        <div className="w-10">{!isSystemType(next) && ImageFC}</div>
       </div>
-      {/* ${
-          isUserMessage
-            ? 'chat-bubble-primary'
-            : 'b3-opacity-6 text-base-content'
-        } */}
+
       <div
-        className={`
-        chat-bubble min-h-[unset]
-        ${
+        className={cn(
+          'chat-bubble min-h-[unset]',
           isSelect && current?.command === COMMAND.SELECT
             ? 'chat-bubble-primary'
             : visible
             ? '!bg-base-100 text-base-content'
-            : 'bg-base-300 text-base-content/80'
-        }
-        ${
+            : 'bg-base-300 text-base-content/80',
           !isSystemType(next)
             ? `user-last ${isUserMessage ? 'rounded-tr-md' : 'rounded-tl-md'}`
             : `before:hidden ${
                 isUserMessage ? '!rounded-r-md' : '!rounded-l-md'
-              }`
-        } ${!isSystemType(last) ? 'user-first !rounded-t-box' : ''}`}
+              }`,
+          !isSystemType(last) ? 'user-first !rounded-t-box' : ''
+        )}
         onClick={handleClick}
       >
         {!isSystemType(last) && (
@@ -141,6 +141,7 @@ const ChatRecords: FC<
             {unicodeToString(user!.nickname)}
           </div>
         )}
+        {/* 回复 */}
         {reply ? (
           <div className="border-l-4 border-primary rounded-md px-2 bg-primary/10 mb-1">
             <div className="text-primary font-bold">
@@ -154,6 +155,7 @@ const ChatRecords: FC<
           <></>
         )}
         <div className="whitespace-break-spaces break-words">{msg}</div>
+        {/* 已编辑 */}
         {isEdit === '1' ? (
           <div className="text-right text-sm">{t(COMMON_KEYS.EDIT)}</div>
         ) : (

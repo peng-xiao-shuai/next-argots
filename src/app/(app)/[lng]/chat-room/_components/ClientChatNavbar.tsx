@@ -71,7 +71,7 @@ export const ClientChatNavbar: FC<{
                 </div>
 
                 <span className="font-sans transition-all duration-300 _bold text-base-content pl-2 text-1rem normal-case">
-                  {navTitle || 'xxxxx'}
+                  {navTitle || ''}
                 </span>
               </div>
 
