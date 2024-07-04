@@ -1,6 +1,6 @@
 'use client';
 
-import type { CommandType } from '@/app/[lng]/chat-room/_components/ClientChatPopoverContent';
+import type { CommandType } from '@/app/(app)/[lng]/chat-room/_components/ClientChatPopoverContent';
 import type { ChatMsg } from '@/hooks/use-pusher';
 import type React from 'react';
 import { MutableRefObject, createContext } from 'react';
