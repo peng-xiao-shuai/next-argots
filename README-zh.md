@@ -34,10 +34,17 @@
 
 `next-argots` 是一个在网络信息交换中优先考虑机密性的个人提供了及时的解决方案。它创新地集成了强大的加密机制，以确保其平台上的每一条通信都是机密的，第三方（包括服务器管理员和潜在的窃听者）无法访问。与许多无限期存储用户数据的平台不同，`next-argots` 确保在聊天会话持续时间之外不会保留任何对话日志或个人信息。并且**无需收集任何个人信息**。
 
+### Payload CMS Url
+
+```
+https://argots.cn/admin
+```
+
 ### 主要配置
 
 - [Next](https://nextjs.org/docs)
 - [Trpc](https://trpc.io/docs/quickstart)
+- [Payload CMS](https://payloadcms.com/)
 - [Pusher](https://pusher.com/docs/channels/getting_started/javascript/?ref=docs-index)
 - [Zustand](https://zustand-demo.pmnd.rs/)
 - [Zod](https://zod.dev/)
