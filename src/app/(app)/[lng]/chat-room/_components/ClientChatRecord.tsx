@@ -87,16 +87,6 @@ const ChatRecords: FC<
     return false;
   }, [current, timestamp]);
 
-  const ImageFC = useMemo(
-    () => (
-      <ImageSvg
-        className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
-        name={user?.avatar}
-      ></ImageSvg>
-    ),
-    [user?.avatar]
-  );
-
   return (
     <div
       className={cn(
@@ -112,7 +102,14 @@ const ChatRecords: FC<
           visible && !isSystemType(next) && 'bg-base-100'
         )}
       >
-        <div className="w-10">{!isSystemType(next) && ImageFC}</div>
+        <div className="w-10">
+          {!isSystemType(next) && (
+            <ImageSvg
+              className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
+              name={user?.avatar}
+            ></ImageSvg>
+          )}
+        </div>
       </div>
 
       <div
