@@ -27,7 +27,7 @@ const beforeDelete: CollectionBeforeDeleteHook = async ({ context, req }) => {
       /**
        * 这里只会有一个
        */
-      roomId: { equals: context.roomId },
+      roomId: { equals: context.recordId },
     },
   });
 };

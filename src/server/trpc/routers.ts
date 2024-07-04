@@ -55,7 +55,7 @@ export const appRouter = router({
           },
           context: {
             roomName: roomName,
-            roomId,
+            recordId: recordId,
           },
         });
 
