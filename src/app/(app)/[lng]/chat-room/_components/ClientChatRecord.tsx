@@ -86,6 +86,12 @@ const ChatRecords: FC<
     }
     return false;
   }, [current, timestamp]);
+  /**
+   * 是否多选状态
+   */
+  const isMultiSelect = useMemo(() => {
+    return isSelect && current?.command === COMMAND.SELECT;
+  }, [isSelect, current?.command]);
 
   return (
     <div
@@ -115,9 +121,11 @@ const ChatRecords: FC<
       <div
         className={cn(
           'chat-bubble min-h-[unset]',
-          isSelect && current?.command === COMMAND.SELECT
+          current?.command === COMMAND.SELECT && 'cursor-pointer',
+          isMultiSelect
             ? 'chat-bubble-primary'
-            : visible
+            : // 是否显示 popover
+            visible
             ? '!bg-base-100 text-base-content'
             : 'bg-base-300 text-base-content/80',
           !isSystemType(next)
@@ -131,20 +139,33 @@ const ChatRecords: FC<
       >
         {!isSystemType(last) && (
           <div
-            className={`chat-header leading-6 line-clamp-1 font-bold text-ellipsis block ${
-              isUserMessage ? 'text-right' : 'text-left'
-            }`}
+            className={cn(
+              'chat-header leading-6 line-clamp-1 font-bold text-ellipsis block duration-300 transition-all',
+              isUserMessage ? 'text-right' : 'text-left',
+              isMultiSelect ? 'text-primary-content' : 'text-primary'
+            )}
           >
             {unicodeToString(user!.nickname)}
           </div>
         )}
         {/* 回复 */}
         {reply ? (
-          <div className="border-l-4 border-primary rounded-md px-2 bg-primary/10 mb-1">
-            <div className="text-primary font-bold">
+          <div
+            className={cn(
+              'border-l-4 border-primary rounded-md px-2 bg-primary/10 mb-1 duration-300 transition-[border,background-color]',
+              isMultiSelect &&
+                'border-primary-content text-primary-content bg-white/10'
+            )}
+          >
+            <div
+              className={cn(
+                'font-bold transition-colors duration-300',
+                !isMultiSelect && 'text-primary '
+              )}
+            >
               {unicodeToString(reply.user.nickname)}
             </div>
-            <div className="whitespace-break-spaces break-words">
+            <div className={cn('whitespace-break-spaces break-words')}>
               {replyMsg}
             </div>
           </div>
