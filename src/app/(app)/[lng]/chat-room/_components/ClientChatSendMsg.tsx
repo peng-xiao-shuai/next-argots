@@ -14,6 +14,7 @@ import React, {
 import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { COMMAND, CommandType, commands } from './ClientChatPopoverContent';
 import { RiCloseLine } from 'react-icons/ri';
+import { unicodeToString } from '@/utils/string-transform';
 
 export const ClientChatSendMsg: FC<{
   sendMsg: (content: string, cb?: (() => void) | undefined) => Promise<void>;
@@ -106,8 +107,8 @@ export const ClientChatSendMsg: FC<{
 
           <div>
             <strong className="text-primary">
-              {currentCommandData.text}
-              {current?.chat[0].user.nickname}
+              {t(currentCommandData.text)}{' '}
+              {unicodeToString(current!.chat[0].user.nickname)}
             </strong>
             <div>{current?.chat[0].msg}</div>
           </div>
