@@ -280,10 +280,11 @@ export type ShareFormDataRules = Omit<FormData, 'password' | 'roomName'>;
  * joinChannel 加入频道，表单触发后执行
  */
 export const ShareForm: FC<{
+  visible: boolean;
   isChannelUserExist: (nickName: string) => boolean;
   showLinkList: () => void;
   joinChannel?: JoinChannel;
-}> = ({ isChannelUserExist, showLinkList, joinChannel }) => {
+}> = ({ visible, isChannelUserExist, showLinkList, joinChannel }) => {
   interface ShareFormView extends FormView {
     prop: 'nickName';
     validation: RegisterOptions<ShareFormDataRules>;
@@ -407,7 +408,7 @@ export const ShareForm: FC<{
               readOnly
             />
           </div>
-          {Boolean(GridAvatar) && userInfo?.avatar === '' && (
+          {Boolean(GridAvatar) && visible && (
             <GridAvatar
               setAvatar={setAvatar}
               setAvatarVisible={setAvatarVisible}

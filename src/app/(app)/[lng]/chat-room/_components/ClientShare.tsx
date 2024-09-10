@@ -125,6 +125,7 @@ export const ClientShare: FC<{
       <Dialog visible={visible} setVisible={setVisible}>
         <div className="flex flex-wrap justify-center">
           <ShareForm
+            visible={visible}
             showLinkList={showLinkList}
             isChannelUserExist={isChannelUserExist}
             joinChannel={joinChannel}
