@@ -22,9 +22,8 @@ import { InviteLink } from '@/server/payload/payload-types';
 import { GoLink, GoTrash } from 'react-icons/go';
 import { copyText } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
-import { LinkUserInfo } from './Client';
 import type { FieldPath } from 'react-hook-form';
-import { AppContext, ClientChatContext } from '@/context';
+import { AppContext, ClientChatContext, LinkUserInfo } from '@/context';
 import { CHAT_ROOM_KEYS, COMMON_KEYS } from '@@/locales/keys';
 
 export type JoinChannel = (
