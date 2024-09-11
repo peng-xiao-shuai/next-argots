@@ -28,6 +28,8 @@ const handler = async (req: NextRequest) => {
 
     console.log('expectedSignature', expectedSignature);
 
+    console.log(process.env.PAYLOAD_ADMIN_EMAIL, process.env.PAYLOAD_ADMIN_PWD);
+
     if (receivedSignature === expectedSignature) {
       const payload = await payloadPromise;
       const remove = async (event: (typeof body)['events'][number]) => {
