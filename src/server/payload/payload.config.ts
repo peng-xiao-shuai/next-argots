@@ -29,7 +29,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  debug: process.env.NODE_ENV === 'production' ? true : true,
+  debug: process.env.NODE_ENV === 'production' ? false : true,
   db: mongooseAdapter({
     url: process.env.DATABASE_URL!,
     connectOptions: {

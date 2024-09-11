@@ -38,14 +38,15 @@ const handler = async (req: NextRequest) => {
           event.name === 'channel_vacated'
         ) {
           try {
-            const { user } = await payload.login({
+            console.log('开始登录');
+            const result = await payload.login({
               collection: 'users',
               data: {
                 email: process.env.PAYLOAD_ADMIN_EMAIL!,
                 password: process.env.PAYLOAD_ADMIN_PWD!,
               },
             });
-            console.log('user', user);
+            console.log('登录 result', result);
 
             const { docs: room, errors } = await payload.delete({
               collection: 'rooms',
