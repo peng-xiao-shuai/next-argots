@@ -30,6 +30,7 @@ const handler = async (req: NextRequest) => {
           event.name === 'channel_vacated'
         ) {
           try {
+            console.log('开始删除');
             const { docs: room } = await payloadcms.delete({
               collection: 'rooms',
               where: {
@@ -56,9 +57,9 @@ const handler = async (req: NextRequest) => {
       console.log('body.events', body.events);
 
       try {
-        body.events.forEach(async (event) => {
+        for (let event of body.events) {
           await remove(event);
-        });
+        }
 
         // 处理有效的 webhook 逻辑
         return new Response(
