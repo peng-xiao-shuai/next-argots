@@ -30,29 +30,31 @@ const handler = async (req: NextRequest) => {
 
     if (receivedSignature === expectedSignature) {
       const payload = await payloadPromise;
+      const remove = async (event: (typeof body)['events'][number]) => {
+        if (
+          event.channel.includes('presence-') &&
+          event.name === 'channel_vacated'
+        ) {
+          try {
+            const { docs: room, errors } = await payload.delete({
+              collection: 'rooms',
+              where: {
+                channel: { equals: event.channel },
+              },
+            });
+
+            console.log(room);
+            console.log('errors', errors);
+            console.log('删除：' + event.channel, room);
+          } catch (err) {
+            console.log(err, '删除报错');
+          }
+        }
+      };
+      console.log('body.events', body.events);
 
       body.events.forEach((event) => {
-        const remove = async () => {
-          if (
-            event.channel.includes('presence-') &&
-            event.name === 'channel_vacated'
-          ) {
-            try {
-              const { docs: room } = await payload.delete({
-                collection: 'rooms',
-                where: {
-                  channel: { equals: event.channel },
-                },
-              });
-
-              console.log('删除：' + event.channel, room);
-            } catch (err) {
-              console.log(err, '删除报错');
-            }
-          }
-        };
-
-        remove();
+        remove(event);
       });
       // 处理有效的 webhook 逻辑
       return new Response(
