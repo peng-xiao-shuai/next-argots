@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
-import { Room } from '@/server/payload/payload-types';
 import payloadPromise from '@/server/payload/get-payload';
 
 const handleSetSALT = async (req: Request) => {
   // 使用 Vercel 的 API 更新环境变量
   const vercelToken = process.env.TK;
-  console.log(req.headers.get('Authorization'));
+  console.log('vercelToken', vercelToken);
+  console.log('Authorization', req.headers.get('Authorization'));
 
   if (req.headers.get('Authorization') !== `Bearer ${vercelToken}`) {
     return new Response(JSON.stringify({ message: 'Unauthorized' }), {

@@ -9,6 +9,10 @@ const handler = async (req: NextRequest) => {
     events: { name: string; channel: string }[];
   };
 
+  console.log('body', body);
+  console.log('user-agent', req.headers.get('user-agent'));
+  console.log('x-pusher-signature', req.headers.get('x-pusher-signature'));
+
   if (req.headers.get('user-agent') === 'pusher-webhooks') {
     const receivedSignature = req.headers.get('x-pusher-signature');
     // const receivedKey = req.headers.get('x-pusher-key');
@@ -21,6 +25,8 @@ const handler = async (req: NextRequest) => {
     )
       .update(payload)
       .digest('hex');
+
+    console.log('expectedSignature', expectedSignature);
 
     if (receivedSignature === expectedSignature) {
       const payload = await payloadPromise;
