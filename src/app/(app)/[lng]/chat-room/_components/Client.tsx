@@ -13,7 +13,14 @@ import { useRoomStore } from '@/hooks/use-room-data';
 import { RoomStatus } from '@/server/enum';
 import { useBusWatch } from '@/hooks/use-bus-watch';
 import { FC, useContext, useEffect, useState } from 'react';
-import { AppContext, ChatPopoverContext, ClientChatContext } from '@/context';
+import {
+  AppContext,
+  ChatPopoverContext,
+  ClientChatContext,
+  type GetLinkPreview,
+  type LinkUserInfo,
+  type SetUserInfoType,
+} from '@/context';
 import { usePusher } from '@/hooks/use-pusher';
 import { API_KEYS } from '@@/locales/keys';
 import { toast } from 'sonner';
@@ -21,16 +28,8 @@ import Cookies from 'js-cookie';
 import { ClientChat } from './ClientChat';
 import emitter from '@/utils/bus';
 
-export type LinkUserInfo = {
-  nickName: string;
-  avatar: AvatarName;
-  roomName: string;
-};
-
-export type setUserInfoType = (userInfo: LinkUserInfo) => void;
-
 export function Client() {
-  const { joinData, lng, setUserInfo } = useContext(ClientChatContext);
+  const { joinData, lng, serveActive } = useContext(ClientChatContext);
   const { setCurrent } = useContext(ChatPopoverContext);
   const { t } = useContext(AppContext);
   const [visible, setVisible] = useState(false);
@@ -62,7 +61,7 @@ export function Client() {
           /**
            * 加入后修改用户信息
            */
-          setUserInfo?.({
+          serveActive?.setUserInfo?.({
             nickName: formData?.nickName || userInfo.nickName,
             avatar: (formData?.avatar || userInfo.avatar) as AvatarName,
             roomName: userInfo.roomName,
@@ -124,14 +123,17 @@ export function Client() {
 export const ClientContext: FC<{
   joinData?: JoinLinkType['data'];
   lng: Lng;
-  setUserInfo?: setUserInfoType;
+  serveActive: {
+    getLinkPreview: GetLinkPreview;
+    setUserInfo?: SetUserInfoType;
+  };
   children: React.ReactNode;
 }> = (props) => {
   return (
     <ClientChatContext.Provider
       value={{
         joinData: props.joinData,
-        setUserInfo: props.setUserInfo,
+        serveActive: props.serveActive,
         userInfo: props.joinData
           ? JSON.parse(props.joinData?.userInfo!)
           : undefined,

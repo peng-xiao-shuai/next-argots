@@ -42,6 +42,7 @@
     "mongodb": "^6.8.0",
     "next": "15.0.0-canary.35",
     "next-sitemap": "^4.2.3",
+    "node-html-parser": "^6.1.13",
     "payload": "3.0.0-beta.55",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0-rc2",
