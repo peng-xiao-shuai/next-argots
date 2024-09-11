@@ -1,5 +1,5 @@
-const path = require('path')
-const withPayload = require('@payloadcms/next/withPayload').withPayload
+import path from 'path'
+import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -26,6 +26,9 @@ const nextConfig = {
     // 重要: 返回修改后的配置
     return config
   },
+  experimental: {
+    reactCompiler: false
+  }
 }
 
-module.exports = withPayload(nextConfig)
+export default withPayload(nextConfig)
