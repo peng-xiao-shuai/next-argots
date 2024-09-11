@@ -69,4 +69,4 @@ const handleSetSALT = async (req: Request) => {
   );
 };
 
-export { handleSetSALT as POST };
+export { handleSetSALT as GET };
