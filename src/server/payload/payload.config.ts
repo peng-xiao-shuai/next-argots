@@ -51,7 +51,7 @@ export default buildConfig({
       titleSuffix: 'Payload manage',
     },
     autoLogin: {
-      email: '1612565136@qq.com',
+      email: 'test@test.com',
       password: 'test',
       prefillOnly: true,
     },
