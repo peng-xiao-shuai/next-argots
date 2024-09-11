@@ -36,7 +36,14 @@ const handler = async (req: NextRequest) => {
           event.name === 'channel_vacated'
         ) {
           try {
-            const { docs: room, errors } = await payload.delete({
+            await payload.login({
+              collection: 'users',
+              data: {
+                email: process.env.PAYLOAD_ADMIN_EMAIL!,
+                password: process.env.PAYLOAD_ADMIN_PWD!,
+              },
+            });
+            const { docs: room } = await payload.delete({
               collection: 'rooms',
               where: {
                 channel: { equals: event.channel },
@@ -44,7 +51,6 @@ const handler = async (req: NextRequest) => {
             });
 
             console.log(room);
-            console.log('errors', errors);
             console.log('删除：' + event.channel, room);
           } catch (err) {
             console.log(err, '删除报错');
