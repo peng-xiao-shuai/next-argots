@@ -29,7 +29,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  debug: process.env.NODE_ENV === 'production' ? false : true,
+  debug: process.env.NODE_ENV === 'production' ? true : true,
   db: mongooseAdapter({
     url: process.env.DATABASE_URL!,
     connectOptions: {
@@ -66,7 +66,7 @@ export default buildConfig({
       await payload.create({
         collection: 'users',
         data: {
-          email: '1612565136@qq.com',
+          email: 'test@test.com',
           role: 'user',
           password: 'test',
         },
