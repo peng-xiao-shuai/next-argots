@@ -24,8 +24,11 @@ export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
     <>
       {metadata.rightOperateType === 'setting' ? (
         <>
-          <Link href={`https://github.com/peng-xiao-shuai/next-argots`}>
-            <AiFillGithub className="mr-3 svg-icon fill-base-content" />
+          <Link
+            href={`https://github.com/peng-xiao-shuai/next-argots`}
+            target="_blank"
+          >
+            <AiFillGithub className="ml-3 svg-icon fill-base-content" />
           </Link>
           <Link href={`/${language}/setting`}>
             <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
