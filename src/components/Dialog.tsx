@@ -3,6 +3,7 @@ import React, {
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -23,16 +24,18 @@ export const Dialog: FC<{
     }, 300);
   }, [visible]);
 
-  const handleClose = () =>
-    debounce(() => {
-      setBoxVisible(false);
+  const handleClose = useCallback(
+    () =>
+      debounce(() => {
+        setBoxVisible(false);
 
-      const time = setTimeout(() => {
-        setVisible(!visible);
-        clearTimeout(time);
-      }, 100);
-    });
-
+        const time = setTimeout(() => {
+          setVisible(!visible);
+          clearTimeout(time);
+        }, 100);
+      }),
+    [setVisible, visible]
+  );
   return (
     <DialogMask visible={visible} onClose={handleClose}>
       <div

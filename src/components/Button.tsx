@@ -1,5 +1,5 @@
 import { debounce } from '@/utils/debounce-throttle';
-import { ButtonHTMLAttributes, FC, useMemo } from 'react';
+import { ButtonHTMLAttributes, FC, memo, useMemo } from 'react';
 
 export const Button: FC<{
   title?: string;
@@ -8,7 +8,7 @@ export const Button: FC<{
   loading?: boolean;
   className?: string;
   attrs?: ButtonHTMLAttributes<HTMLButtonElement>;
-}> = ({ title, children, click, className = '', attrs, loading }) => {
+}> = memo(({ title, children, click, className = '', attrs, loading }) => {
   const _loading = useMemo(() => {
     return typeof loading === 'undefined' ? attrs?.disabled : loading;
   }, [loading, attrs?.disabled]);
@@ -36,4 +36,5 @@ export const Button: FC<{
       )}
     </button>
   );
-};
+});
+Button.displayName = 'Button';

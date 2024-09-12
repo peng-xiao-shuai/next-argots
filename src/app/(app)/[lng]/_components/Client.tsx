@@ -2,7 +2,7 @@
 import { HOME_KEYS } from '@@/locales/keys';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RoomStatus } from '@/server/enum';
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useCallback, useContext, useEffect, useState } from 'react';
 import { Lng } from '@/locales/i18n';
 import { Dialog, HomeForm } from '@/components';
 import { AppContext } from '@/context';
@@ -24,10 +24,13 @@ export const ClientOperate: FC<{
   }, [router, lng]);
 
   // 点击加入/创建频道按钮
-  const handleRoom = (type: RoomStatus) => {
-    setRoomStatus(type);
-    setVisible(true);
-  };
+  const handleRoom = useCallback(
+    (type: RoomStatus) => {
+      setRoomStatus(type);
+      setVisible(true);
+    },
+    [setRoomStatus, setVisible]
+  );
 
   useEffect(() => {
     const msg = searchParams.get('msg');

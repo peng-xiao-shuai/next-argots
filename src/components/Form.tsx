@@ -1,5 +1,14 @@
 'use client';
-import React, { FC, Fragment, useContext, useEffect, useState } from 'react';
+import React, {
+  FC,
+  Fragment,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useForm, SubmitHandler, RegisterOptions } from 'react-hook-form';
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
@@ -50,37 +59,38 @@ type HomeForm = FC<{
   lng: Lng;
   visible: boolean;
 }>;
-export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
-  const formView: FormView[] = [
-    {
-      type: 'text',
-      locale: HOME_KEYS.ROOM_NUMBER,
-      prop: 'roomName',
-      validation: {
-        required: HOME_KEYS.EMPTY_ROOM_NUMBER,
-        maxLength: 12,
-      },
-    },
-    {
-      type: 'text',
-      locale: HOME_KEYS.NICKNAME,
-      prop: 'nickName',
-      validation: {
-        required: HOME_KEYS.EMPTY_NICKNAME,
-        maxLength: 12,
-      },
-    },
-    {
-      type: 'password',
-      locale: HOME_KEYS.PASSWORD,
-      prop: 'password',
-      validation: {
-        required: HOME_KEYS.EMPTY_PASSWORD,
-        maxLength: 12,
-      },
-    },
-  ];
 
+const formView: FormView[] = [
+  {
+    type: 'text',
+    locale: HOME_KEYS.ROOM_NUMBER,
+    prop: 'roomName',
+    validation: {
+      required: HOME_KEYS.EMPTY_ROOM_NUMBER,
+      maxLength: 12,
+    },
+  },
+  {
+    type: 'text',
+    locale: HOME_KEYS.NICKNAME,
+    prop: 'nickName',
+    validation: {
+      required: HOME_KEYS.EMPTY_NICKNAME,
+      maxLength: 12,
+    },
+  },
+  {
+    type: 'password',
+    locale: HOME_KEYS.PASSWORD,
+    prop: 'password',
+    validation: {
+      required: HOME_KEYS.EMPTY_PASSWORD,
+      maxLength: 12,
+    },
+  },
+];
+
+export const HomeForm: HomeForm = memo(({ roomStatus, lng, visible }) => {
   const {
     register,
     handleSubmit,
@@ -94,64 +104,67 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
   const { signin } = usePusher();
   const router = useRouter();
   const { setData } = useRoomStore();
-
-  const onSubmit: SubmitHandler<FormData> = async (formData) => {
-    setLoading(true);
-    // 加密数据
-    const encryptData = {
-      nickName: stringToUnicode(formData.nickName),
-      roomName: stringToUnicode(formData.roomName),
-      password: CryptoJS.SHA256(formData.password).toString(),
-    };
-
-    try {
-      const { data } = await fetchReq(API_URL.GET_CHANNEL, {
-        roomName: encryptData.roomName,
-      });
-
-      if (roomStatus === RoomStatus.JOIN && !data.isRoom) {
-        setError('root.roomName', {
-          type: 'custom',
-          message: `${HOME_KEYS.HOME_API_NO_ROOM_NAME}`,
-        });
-        throw new Error('');
-      }
-
-      if (roomStatus === RoomStatus.ADD && data.isRoom) {
-        setError('root.roomName', {
-          type: 'custom',
-          message: `${HOME_KEYS.HOME_API_ROOM_NAME}`,
-        });
-
-        throw new Error(data.message);
-      }
-
-      setData({
-        ...encryptData,
-        avatar: avatar,
-      });
-
-      signin({
-        roomStatus,
-      })
-        .then((res) => {
-          Cookies.set('pw-256', encryptData.password);
-          Cookies.set('hash', res);
-          router.push(`/${lng}/chat-room`);
-        })
-        .catch((err) => {
-          setLoading(false);
-
-          console.log(err);
-        });
-    } catch (err) {
-      setLoading(false);
-      trigger('roomName');
-    }
-  };
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<AvatarName>('');
   const [avatarVisible, setAvatarVisible] = useState(false);
+
+  const onSubmit: SubmitHandler<FormData> = useCallback(
+    async (formData) => {
+      setLoading(true);
+      // 加密数据
+      const encryptData = {
+        nickName: stringToUnicode(formData.nickName),
+        roomName: stringToUnicode(formData.roomName),
+        password: CryptoJS.SHA256(formData.password).toString(),
+      };
+
+      try {
+        const { data } = await fetchReq(API_URL.GET_CHANNEL, {
+          roomName: encryptData.roomName,
+        });
+
+        if (roomStatus === RoomStatus.JOIN && !data.isRoom) {
+          setError('root.roomName', {
+            type: 'custom',
+            message: `${HOME_KEYS.HOME_API_NO_ROOM_NAME}`,
+          });
+          throw new Error('');
+        }
+
+        if (roomStatus === RoomStatus.ADD && data.isRoom) {
+          setError('root.roomName', {
+            type: 'custom',
+            message: `${HOME_KEYS.HOME_API_ROOM_NAME}`,
+          });
+
+          throw new Error(data.message);
+        }
+
+        setData({
+          ...encryptData,
+          avatar: avatar,
+        });
+
+        signin({
+          roomStatus,
+        })
+          .then((res) => {
+            Cookies.set('pw-256', encryptData.password);
+            Cookies.set('hash', res);
+            router.push(`/${lng}/chat-room`);
+          })
+          .catch((err) => {
+            setLoading(false);
+
+            console.log(err);
+          });
+      } catch (err) {
+        setLoading(false);
+        trigger('roomName');
+      }
+    },
+    [avatar, lng, roomStatus, router, setData, setError, signin, trigger]
+  );
 
   useEffect(() => {
     if (visible) {
@@ -250,7 +263,8 @@ export const HomeForm: HomeForm = ({ roomStatus, lng, visible }) => {
       />
     </form>
   );
-};
+});
+HomeForm.displayName = 'HomeForm';
 
 const InputClassName =
   'input w-full transition-all duration-300 outline-none focus-within:outline-none focus-within:border-primary focus-within:shadow-sm focus-within:shadow-primary focus:outline-none focus:border-primary focus:shadow-sm focus:shadow-primary';
@@ -258,7 +272,7 @@ const InputClassName =
 export const ItemLabel: FC<{
   label: string;
   children: React.ReactNode;
-}> = ({ label, children }) => {
+}> = memo(({ label, children }) => {
   return (
     <div className="w-full relative">
       <label className="inline-block text-base mb-2 text-accent-content _p-x">
@@ -267,7 +281,8 @@ export const ItemLabel: FC<{
       {children}
     </div>
   );
-};
+});
+ItemLabel.displayName = 'ItemLabel';
 
 export type ShareFormDataRules = Omit<FormData, 'password' | 'roomName'>;
 /**
@@ -284,13 +299,13 @@ export const ShareForm: FC<{
   isChannelUserExist: (nickName: string) => boolean;
   showLinkList: () => void;
   joinChannel?: JoinChannel;
-}> = ({ visible, isChannelUserExist, showLinkList, joinChannel }) => {
+}> = memo(({ visible, isChannelUserExist, showLinkList, joinChannel }) => {
   interface ShareFormView extends FormView {
     prop: 'nickName';
     validation: RegisterOptions<ShareFormDataRules>;
   }
 
-  const formView: ShareFormView[] = [
+  const { current: formView } = useRef<ShareFormView[]>([
     {
       type: 'text',
       locale: HOME_KEYS.NICKNAME,
@@ -300,7 +315,7 @@ export const ShareForm: FC<{
         maxLength: 12,
       },
     },
-  ];
+  ]);
 
   const { userInfo } = useContext(ClientChatContext);
   const {
@@ -322,43 +337,58 @@ export const ShareForm: FC<{
       toast.error(error.message || t(API_KEYS.PUSHER_AUTH_500));
     },
   });
-  const onSubmit: SubmitHandler<ShareFormDataRules> = async (formData) => {
-    setLoading(true);
+  const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarName>(userInfo?.avatar || '');
+  const [avatarVisible, setAvatarVisible] = useState(false);
 
-    if (joinChannel) {
-      const data = await joinChannel(
-        {
-          ...formData,
-          avatar,
-        },
-        setLoading
-      );
-      if (data && data.msg) {
-        setError(data.prop!, {
+  const onSubmit: SubmitHandler<ShareFormDataRules> = useCallback(
+    async (formData) => {
+      setLoading(true);
+
+      if (joinChannel) {
+        const data = await joinChannel(
+          {
+            ...formData,
+            avatar,
+          },
+          setLoading
+        );
+        if (data && data.msg) {
+          setError(data.prop!, {
+            type: 'custom',
+            message: data.msg,
+          });
+
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (isChannelUserExist(stringToUnicode(formData.nickName))) {
+        setError('root.nickName', {
           type: 'custom',
-          message: data.msg,
+          message: t(CHAT_ROOM_KEYS.NAME_EXISTS),
         });
 
         setLoading(false);
+        return;
       }
-      return;
-    }
 
-    if (isChannelUserExist(stringToUnicode(formData.nickName))) {
-      setError('root.nickName', {
-        type: 'custom',
-        message: t(CHAT_ROOM_KEYS.NAME_EXISTS),
+      mutate({
+        roomName: encryptData.roomName,
+        userInfo: { ...formData, avatar: avatar },
       });
-
-      setLoading(false);
-      return;
-    }
-
-    mutate({
-      roomName: encryptData.roomName,
-      userInfo: { ...formData, avatar: avatar },
-    });
-  };
+    },
+    [
+      avatar,
+      encryptData.roomName,
+      isChannelUserExist,
+      joinChannel,
+      mutate,
+      setError,
+      t,
+    ]
+  );
   useEffect(() => {
     if (!Boolean(GridAvatar)) {
       GridAvatar = dynamic(() => import('./ImageSvg').then((m) => m.default), {
@@ -368,9 +398,6 @@ export const ShareForm: FC<{
     setFocus('nickName');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState<AvatarName>(userInfo?.avatar || '');
-  const [avatarVisible, setAvatarVisible] = useState(false);
 
   return (
     <form
@@ -485,4 +512,5 @@ export const ShareForm: FC<{
       )}
     </form>
   );
-};
+});
+ShareForm.displayName = 'ShareForm';

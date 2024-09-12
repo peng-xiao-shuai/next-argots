@@ -1,6 +1,6 @@
 'use client';
 import bus from '@/utils/bus';
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import type { Meta } from '../app/(app)/[lng]/meta';
 import { AiFillGithub, AiOutlineSetting } from 'react-icons/ai';
 import Link from 'next/link';
@@ -16,9 +16,9 @@ export type NavRightProps = {
 
 export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
   // 完成事件，点击触发全局通信
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     bus.emit('complete');
-  };
+  }, []);
 
   return (
     <>

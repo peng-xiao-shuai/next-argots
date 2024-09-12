@@ -1,7 +1,7 @@
 'use client';
 
 import { ChatPopoverContext, ChatPopoverContextData } from '@/context';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 export const ChatPopoverProviders = ({
   children,
@@ -17,29 +17,33 @@ export const ChatPopoverProviders = ({
     useState<ChatPopoverContextData['dialogVisible']>(false);
   const [current, setCurrent] =
     useState<ChatPopoverContextData['current']>(null);
-  const setVisible: ChatPopoverContextData['setVisible'] = (value) => {
-    setPopoverVisible(value);
-    setDialogVisible(value);
-  };
-  const handleClose: ChatPopoverContextData['handleClose'] = (
-    clearCurrent = false
-  ) => {
-    setVisible(false);
+  const setVisible: ChatPopoverContextData['setVisible'] = useCallback(
+    (value) => {
+      setPopoverVisible(value);
+      setDialogVisible(value);
+    },
+    []
+  );
+  const setCurrentData = useCallback(
+    (value: React.SetStateAction<ChatPopoverContextData['current']>) => {
+      if (typeof value === 'function') {
+        syncCurrent.current = value(syncCurrent.current);
+      } else syncCurrent.current = value;
 
-    if (clearCurrent === true) {
-      setCurrentData(null);
-    }
-  };
+      setCurrent(syncCurrent.current);
+    },
+    []
+  );
+  const handleClose: ChatPopoverContextData['handleClose'] = useCallback(
+    (clearCurrent = false) => {
+      setVisible(false);
 
-  const setCurrentData = (
-    value: React.SetStateAction<ChatPopoverContextData['current']>
-  ) => {
-    if (typeof value === 'function') {
-      syncCurrent.current = value(syncCurrent.current);
-    } else syncCurrent.current = value;
-
-    setCurrent(syncCurrent.current);
-  };
+      if (clearCurrent === true) {
+        setCurrentData(null);
+      }
+    },
+    [setCurrentData, setVisible]
+  );
 
   return (
     <ChatPopoverContext.Provider

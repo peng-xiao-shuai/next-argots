@@ -71,7 +71,7 @@ MemoizedImageSvg.displayName = 'ImageSvg';
 const GridAvatar: ComponentType<{
   setAvatar: Dispatch<SetStateAction<AvatarName>>;
   setAvatarVisible: Dispatch<SetStateAction<boolean>>;
-}> = ({ setAvatar, setAvatarVisible }) => {
+}> = memo(({ setAvatar, setAvatarVisible }) => {
   return (
     <ul className="dropdown-content !duration-300 mt-2 grid grid-cols-6 !bg-opacity-90 gap-x-2 gap-y-3 px-2 py-3 z-[1] bg-base-300 rounded-sm w-full">
       {avatars.map((item) => (
@@ -92,7 +92,8 @@ const GridAvatar: ComponentType<{
       ))}
     </ul>
   );
-};
+});
+GridAvatar.displayName = 'GridAvatar';
 
 export { MemoizedImageSvg as ImageSvg };
 
