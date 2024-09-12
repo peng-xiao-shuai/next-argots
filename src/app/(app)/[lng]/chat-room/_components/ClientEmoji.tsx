@@ -17,53 +17,54 @@ export const ClientEmojiPicker: FC<{
   setContent: React.Dispatch<React.SetStateAction<string>>;
   visibleEmoji: boolean;
   setVisibleEmoji: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setContent, textAreaRef, visibleEmoji, setVisibleEmoji }) => {
-  const { dataTheme } = useContext(AppContext);
-  const [emojiData, setEmojiData] = useState();
-  const cursorPosition = useRef(0);
+}> = React.memo(
+  ({ setContent, textAreaRef, visibleEmoji, setVisibleEmoji }) => {
+    const { dataTheme } = useContext(AppContext);
+    const [emojiData, setEmojiData] = useState();
+    const cursorPosition = useRef(0);
 
-  /**
-   * 选中表情
-   */
-  const onEmojiSelect = (e: any) => {
-    setContent((state) => {
-      cursorPosition.current =
-        textAreaRef.current?.selectionStart || cursorPosition.current + 1;
+    /**
+     * 选中表情
+     */
+    const onEmojiSelect = (e: any) => {
+      setContent((state) => {
+        cursorPosition.current =
+          textAreaRef.current?.selectionStart || cursorPosition.current + 1;
 
-      return (
-        state.substring(0, cursorPosition.current) +
-        e.native +
-        state.substring(cursorPosition.current, state.length)
-      );
-    });
-  };
-
-  /**
-   * 表情外点击
-   */
-  const onClickOutside = (e: PointerEvent) => {
-    if ((e.target as HTMLElement).dataset.hide === 'true') {
-      setVisibleEmoji(false);
-    }
-  };
-
-  useEffect(() => {
-    const getData = async () => {
-      const response = await fetch(
-        'https://cdn.jsdelivr.net/npm/@emoji-mart/data'
-      );
-      const res = await response.json();
-      setEmojiData(res);
+        return (
+          state.substring(0, cursorPosition.current) +
+          e.native +
+          state.substring(cursorPosition.current, state.length)
+        );
+      });
     };
 
-    getData();
-  }, []);
+    /**
+     * 表情外点击
+     */
+    const onClickOutside = (e: PointerEvent) => {
+      if ((e.target as HTMLElement).dataset.hide === 'true') {
+        setVisibleEmoji(false);
+      }
+    };
 
-  useEffect(() => {
-    const emojiPicker = document.querySelector('em-emoji-picker');
-    if (emojiPicker) {
-      const style = document.createElement('style');
-      style.innerHTML = `
+    useEffect(() => {
+      const getData = async () => {
+        const response = await fetch(
+          'https://cdn.jsdelivr.net/npm/@emoji-mart/data'
+        );
+        const res = await response.json();
+        setEmojiData(res);
+      };
+
+      getData();
+    }, []);
+
+    useEffect(() => {
+      const emojiPicker = document.querySelector('em-emoji-picker');
+      if (emojiPicker) {
+        const style = document.createElement('style');
+        style.innerHTML = `
         section {
           --em-color-border-over: transparent !important;
           --em-rgb-background: transparent !important;
@@ -71,42 +72,44 @@ export const ClientEmojiPicker: FC<{
           --padding: 16px !important;
         }
       `;
-      emojiPicker?.shadowRoot?.appendChild(style);
-    }
-  }, [emojiData]);
+        emojiPicker?.shadowRoot?.appendChild(style);
+      }
+    }, [emojiData]);
 
-  return (
-    <div
-      className={`!duration-300 !transition-all ${
-        visibleEmoji
-          ? // 这里 336 是 320 （em-emoji-picker 的高度）+ 边距 16
-            'opacity-100 h-[336px] pb-[var(--padding)]'
-          : 'opacity-0 h-0 overflow-hidden pb-0'
-      }`}
-    >
-      {Boolean(emojiData) ? (
-        <Picker
-          data={emojiData}
-          searchPosition="none"
-          previewPosition="none"
-          theme={dataTheme}
-          maxFrequentRows={2}
-          emojiSize={26}
-          dynamicWidth
-          onEmojiSelect={onEmojiSelect}
-          onClickOutside={onClickOutside}
-        />
-      ) : (
-        <LoadingRender></LoadingRender>
-      )}
-    </div>
-  );
-};
+    return (
+      <div
+        className={`!duration-300 !transition-all ${
+          visibleEmoji
+            ? // 这里 336 是 320 （em-emoji-picker 的高度）+ 边距 16
+              'opacity-100 h-[336px] pb-[var(--padding)]'
+            : 'opacity-0 h-0 overflow-hidden pb-0'
+        }`}
+      >
+        {Boolean(emojiData) ? (
+          <Picker
+            data={emojiData}
+            searchPosition="none"
+            previewPosition="none"
+            theme={dataTheme}
+            maxFrequentRows={2}
+            emojiSize={26}
+            dynamicWidth
+            onEmojiSelect={onEmojiSelect}
+            onClickOutside={onClickOutside}
+          />
+        ) : (
+          <LoadingRender></LoadingRender>
+        )}
+      </div>
+    );
+  }
+);
+ClientEmojiPicker.displayName = 'ClientEmojiPicker';
 
 export const ClientSwapSvg: FC<{
   setVisibleEmoji: React.Dispatch<React.SetStateAction<boolean>>;
   visibleEmoji: boolean;
-}> = ({ setVisibleEmoji, visibleEmoji }) => (
+}> = React.memo(({ setVisibleEmoji, visibleEmoji }) => (
   <label
     className="relative text-accent-content/80 mr-4 h-[2.5rem] swap"
     onClick={() => {
@@ -129,4 +132,5 @@ export const ClientSwapSvg: FC<{
       }`}
     />
   </label>
-);
+));
+ClientSwapSvg.displayName = 'ClientSwapSvg';

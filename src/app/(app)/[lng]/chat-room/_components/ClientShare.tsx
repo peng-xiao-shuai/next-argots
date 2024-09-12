@@ -12,7 +12,9 @@ import { trpc } from '@/server/trpc/client';
 import {
   Dispatch,
   FC,
+  memo,
   SetStateAction,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -38,7 +40,7 @@ export const ClientShare: FC<{
   visible: boolean;
   setVisible: Dispatch<SetStateAction<boolean>>;
   joinChannelSignin: (formData?: ShareFormDataRules) => Promise<string>;
-}> = ({ visible, setVisible, joinChannelSignin }) => {
+}> = memo(({ visible, setVisible, joinChannelSignin }) => {
   const { joinData } = useContext(ClientChatContext);
 
   const joinChannel = useMemo<JoinChannel | undefined>(
@@ -98,13 +100,16 @@ export const ClientShare: FC<{
     });
   };
 
-  const setListVIsibleCb = (bol: boolean) => {
-    setListVisible(bol);
+  const setListVIsibleCb = useCallback(
+    (bol: boolean) => {
+      setListVisible(bol);
 
-    if (!bol) {
-      setVisible(true);
-    }
-  };
+      if (!bol) {
+        setVisible(true);
+      }
+    },
+    [setListVisible, setVisible]
+  );
 
   return (
     <>
@@ -133,15 +138,39 @@ export const ClientShare: FC<{
       </Dialog>
     </>
   );
-};
+});
+ClientShare.displayName = 'ClientShare';
 
 const LinkRecord: FC<{
   isLoading: boolean;
   removeMutate: (opts: { roomName: string; id: string }) => void;
   list: InviteLink[];
   setList: Dispatch<SetStateAction<InviteLink[]>>;
-}> = ({ isLoading, list, removeMutate, setList }) => {
+}> = memo(({ isLoading, list, removeMutate, setList }) => {
   const { t } = useContext(AppContext);
+  const handleClick = useCallback((item: InviteLink) => {
+    if (item.status === '1') {
+      return;
+    }
+
+    copyText(`${location.href}?link=${item.id}`);
+  }, []);
+
+  const handleRemove = useCallback(
+    (item: InviteLink) => {
+      setList((state) => {
+        const CopyList = [...state];
+        CopyList.splice(CopyList.indexOf(item), 1);
+        return CopyList;
+      });
+
+      removeMutate({
+        id: item.id,
+        roomName: useRoomStore.getState().encryptData.roomName,
+      });
+    },
+    [removeMutate, setList]
+  );
 
   if (isLoading) {
     return <LoadingRender></LoadingRender>;
@@ -154,26 +183,6 @@ const LinkRecord: FC<{
       </div>
     );
   }
-  const handleClick = (item: InviteLink) => {
-    if (item.status === '1') {
-      return;
-    }
-
-    copyText(`${location.href}?link=${item.id}`);
-  };
-
-  const handleRemove = (item: InviteLink) => {
-    setList((state) => {
-      const CopyList = [...state];
-      CopyList.splice(list.indexOf(item), 1);
-      return CopyList;
-    });
-
-    removeMutate({
-      id: item.id,
-      roomName: useRoomStore.getState().encryptData.roomName,
-    });
-  };
 
   return (
     <div className="max-h-72 overflow-y-auto">
@@ -232,4 +241,5 @@ const LinkRecord: FC<{
       })}
     </div>
   );
-};
+});
+LinkRecord.displayName = 'LinkRecord';

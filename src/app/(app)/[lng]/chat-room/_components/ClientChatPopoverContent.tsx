@@ -7,11 +7,9 @@ import {
   RiReplyAllLine,
 } from 'react-icons/ri';
 import React, { FC, MouseEvent, memo, useCallback, useContext } from 'react';
-import type { ChatMsg } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { AppContext, ChatPopoverContextData } from '@/context';
-import { isTypeProtect } from '@/utils/type';
 
 export const COMMAND = {
   [COMMON_KEYS.REPLY]: COMMON_KEYS.REPLY,
@@ -55,21 +53,24 @@ export const commands: CommandType[] = [
     command: COMMAND[COMMON_KEYS.SELECT],
   },
 ];
-const PopoverContent: FC<{
+export const MemoPopoverContent: FC<{
   cb: (command: CommandType['command']) => void;
   current: ChatPopoverContextData['current'];
-}> = ({ cb, current }) => {
+}> = memo(({ cb, current }) => {
   const { t } = useContext(AppContext);
   const { userInfo } = useRoomStore();
-  const handleClick = (e: MouseEvent<HTMLUListElement>) => {
-    const liElement = (e.target as HTMLElement).offsetParent as HTMLElement;
-    if (liElement.nodeName === 'LI') {
-      const command = (liElement as HTMLElement).dataset
-        .command as CommandType['command'];
+  const handleClick = useCallback(
+    (e: MouseEvent<HTMLUListElement>) => {
+      const liElement = (e.target as HTMLElement).offsetParent as HTMLElement;
+      if (liElement.nodeName === 'LI') {
+        const command = (liElement as HTMLElement).dataset
+          .command as CommandType['command'];
 
-      cb(command);
-    }
-  };
+        cb(command);
+      }
+    },
+    [cb]
+  );
   /**
    * 当前内容是否可以显示指令
    */
@@ -93,5 +94,5 @@ const PopoverContent: FC<{
         ))}
     </ul>
   );
-};
-export const MemoPopoverContent = memo(PopoverContent);
+});
+MemoPopoverContent.displayName = 'MemoPopoverContent';
