@@ -81,7 +81,7 @@ export const MemoPopoverContent: FC<{
     return false;
   }, [current, userInfo.userId]);
   return (
-    <ul className="menu !bg-base-100 rounded-box" onClick={handleClick}>
+    <ul className="menu b3-opacity-6 rounded-box" onClick={handleClick}>
       {commands
         .filter((item) => (item.role && item.role == 'my' ? isSelect() : true))
         .map((item, index) => (
