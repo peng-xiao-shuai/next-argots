@@ -20,113 +20,110 @@ const ChatRecords: FC<
   {
     chatItem: ChatMsg;
     replyMsg: string | undefined;
-    isSelected: boolean;
-    isMultiSelect: boolean;
     onChatClick: (timestamp: ChatMsg['timestamp']) => void;
   } & ExtensionRecord<Chat>
-> = memo(
-  ({
-    chatItem,
-    next,
-    last,
-    replyMsg,
-    isSelected,
-    isMultiSelect,
-    onChatClick,
-  }) => {
-    const { t } = useContext(AppContext);
-    const isSystemType = useCallback(
-      (data: Chat | null) =>
-        data?.type === MESSAGE_TYPE.SYSTEM
-          ? false
-          : data?.user.id == chatItem.user.id,
-      [chatItem.user.id]
-    );
-    const { userInfo } = useRoomStore();
-    const isUserMessage = useMemo(() => {
-      return chatItem.user.nickname === userInfo.nickname;
-    }, [chatItem.user.nickname, userInfo.nickname]);
-    const handleClick = useCallback(() => {
-      onChatClick(chatItem.timestamp);
-    }, [chatItem.timestamp, onChatClick]);
+> = memo(({ chatItem, next, last, replyMsg, onChatClick }) => {
+  const { t } = useContext(AppContext);
+  const isSystemType = useCallback(
+    (data: Chat | null) =>
+      data?.type === MESSAGE_TYPE.SYSTEM
+        ? false
+        : data?.user.id == chatItem.user.id,
+    [chatItem.user.id]
+  );
+  const { userInfo } = useRoomStore();
+  const isUserMessage = useMemo(() => {
+    return chatItem.user.nickname === userInfo.nickname;
+  }, [chatItem.user.nickname, userInfo.nickname]);
+  const handleClick = useCallback(() => {
+    onChatClick(chatItem.timestamp);
+  }, [chatItem.timestamp, onChatClick]);
 
-    return (
+  return (
+    <div
+      className={cn(
+        'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
+        `chat-${isUserMessage ? 'end' : 'start'}`,
+        !isSystemType(last) && '!pt-2',
+        'group-[.group-select]:*:z-[100]'
+      )}
+    >
       <div
         className={cn(
-          'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
-          `chat-${isUserMessage ? 'end' : 'start'}`,
-          !isSystemType(last) && '!pt-2',
-          isSelected && '*:z-[100]'
+          'chat-image avatar rounded-lg',
+          !isSystemType(next) && 'b3-opacity-6'
         )}
       >
-        <div
-          className={cn(
-            'chat-image avatar rounded-lg',
-            !isSystemType(next) && 'bg-base-100'
-          )}
-        >
-          <div className="w-10">
-            {!isSystemType(next) && (
-              <ImageSvg
-                className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
-                name={chatItem.user?.avatar}
-              ></ImageSvg>
-            )}
-          </div>
-        </div>
-
-        <div
-          id={String(chatItem.timestamp)}
-          className={cn('chat-bubble min-h-[unset]')}
-          onClick={handleClick}
-        >
-          {!isSystemType(last) && (
-            <div
-              className={cn(
-                'chat-header leading-6 line-clamp-1 font-bold text-ellipsis block duration-300 transition-all',
-                isUserMessage ? 'text-right' : 'text-left',
-                isMultiSelect ? 'text-primary-content' : 'text-primary'
-              )}
-            >
-              {unicodeToString(chatItem.user!.nickname)}
-            </div>
-          )}
-          {/* 回复 */}
-          {chatItem.reply ? (
-            <div
-              className={cn(
-                'border-l-4 border-primary rounded-md px-2 bg-primary/10 mb-1 duration-300 transition-[border,background-color]',
-                isMultiSelect &&
-                  'border-primary-content text-primary-content bg-white/10'
-              )}
-            >
-              <div
-                className={cn(
-                  'font-bold transition-colors duration-300',
-                  !isMultiSelect && 'text-primary '
-                )}
-              >
-                {unicodeToString(chatItem.reply.user.nickname)}
-              </div>
-              <div className={cn('whitespace-break-spaces break-words')}>
-                {replyMsg}
-              </div>
-            </div>
-          ) : (
-            <></>
-          )}
-          <ChatMsgRender msg={chatItem.msg}></ChatMsgRender>
-          {/* 已编辑 */}
-          {chatItem.isEdit === '1' ? (
-            <div className="text-right text-sm">{t(COMMON_KEYS.EDIT)}</div>
-          ) : (
-            <></>
+        <div className="w-10">
+          {!isSystemType(next) && (
+            <ImageSvg
+              className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
+              name={chatItem.user?.avatar}
+            ></ImageSvg>
           )}
         </div>
       </div>
-    );
-  }
-);
+      <div
+        id={String(chatItem.timestamp)}
+        className={cn(
+          'chat-bubble min-h-[unset]',
+          'group-[.group-select-model]:cursor-pointer group-[.group-multiselect]:chat-bubble-primary',
+          !isSystemType(next)
+            ? `user-last ${isUserMessage ? 'rounded-tr-md' : 'rounded-tl-md'}`
+            : `before:hidden ${
+                isUserMessage ? '!rounded-r-md' : '!rounded-l-md'
+              }`,
+          !isSystemType(last) ? 'user-first !rounded-t-box' : ''
+        )}
+        onClick={handleClick}
+      >
+        {!isSystemType(last) && (
+          <div
+            className={cn(
+              'chat-header text-primary leading-6 line-clamp-1 font-bold text-ellipsis block duration-300 transition-all',
+              isUserMessage ? 'text-right' : 'text-left',
+              'group-[.group-multiselect]:text-primary-content'
+            )}
+          >
+            {unicodeToString(chatItem.user!.nickname)}
+          </div>
+        )}
+        {/* 回复 */}
+        {chatItem.reply ? (
+          <div
+            className={cn(
+              'border-l-4 border-primary rounded-md px-2 bg-primary/5 mb-1 duration-300 transition-[border,background-color]',
+              'group-[.group-multiselect]:border-primary-content group-[.group-multiselect]:text-primary-content group-[.group-multiselect]:bg-white/10'
+            )}
+          >
+            <div
+              className={cn(
+                'font-bold transition-colors duration-300 text-primary',
+                'group-[.group-multiselect]:text-inherit'
+              )}
+            >
+              {unicodeToString(chatItem.reply.user.nickname)}
+            </div>
+            <div
+              className={cn('whitespace-break-spaces break-words text-inherit')}
+            >
+              {replyMsg}
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        <ChatMsgRender msg={chatItem.msg}></ChatMsgRender>
+        {/* 已编辑 */}
+        {chatItem.isEdit === '1' ? (
+          <div className="text-right text-sm">{t(COMMON_KEYS.EDIT)}</div>
+        ) : (
+          <></>
+        )}
+      </div>
+    </div>
+  );
+});
 ChatRecords.displayName = 'ChatRecords';
 
 export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
@@ -178,58 +175,88 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
     [chats, current?.command, setCurrent, setReferenceElement, setVisible]
   );
 
-  const selectedChats = useMemo(() => {
-    return new Set(current?.chat?.map((chat) => chat.timestamp) || []);
-  }, [current?.chat]);
+  const chatsData = useMemo(() => {
+    const selectedChats = new Set(
+      current?.chat?.map((chat) => chat.timestamp) || []
+    );
+    return chats.map((item, index) => {
+      if (item.type === MESSAGE_TYPE.MSG) {
+        // 当前内容是否被选中
+        const isSelected = selectedChats.has(item.timestamp);
+        // 是否多选状态
+        const isMultiSelect =
+          isSelected && current?.command === COMMAND[COMMON_KEYS.SELECT];
+        // 是否回复
+        const replyMsg =
+          item.reply && item.reply.timestamp
+            ? chats.find(
+                (c) =>
+                  c.timestamp === item.reply!.timestamp &&
+                  c.type === MESSAGE_TYPE.MSG
+              )?.msg
+            : undefined;
+        return {
+          item,
+          isSelected,
+          isMultiSelect,
+          replyMsg,
+          last: chats[index - 1],
+          next: chats[index + 1],
+        };
+      }
+      return { item };
+    });
+  }, [chats, current]);
 
   return (
     <>
-      {chats.map((item, index) => {
-        if (item.type === MESSAGE_TYPE.MSG) {
-          let replyMsg: undefined | string = undefined;
-          if (item.reply && item.reply.timestamp) {
-            replyMsg = chats.find(
-              (c) =>
-                c.timestamp === item.reply!.timestamp &&
-                c.type === MESSAGE_TYPE.MSG
-            )?.msg;
+      {chatsData.map(
+        ({ item, isSelected, isMultiSelect, replyMsg, last, next }, index) => {
+          if (item.type === MESSAGE_TYPE.MSG) {
+            let replyMsg: undefined | string = undefined;
+            if (item.reply && item.reply.timestamp) {
+              replyMsg = chats.find(
+                (c) =>
+                  c.timestamp === item.reply!.timestamp &&
+                  c.type === MESSAGE_TYPE.MSG
+              )?.msg;
+            }
+
+            return (
+              <div
+                key={item.timestamp}
+                className={cn(
+                  'group',
+                  isSelected && 'group-select',
+                  isMultiSelect && 'group-multiselect',
+                  current?.command === COMMAND[COMMON_KEYS.SELECT] &&
+                    'group-select-model'
+                )}
+              >
+                <ChatRecords
+                  last={chats[index - 1]}
+                  next={chats[index + 1]}
+                  chatItem={item}
+                  replyMsg={replyMsg}
+                  onChatClick={handleChatClick}
+                ></ChatRecords>
+              </div>
+            );
           }
-          /**
-           * 当前内容是否被选中
-           */
-          const isSelected = selectedChats.has(item.timestamp);
-          /**
-           * 是否多选状态
-           */
-          const isMultiSelect =
-            isSelected && current?.command === COMMAND[COMMON_KEYS.SELECT];
+          // 系统通知
+          if (item.type === MESSAGE_TYPE.SYSTEM)
+            return (
+              <div
+                className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+                key={index}
+              >
+                {item.msg}
+              </div>
+            );
 
-          return (
-            <ChatRecords
-              key={item.timestamp}
-              last={chats[index - 1]}
-              next={chats[index + 1]}
-              chatItem={item}
-              replyMsg={replyMsg}
-              isSelected={isSelected}
-              isMultiSelect={isMultiSelect}
-              onChatClick={handleChatClick}
-            ></ChatRecords>
-          );
+          return <></>;
         }
-        // 系统通知
-        if (item.type === MESSAGE_TYPE.SYSTEM)
-          return (
-            <div
-              className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
-              key={index}
-            >
-              {item.msg}
-            </div>
-          );
-
-        return <></>;
-      })}
+      )}
     </>
   );
 });
