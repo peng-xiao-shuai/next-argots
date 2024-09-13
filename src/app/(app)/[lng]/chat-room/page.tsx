@@ -22,8 +22,16 @@ interface Props extends CustomReactParams {
  */
 const getLinkPreview = async (url: string) => {
   'use server';
+  const regex =
+    /\b(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+)(?:\.[a-zA-Z]{2,})(?:[\/\s?#]|$)/g;
   try {
-    const response = await fetch(url, { next: { revalidate: 3600 } });
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+      },
+      next: { revalidate: 3600 },
+    });
     const html = await response.text();
     const root = parse(html);
     const getMetaContent = (selector: string) =>
@@ -36,6 +44,10 @@ const getLinkPreview = async (url: string) => {
       ogTitle: getMetaContent('meta[property="og:title"]'),
       ogDescription: getMetaContent('meta[property="og:description"]'),
       ogImage: getMetaContent('meta[property="og:image"]'),
+      ogSiteName:
+        getMetaContent('meta[property="og:site_name"]') ??
+        regex.exec(url)?.[1] ??
+        null,
       twitterCard: getMetaContent('meta[name="twitter:card"]'),
       twitterSite: getMetaContent('meta[name="twitter:site"]'),
       canonicalUrl:

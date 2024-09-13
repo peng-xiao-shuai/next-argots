@@ -11,15 +11,16 @@ export type LinkUserInfo = {
   roomName: string;
 };
 export type LinkPreviewInfo = {
-  title: any;
-  description: any;
-  keywords: any;
-  ogTitle: any;
-  ogDescription: any;
-  ogImage: any;
-  twitterCard: any;
-  twitterSite: any;
-  canonicalUrl: any;
+  title: null | string;
+  description: null | string;
+  keywords: null | string;
+  ogTitle: null | string;
+  ogDescription: null | string;
+  ogImage: null | string;
+  ogSiteName: null | string;
+  twitterCard: null | string;
+  twitterSite: null | string;
+  canonicalUrl: null | string;
 };
 export type SetUserInfoType = (userInfo: LinkUserInfo) => void;
 export type GetLinkPreview = (url: string) => Promise<LinkPreviewInfo | null>;
