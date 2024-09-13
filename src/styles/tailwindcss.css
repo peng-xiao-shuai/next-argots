@@ -63,12 +63,20 @@
     @apply opacity-0 w-0 h-0;
   }
 
+  .text-primary:hover {
+    text-shadow: 0 0 0.4rem var(--fallback-p, oklch(var(--p) / 0.8));
+  }
+
   .b3-opacity-6 {
     --tw-bg-opacity: 0.6 !important;
     background-color: var(
       --fallback-b3,
       oklch(var(--b3) / var(--tw-bg-opacity))
     ) !important;
+  }
+
+  .chat-bubble {
+    @apply b3-opacity-6;
   }
 
   input,

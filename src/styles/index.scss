@@ -14,6 +14,10 @@
 
 [data-theme='dark'] {
   background-color: black;
+
+  .text-primary {
+    color: color-mix(in oklch, oklch(var(--p) / 1), white 10%);
+  }
 }
 
 [data-theme='light'] {
