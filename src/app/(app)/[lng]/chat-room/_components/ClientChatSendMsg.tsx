@@ -1,7 +1,7 @@
 import { ClientEmojiPicker, ClientSwapSvg } from './ClientEmoji';
 import { debounce } from '@/utils/debounce-throttle';
 import { toast } from 'sonner';
-import { AppContext, ChatPopoverContext } from '@/context';
+import { AppContext, ChatPopoverContext, definedCurrent } from '@/context';
 import React, {
   FC,
   KeyboardEvent,
@@ -115,7 +115,11 @@ export const ClientChatSendMsg: FC<{
 
           <RiCloseLine
             className="absolute right-[var(--padding)] size-6"
-            onClick={() => setCurrent(null)}
+            onClick={() =>
+              setCurrent({
+                ...definedCurrent,
+              })
+            }
           ></RiCloseLine>
         </div>
       ) : (
