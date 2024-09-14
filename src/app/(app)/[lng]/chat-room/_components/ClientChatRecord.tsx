@@ -127,7 +127,7 @@ const ChatRecords: FC<
 ChatRecords.displayName = 'ChatRecords';
 
 export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
-  const { current, setCurrent, setReferenceElement, setVisible } =
+  const { syncCurrent, current, setCurrent, setReferenceElement, setVisible } =
     useContext(ChatPopoverContext);
 
   const handleChatClick = useCallback(
@@ -135,7 +135,8 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
       const chatItem = chats.find(
         (chat) => chat.timestamp === timestamp
       )! as ChatMsg;
-      if (current?.command === COMMAND[COMMON_KEYS.SELECT]) {
+
+      if (syncCurrent?.current.command === COMMAND[COMMON_KEYS.SELECT]) {
         setCurrent((state) => {
           const newState = {
             chat: [...state.chat],
@@ -182,13 +183,11 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
         });
       }
     },
-    [chats, current?.command, setCurrent, setReferenceElement, setVisible]
+    [chats, setCurrent, setReferenceElement, setVisible, syncCurrent]
   );
 
-  const isSelectModel = useMemo(
-    () => current?.command === COMMAND[COMMON_KEYS.SELECT],
-    [current?.command]
-  );
+  const isSelectModel =
+    syncCurrent?.current.command === COMMAND[COMMON_KEYS.SELECT];
 
   const chatsData = useMemo(() => {
     const selectedChats = new Set(
