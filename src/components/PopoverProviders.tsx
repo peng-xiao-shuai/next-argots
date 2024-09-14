@@ -3,20 +3,28 @@
 import { ChatPopoverContext, ChatPopoverContextData } from '@/context';
 import React, { useCallback, useRef, useState } from 'react';
 
+const definedCurrent: ChatPopoverContextData['current'] = {
+  command: '',
+  chat: [],
+};
+
 export const ChatPopoverProviders = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const syncCurrent = useRef<ChatPopoverContextData['current']>(null);
+  const syncCurrent = useRef<ChatPopoverContextData['current']>({
+    ...definedCurrent,
+  });
   const [referenceElement, setReferenceElement] =
     useState<ChatPopoverContextData['referenceElement']>(null);
   const [visible, setPopoverVisible] =
     useState<ChatPopoverContextData['visible']>(false);
   const [dialogVisible, setDialogVisible] =
     useState<ChatPopoverContextData['dialogVisible']>(false);
-  const [current, setCurrent] =
-    useState<ChatPopoverContextData['current']>(null);
+  const [current, setCurrent] = useState<ChatPopoverContextData['current']>({
+    ...definedCurrent,
+  });
   const setVisible: ChatPopoverContextData['setVisible'] = useCallback(
     (value) => {
       setPopoverVisible(value);
@@ -26,9 +34,11 @@ export const ChatPopoverProviders = ({
   );
   const setCurrentData = useCallback(
     (value: React.SetStateAction<ChatPopoverContextData['current']>) => {
-      if (typeof value === 'function') {
-        syncCurrent.current = value(syncCurrent.current);
-      } else syncCurrent.current = value;
+      // 收到 null 是充值 current
+      const _value = value == null ? { ...definedCurrent } : value;
+      if (typeof _value === 'function') {
+        syncCurrent.current = _value(syncCurrent.current);
+      } else syncCurrent.current = _value;
 
       setCurrent(syncCurrent.current);
     },
