@@ -1,9 +1,6 @@
 'use client';
-import { ImageSvg } from '@/components';
-import { AppContext, ChatPopoverContext, LinkPreviewInfo } from '@/context';
+import { ChatPopoverContext } from '@/context';
 import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
-import { useRoomStore } from '@/hooks/use-room-data';
-import { unicodeToString } from '@/utils/string-transform';
 import {
   FC,
   memo,
@@ -17,124 +14,9 @@ import { COMMAND } from './ClientChatPopoverContent';
 import emitter from '@/utils/bus';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { cn } from '@/utils/utils';
-import { ChatMsgRender } from './ClientChatRecordMsg';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-
-type ExtensionRecord<T> = {
-  last: T | null;
-  next: T | null;
-};
-
-const ChatRecords: FC<
-  {
-    chatItem: ChatMsg;
-    replyMsg: string | undefined;
-    onChatClick: (timestamp: ChatMsg['timestamp']) => void;
-  } & ExtensionRecord<Chat>
-> = memo(({ chatItem, next, last, replyMsg, onChatClick }) => {
-  const { t } = useContext(AppContext);
-  const isSystemType = useCallback(
-    (data: Chat | null) =>
-      data?.type === MESSAGE_TYPE.SYSTEM
-        ? false
-        : data?.user.id == chatItem.user.id,
-    [chatItem.user.id]
-  );
-  const { userInfo } = useRoomStore();
-  const isUserMessage = useMemo(() => {
-    return chatItem.user.nickname === userInfo.nickname;
-  }, [chatItem.user.nickname, userInfo.nickname]);
-  const handleClick = useCallback(() => {
-    onChatClick(chatItem.timestamp);
-  }, [chatItem.timestamp, onChatClick]);
-
-  return (
-    <div
-      className={cn(
-        'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
-        `chat-${isUserMessage ? 'end' : 'start'}`,
-        !isSystemType(last) && '!pt-2',
-        'group-[.group-select]:*:z-[100]'
-      )}
-    >
-      <div
-        className={cn(
-          'chat-image avatar rounded-lg',
-          !isSystemType(next) && 'b3-opacity-6'
-        )}
-      >
-        <div className="w-10">
-          {!isSystemType(next) && (
-            <ImageSvg
-              className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
-              name={chatItem.user?.avatar}
-            ></ImageSvg>
-          )}
-        </div>
-      </div>
-      <div
-        id={String(chatItem.timestamp)}
-        className={cn(
-          'chat-bubble min-h-[unset]',
-          'group-[.group-select-model]:cursor-pointer group-[.group-select.group-select-model]:chat-bubble-primary',
-          !isSystemType(next)
-            ? `user-last ${isUserMessage ? 'rounded-tr-md' : 'rounded-tl-md'}`
-            : `before:hidden ${
-                isUserMessage ? '!rounded-r-md' : '!rounded-l-md'
-              }`,
-          !isSystemType(last) ? 'user-first !rounded-t-box' : ''
-        )}
-        onClick={handleClick}
-      >
-        {!isSystemType(last) && (
-          <div
-            className={cn(
-              'chat-header text-primary leading-6 line-clamp-1 font-bold text-ellipsis block duration-300 transition-all',
-              isUserMessage ? 'text-right' : 'text-left',
-              'group-[.group-select.group-select-model]:text-primary-content'
-            )}
-          >
-            {unicodeToString(chatItem.user!.nickname)}
-          </div>
-        )}
-        {/* 回复 */}
-        {chatItem.reply ? (
-          <div
-            className={cn(
-              'border-l-4 border-primary rounded-md px-2 bg-primary/5 mb-1 duration-300 transition-[border,background-color]',
-              'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
-            )}
-          >
-            <div
-              className={cn(
-                'font-bold transition-colors duration-300 text-primary',
-                'group-[.group-select.group-select-model]:text-inherit'
-              )}
-            >
-              {unicodeToString(chatItem.reply.user.nickname)}
-            </div>
-            <div
-              className={cn('whitespace-break-spaces break-words text-inherit')}
-            >
-              {replyMsg}
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        <ChatMsgRender msg={chatItem.msg}></ChatMsgRender>
-        {/* 已编辑 */}
-        {chatItem.isEdit === '1' ? (
-          <div className="text-right text-sm">{t(COMMON_KEYS.EDIT)}</div>
-        ) : (
-          <></>
-        )}
-      </div>
-    </div>
-  );
-});
-ChatRecords.displayName = 'ChatRecords';
+import { ClientChatRecordContent } from './ClientChatRecordContent';
 
 const Row: FC<ListChildComponentProps> = ({ index, style, data }) => {
   console.log('渲染');
@@ -181,7 +63,7 @@ const Row: FC<ListChildComponentProps> = ({ index, style, data }) => {
           isSelectModel && 'group-select-model'
         )}
       >
-        <ChatRecords
+        <ClientChatRecordContent
           last={last}
           next={next}
           chatItem={item}
