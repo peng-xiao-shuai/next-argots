@@ -3,7 +3,8 @@
 import { type AvatarName } from '@/components';
 import { type Data } from '@/app/api/join-link/route';
 import { type Lng } from '@/locales/i18n';
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
+import type { Chat } from '@/hooks/use-pusher';
 
 export type LinkUserInfo = {
   nickName: string;
@@ -33,6 +34,10 @@ export const ClientChatContext = createContext<{
     setUserInfo?: SetUserInfoType;
   };
   userInfo?: LinkUserInfo;
+  chat: Chat[];
+  setChat: Dispatch<SetStateAction<Chat[]>>;
 }>({
   lng: 'en-US',
+  chat: [],
+  setChat: () => {},
 });

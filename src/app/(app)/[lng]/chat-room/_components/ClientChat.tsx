@@ -8,15 +8,14 @@ import React, {
   useState,
 } from 'react';
 
-import {
-  type Chat,
-  usePusher,
-  MESSAGE_TYPE,
-  ChatMsg,
-} from '@/hooks/use-pusher';
+import { usePusher } from '@/hooks/use-pusher';
 import { usePathname } from 'next/navigation';
 import { trpc } from '@/server/trpc/client';
-import { ChatPopoverContext, CommandChatMsg } from '@/context';
+import {
+  ChatPopoverContext,
+  ClientChatContext,
+  CommandChatMsg,
+} from '@/context';
 import { ClientChatRecords } from './ClientChatRecord';
 
 import Cookies from 'js-cookie';
@@ -35,8 +34,8 @@ import { useBusWatch } from '@/hooks/use-bus-watch';
 
 export function ClientChat() {
   const pathname = usePathname();
-  const [chat, setChat] = useState<Chat[]>([]);
   const ChatScroll = useRef<HTMLDivElement | null>(null);
+  const { setChat, chat } = useContext(ClientChatContext);
   const {
     clientSendMessage,
     clientOperateMessage,

@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 import { ClientChat } from './ClientChat';
 import emitter from '@/utils/bus';
+import { type Chat, MESSAGE_TYPE } from '@/hooks/use-pusher';
 
 export function Client() {
   const { joinData, lng, serveActive } = useContext(ClientChatContext);
@@ -130,6 +131,7 @@ export const ClientContext: FC<{
   };
   children: React.ReactNode;
 }> = (props) => {
+  const [chat, setChat] = useState<Chat[]>([]);
   return (
     <ClientChatContext.Provider
       value={{
@@ -139,6 +141,8 @@ export const ClientContext: FC<{
           ? JSON.parse(props.joinData?.userInfo!)
           : undefined,
         lng: props.lng,
+        chat,
+        setChat,
       }}
     >
       <ChatPopoverProviders>{props.children}</ChatPopoverProviders>
