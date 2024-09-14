@@ -13,6 +13,9 @@ import {
   useState,
 } from 'react';
 
+// 创建一个全局缓存对象
+const globalPreviewCache = new Map<string, LinkPreviewInfo>();
+
 // 正则表达式用于快速检查 URL 格式
 const URL_REGEX =
   /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-\?\=&%+]*)\/?$/;
@@ -40,11 +43,21 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
 
   useEffect(() => {
     const fetchPreview = async () => {
-      if (serveActive?.getLinkPreview) {
-        const data = await serveActive.getLinkPreview(url);
-        console.log(data);
+      if (globalPreviewCache.has(url)) {
+        setPreview(globalPreviewCache.get(url)!);
+        return;
+      }
 
-        setPreview(data);
+      try {
+        const data = await serveActive.getLinkPreview(url);
+
+        if (data) {
+          // 将新获取的数据存入缓存
+          globalPreviewCache.set(url, data);
+          setPreview(data);
+        }
+      } catch (error) {
+        console.error('Error fetching link preview:', error);
       }
     };
     fetchPreview();

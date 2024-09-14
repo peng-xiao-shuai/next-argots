@@ -29,7 +29,7 @@ export type GetLinkPreview = (url: string) => Promise<LinkPreviewInfo | null>;
 export const ClientChatContext = createContext<{
   lng: Lng;
   joinData?: Data;
-  serveActive?: {
+  serveActive: {
     getLinkPreview: GetLinkPreview;
     setUserInfo?: SetUserInfoType;
   };
@@ -40,4 +40,7 @@ export const ClientChatContext = createContext<{
   lng: 'en-US',
   chat: [],
   setChat: () => {},
+  serveActive: {
+    getLinkPreview: () => Promise.resolve(null),
+  },
 });
