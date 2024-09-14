@@ -111,8 +111,8 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
         href={url}
         target="_blank"
         className="flex items-center"
-        onClick={({ stopPropagation }) => {
-          stopPropagation();
+        onClick={(event) => {
+          event.stopPropagation();
         }}
       >
         <div className="flex-1" ref={textRef}>
