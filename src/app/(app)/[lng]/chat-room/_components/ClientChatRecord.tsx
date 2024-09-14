@@ -19,8 +19,6 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { ClientChatRecordContent } from './ClientChatRecordContent';
 
 const Row: FC<ListChildComponentProps> = ({ index, style, data }) => {
-  console.log('渲染');
-
   const { chatsData, isSelectModel, onChatClick, setRowHeight } = data;
   const { item, isSelected, replyMsg, last, next } = chatsData[index];
   const rowRef = useRef<HTMLDivElement>(null);
@@ -107,7 +105,6 @@ const useRowHeights = (chats: Chat[]) => {
   const setRowHeight = useCallback(
     (index: number, size: number) => {
       const timestamp = chats[index].timestamp;
-      console.log('触发set', rowHeights.current[timestamp], size);
       if (rowHeights.current[timestamp] !== size) {
         rowHeights.current[timestamp] = size;
         if (listRef.current) {
@@ -204,8 +201,6 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
   return (
     <AutoSizer>
       {({ height, width }) => {
-        console.log(height);
-
         return (
           // @ts-ignore
           <VariableSizeList

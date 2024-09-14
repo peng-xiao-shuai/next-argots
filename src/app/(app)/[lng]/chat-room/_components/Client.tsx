@@ -63,7 +63,7 @@ export function Client() {
           /**
            * 加入后修改用户信息
            */
-          serveActive?.setUserInfo?.({
+          serveActive.setUserInfo?.({
             nickName: formData?.nickName || userInfo.nickName,
             avatar: (formData?.avatar || userInfo.avatar) as AvatarName,
             roomName: userInfo.roomName,
