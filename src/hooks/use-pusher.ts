@@ -26,7 +26,12 @@ import { API_KEYS, CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AvatarName } from '@/components/ImageSvg';
-import { AppContext, ChatPopoverContext, CommandChatMsg } from '@/context';
+import {
+  AppContext,
+  ChatPopoverContext,
+  CommandChatMsg,
+  definedCurrent,
+} from '@/context';
 import emitter from '@/utils/bus';
 import { createPusherSignature } from '@/app/api/utils';
 import { COMMAND } from '@/app/(app)/[lng]/chat-room/_components/ClientChatPopoverContent';
@@ -551,7 +556,9 @@ export const usePusher = (
     /**
      * 清除当前的操作指令信息
      */
-    setCurrent(null);
+    setCurrent({
+      ...definedCurrent,
+    });
 
     setChatValue((state) => {
       const copyState = [...state];
