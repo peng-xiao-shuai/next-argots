@@ -139,7 +139,9 @@ export const ContentMsg: FC<{ msg: string }> = memo(({ msg }) => {
     );
   }
 
-  const parts = msg.split(/\s+/);
+  const parts = msg.split(
+    /((?:https?|ftp|sftp|ftps|file|smb|afp|nfs|telnet|ssh|ws|wss):\/\/[^\s]+)/gi
+  );
   const firstUrl = parts.find((part) => isValidUrl(part));
   return (
     <div className="break-words">
