@@ -67,7 +67,7 @@ const ChatRecords: FC<
         id={String(chatItem.timestamp)}
         className={cn(
           'chat-bubble min-h-[unset]',
-          'group-[.group-select-model]:cursor-pointer group-[.group-multiselect]:chat-bubble-primary',
+          'group-[.group-select-model]:cursor-pointer group-[.group-select.group-select-model]:chat-bubble-primary',
           !isSystemType(next)
             ? `user-last ${isUserMessage ? 'rounded-tr-md' : 'rounded-tl-md'}`
             : `before:hidden ${
@@ -82,7 +82,7 @@ const ChatRecords: FC<
             className={cn(
               'chat-header text-primary leading-6 line-clamp-1 font-bold text-ellipsis block duration-300 transition-all',
               isUserMessage ? 'text-right' : 'text-left',
-              'group-[.group-multiselect]:text-primary-content'
+              'group-[.group-select.group-select-model]:text-primary-content'
             )}
           >
             {unicodeToString(chatItem.user!.nickname)}
@@ -93,13 +93,13 @@ const ChatRecords: FC<
           <div
             className={cn(
               'border-l-4 border-primary rounded-md px-2 bg-primary/5 mb-1 duration-300 transition-[border,background-color]',
-              'group-[.group-multiselect]:border-primary-content group-[.group-multiselect]:text-primary-content group-[.group-multiselect]:bg-white/10'
+              'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
             )}
           >
             <div
               className={cn(
                 'font-bold transition-colors duration-300 text-primary',
-                'group-[.group-multiselect]:text-inherit'
+                'group-[.group-select.group-select-model]:text-inherit'
               )}
             >
               {unicodeToString(chatItem.reply.user.nickname)}
@@ -137,7 +137,10 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
       )! as ChatMsg;
       if (current?.command === COMMAND[COMMON_KEYS.SELECT]) {
         setCurrent((state) => {
-          const newState = { ...state!, command: COMMAND[COMMON_KEYS.SELECT] };
+          const newState = {
+            chat: [...state.chat],
+            command: COMMAND[COMMON_KEYS.SELECT],
+          };
 
           if (Array.isArray(newState.chat)) {
             const index = newState.chat.findIndex(
@@ -145,7 +148,7 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
             );
 
             if (index === -1) {
-              newState.chat = newState.chat.concat(chatItem);
+              newState.chat.push(chatItem);
             } else {
               newState.chat.splice(index, 1);
             }
@@ -153,9 +156,16 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
             newState.chat = [newState.chat!, chatItem];
           }
 
+          // 最后一个选择被取消选择时
           if (Array.isArray(newState.chat) && newState.chat.length === 0) {
-            emitter.emit('setSelectChat', null);
-            return null;
+            emitter.emit('setSelectChat', {
+              command: '',
+              chat: [],
+            });
+            return {
+              command: '',
+              chat: [],
+            };
           }
 
           emitter.emit('setSelectChat', newState);
@@ -175,6 +185,11 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
     [chats, current?.command, setCurrent, setReferenceElement, setVisible]
   );
 
+  const isSelectModel = useMemo(
+    () => current?.command === COMMAND[COMMON_KEYS.SELECT],
+    [current?.command]
+  );
+
   const chatsData = useMemo(() => {
     const selectedChats = new Set(
       current?.chat?.map((chat) => chat.timestamp) || []
@@ -183,9 +198,7 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
       if (item.type === MESSAGE_TYPE.MSG) {
         // 当前内容是否被选中
         const isSelected = selectedChats.has(item.timestamp);
-        // 是否多选状态
-        const isMultiSelect =
-          isSelected && current?.command === COMMAND[COMMON_KEYS.SELECT];
+
         // 是否回复
         const replyMsg =
           item.reply && item.reply.timestamp
@@ -198,7 +211,6 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
         return {
           item,
           isSelected,
-          isMultiSelect,
           replyMsg,
           last: chats[index - 1],
           next: chats[index + 1],
@@ -206,57 +218,44 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
       }
       return { item };
     });
-  }, [chats, current]);
+  }, [chats, current?.chat]);
 
   return (
     <>
-      {chatsData.map(
-        ({ item, isSelected, isMultiSelect, replyMsg, last, next }, index) => {
-          if (item.type === MESSAGE_TYPE.MSG) {
-            let replyMsg: undefined | string = undefined;
-            if (item.reply && item.reply.timestamp) {
-              replyMsg = chats.find(
-                (c) =>
-                  c.timestamp === item.reply!.timestamp &&
-                  c.type === MESSAGE_TYPE.MSG
-              )?.msg;
-            }
-
-            return (
-              <div
-                key={item.timestamp}
-                className={cn(
-                  'group',
-                  isSelected && 'group-select',
-                  isMultiSelect && 'group-multiselect',
-                  current?.command === COMMAND[COMMON_KEYS.SELECT] &&
-                    'group-select-model'
-                )}
-              >
-                <ChatRecords
-                  last={chats[index - 1]}
-                  next={chats[index + 1]}
-                  chatItem={item}
-                  replyMsg={replyMsg}
-                  onChatClick={handleChatClick}
-                ></ChatRecords>
-              </div>
-            );
-          }
-          // 系统通知
-          if (item.type === MESSAGE_TYPE.SYSTEM)
-            return (
-              <div
-                className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
-                key={index}
-              >
-                {item.msg}
-              </div>
-            );
-
-          return <></>;
+      {chatsData.map(({ item, isSelected, replyMsg, last, next }, index) => {
+        if (item.type === MESSAGE_TYPE.MSG) {
+          return (
+            <div
+              key={item.timestamp}
+              className={cn(
+                'group',
+                isSelected && 'group-select',
+                isSelectModel && 'group-select-model'
+              )}
+            >
+              <ChatRecords
+                last={last || null}
+                next={next || null}
+                chatItem={item}
+                replyMsg={replyMsg}
+                onChatClick={handleChatClick}
+              ></ChatRecords>
+            </div>
+          );
         }
-      )}
+        // 系统通知
+        if (item.type === MESSAGE_TYPE.SYSTEM)
+          return (
+            <div
+              className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+              key={index}
+            >
+              {item.msg}
+            </div>
+          );
+
+        return <></>;
+      })}
     </>
   );
 });

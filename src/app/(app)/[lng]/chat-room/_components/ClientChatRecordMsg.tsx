@@ -35,7 +35,7 @@ const AComponents: FC<{ msg: string }> = memo(({ msg }) => (
   <a
     href={msg}
     target="_blank"
-    className="group-[.group-multiselect]:text-primary-content text-primary hover:underline underline-offset-4 decoration-double duration-300 transition-colors"
+    className="group-[.group-select.group-select-model]:text-primary-content text-primary hover:underline underline-offset-4 decoration-double duration-300 transition-colors"
     onClick={({ stopPropagation }) => {
       stopPropagation();
     }}
@@ -104,7 +104,7 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
     <div
       className={cn(
         'p-2 border-l-4 border-primary rounded-md bg-primary/5 mt-1 duration-300 transition-[border,background-color]',
-        'group-[.group-multiselect]:border-primary-content group-[.group-multiselect]:text-primary-content group-[.group-multiselect]:bg-white/10'
+        'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
       )}
     >
       <a
@@ -116,7 +116,7 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
         }}
       >
         <div className="flex-1" ref={textRef}>
-          <h1 className="hover:underline capitalize cursor-pointer underline-offset-4 decoration-double font-bold text-primary duration-300 transition-[color] group-[.group-multiselect]:text-primary-content">
+          <h1 className="hover:underline capitalize cursor-pointer underline-offset-4 decoration-double font-bold text-primary duration-300 transition-[color] group-[.group-select.group-select-model]:text-primary-content">
             {preview.ogSiteName}
           </h1>
           <h3 className="font-bold">{preview.ogTitle || preview.title}</h3>

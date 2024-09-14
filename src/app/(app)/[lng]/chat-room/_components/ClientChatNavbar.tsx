@@ -23,8 +23,10 @@ export const ClientChatNavbar: FC<{
   const [navTitle, setNavTitle] = useState(
     unicodeToString(encryptData.roomName)
   );
-  const [current, setCurrent] =
-    useState<ChatPopoverContextData['current']>(null);
+  const [current, setCurrent] = useState<ChatPopoverContextData['current']>({
+    command: '',
+    chat: [],
+  });
 
   useBusWatch('setNavTitle', (key) => {
     setNavTitle(t(key as LOCALES_KEYS));

@@ -19,7 +19,7 @@ export interface CommandChatMsg {
 export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
-  current: CommandChatMsg | null;
+  current: CommandChatMsg;
   syncCurrent: MutableRefObject<ChatPopoverContextData['current'] | null>;
   setCurrent: React.Dispatch<
     React.SetStateAction<ChatPopoverContextData['current']>
@@ -47,7 +47,10 @@ export const ChatPopoverContext = createContext<ChatPopoverContextData>({
   dialogVisible: false,
   visible: false,
   setVisible: () => false,
-  current: null,
+  current: {
+    command: '',
+    chat: [],
+  },
   /**
    * 调用setCurrent会立即改变
    */
