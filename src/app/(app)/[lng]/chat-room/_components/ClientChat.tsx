@@ -1,6 +1,12 @@
 'use client';
 import '../style.css';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   type Chat,
@@ -82,28 +88,30 @@ export function ClientChat() {
   /**
    * 发送信息或者接受信息滚动到底部
    */
-  const handleScrollBottom = (duration: number = 200) => {
-    const element = ChatScroll.current;
-    if (!element) return;
+  const handleScrollBottom = useCallback(() => {
+    (duration: number = 200) => {
+      const element = ChatScroll.current;
+      if (!element) return;
 
-    const start = element.scrollTop;
-    const end = element.scrollHeight - element.clientHeight;
-    const change = end - start;
-    const startTime = performance.now();
+      const start = element.scrollTop;
+      const end = element.scrollHeight - element.clientHeight;
+      const change = end - start;
+      const startTime = performance.now();
 
-    const animateScroll = (currentTime: number) => {
-      const elapsedTime = currentTime - startTime;
-      const progress = Math.min(elapsedTime / duration, 1);
+      const animateScroll = (currentTime: number) => {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
 
-      element.scrollTop = start + change * progress;
+        element.scrollTop = start + change * progress;
 
-      if (elapsedTime < duration) {
-        requestAnimationFrame(animateScroll);
-      }
+        if (elapsedTime < duration) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
     };
-
-    requestAnimationFrame(animateScroll);
-  };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -115,49 +123,53 @@ export function ClientChat() {
 
   useEffect(() => {
     handleScrollBottom();
-  }, [chat]);
+  }, [chat, handleScrollBottom]);
 
   /**
    * 指令操作
    */
-  const handleCommand = (command: CommandType['command']) => {
-    const currentData: CommandChatMsg = {
-      chat: current?.chat!,
-      command: command,
-    };
-    setCurrent(currentData);
+  const handleCommand = useCallback(
+    (command: CommandType['command']) => {
+      const currentData: CommandChatMsg = {
+        chat: current?.chat!,
+        command: command,
+      };
+      setCurrent(currentData);
 
-    switch (command) {
-      case COMMAND.DELETE:
-        clientOperateMessage((triggered: boolean) => {
-          if (triggered) {
-            handleClose(true);
-            emitter.emit('setSelectChat', null);
-          }
-        });
-        break;
-      case COMMAND.COPY_TEXT:
-        /**
-         * 需要复制的消息
-         */
-        const msgString = () => {
-          if (currentData?.chat.length > 1) {
-            return currentData?.chat
-              .map(
-                (item) => `${unicodeToString(item.user.nickname)}\n${item.msg}`
-              )
-              .join(',\n\n');
-          } else return currentData?.chat[0].msg;
-        };
-        copyText(msgString() || '');
-        handleClose(true);
-        emitter.emit('setSelectChat', null);
-        break;
-      case COMMAND.SELECT:
-        emitter.emit('setSelectChat', currentData);
-        break;
-    }
-  };
+      switch (command) {
+        case COMMAND.DELETE:
+          clientOperateMessage((triggered: boolean) => {
+            if (triggered) {
+              handleClose(true);
+              emitter.emit('setSelectChat', null);
+            }
+          });
+          break;
+        case COMMAND.COPY_TEXT:
+          /**
+           * 需要复制的消息
+           */
+          const msgString = () => {
+            if (currentData?.chat.length > 1) {
+              return currentData?.chat
+                .map(
+                  (item) =>
+                    `${unicodeToString(item.user.nickname)}\n${item.msg}`
+                )
+                .join(',\n\n');
+            } else return currentData?.chat[0].msg;
+          };
+          copyText(msgString() || '');
+          handleClose(true);
+          emitter.emit('setSelectChat', null);
+          break;
+        case COMMAND.SELECT:
+          emitter.emit('setSelectChat', currentData);
+          break;
+      }
+    },
+    [clientOperateMessage, current?.chat, handleClose, setCurrent]
+  );
 
   return (
     <>
