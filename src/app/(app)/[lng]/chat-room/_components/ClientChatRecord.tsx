@@ -1,15 +1,25 @@
 'use client';
 import { ImageSvg } from '@/components';
-import { AppContext, ChatPopoverContext } from '@/context';
+import { AppContext, ChatPopoverContext, LinkPreviewInfo } from '@/context';
 import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import { useRoomStore } from '@/hooks/use-room-data';
 import { unicodeToString } from '@/utils/string-transform';
-import { FC, memo, useCallback, useContext, useMemo } from 'react';
+import {
+  FC,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { COMMAND } from './ClientChatPopoverContent';
 import emitter from '@/utils/bus';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { cn } from '@/utils/utils';
 import { ChatMsgRender } from './ClientChatRecordMsg';
+import { VariableSizeList, ListChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 type ExtensionRecord<T> = {
   last: T | null;
@@ -126,10 +136,114 @@ const ChatRecords: FC<
 });
 ChatRecords.displayName = 'ChatRecords';
 
+const Row: FC<ListChildComponentProps> = ({ index, style, data }) => {
+  console.log('渲染');
+
+  const { chatsData, isSelectModel, onChatClick, setRowHeight } = data;
+  const { item, isSelected, replyMsg, last, next } = chatsData[index];
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (rowRef.current) {
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          const height = entry.contentRect.height;
+          setRowHeight(index, height);
+        }
+      });
+
+      observer.observe(rowRef.current);
+
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [index, item, setRowHeight]);
+
+  if (item.type === MESSAGE_TYPE.SYSTEM) {
+    return (
+      <div
+        ref={rowRef}
+        style={style}
+        className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+      >
+        {item.msg}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={rowRef} style={{ ...style, height: 'auto' }}>
+      <div
+        className={cn(
+          'group',
+          isSelected && 'group-select',
+          isSelectModel && 'group-select-model'
+        )}
+      >
+        <ChatRecords
+          last={last}
+          next={next}
+          chatItem={item}
+          replyMsg={replyMsg}
+          onChatClick={onChatClick}
+        />
+      </div>
+    </div>
+  );
+};
+
+const useChatData = (chats: Chat[], current: any) => {
+  return useMemo(() => {
+    const selectedChats = new Set(
+      current?.chat?.map((chat: Chat) => chat.timestamp) || []
+    );
+    return chats.map((item, index) => ({
+      item,
+      isSelected:
+        item.type === MESSAGE_TYPE.MSG && selectedChats.has(item.timestamp),
+      replyMsg:
+        item.type === MESSAGE_TYPE.MSG && item.reply && item.reply.timestamp
+          ? chats.find(
+              (c) =>
+                c.timestamp === item.reply!.timestamp &&
+                c.type === MESSAGE_TYPE.MSG
+            )?.msg
+          : undefined,
+      last: chats[index - 1] || null,
+      next: chats[index + 1] || null,
+    }));
+  }, [chats, current?.chat]);
+};
+const useRowHeights = (chats: Chat[]) => {
+  const listRef = useRef<VariableSizeList>(null);
+  const rowHeights = useRef<{ [key: string]: number }>({});
+  const getRowHeight = useCallback(
+    (index: number) => rowHeights.current[chats[index].timestamp] || 80,
+    [chats]
+  );
+  const setRowHeight = useCallback(
+    (index: number, size: number) => {
+      const timestamp = chats[index].timestamp;
+      console.log('触发set', rowHeights.current[timestamp], size);
+      if (rowHeights.current[timestamp] !== size) {
+        rowHeights.current[timestamp] = size;
+        if (listRef.current) {
+          listRef.current.resetAfterIndex(index, true);
+        }
+      }
+    },
+    [chats]
+  );
+
+  return { listRef, getRowHeight, setRowHeight };
+};
+
 export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
   const { syncCurrent, current, setCurrent, setReferenceElement, setVisible } =
     useContext(ChatPopoverContext);
-
+  const chatsData = useChatData(chats, current);
+  const { listRef, getRowHeight, setRowHeight } = useRowHeights(chats);
   const handleChatClick = useCallback(
     (timestamp: ChatMsg['timestamp']) => {
       const chatItem = chats.find(
@@ -189,73 +303,43 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
   const isSelectModel =
     syncCurrent?.current.command === COMMAND[COMMON_KEYS.SELECT];
 
-  const chatsData = useMemo(() => {
-    const selectedChats = new Set(
-      current?.chat?.map((chat) => chat.timestamp) || []
-    );
-    return chats.map((item, index) => {
-      if (item.type === MESSAGE_TYPE.MSG) {
-        // 当前内容是否被选中
-        const isSelected = selectedChats.has(item.timestamp);
+  const rowData = useMemo(
+    () => ({
+      chatsData,
+      isSelectModel,
+      onChatClick: handleChatClick,
+      setRowHeight,
+    }),
+    [chatsData, isSelectModel, handleChatClick, setRowHeight]
+  );
 
-        // 是否回复
-        const replyMsg =
-          item.reply && item.reply.timestamp
-            ? chats.find(
-                (c) =>
-                  c.timestamp === item.reply!.timestamp &&
-                  c.type === MESSAGE_TYPE.MSG
-              )?.msg
-            : undefined;
-        return {
-          item,
-          isSelected,
-          replyMsg,
-          last: chats[index - 1],
-          next: chats[index + 1],
-        };
-      }
-      return { item };
-    });
-  }, [chats, current?.chat]);
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [chats, listRef]);
 
   return (
-    <>
-      {chatsData.map(({ item, isSelected, replyMsg, last, next }, index) => {
-        if (item.type === MESSAGE_TYPE.MSG) {
-          return (
-            <div
-              key={item.timestamp}
-              className={cn(
-                'group',
-                isSelected && 'group-select',
-                isSelectModel && 'group-select-model'
-              )}
-            >
-              <ChatRecords
-                last={last || null}
-                next={next || null}
-                chatItem={item}
-                replyMsg={replyMsg}
-                onChatClick={handleChatClick}
-              ></ChatRecords>
-            </div>
-          );
-        }
-        // 系统通知
-        if (item.type === MESSAGE_TYPE.SYSTEM)
-          return (
-            <div
-              className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
-              key={index}
-            >
-              {item.msg}
-            </div>
-          );
+    <AutoSizer>
+      {({ height, width }) => {
+        console.log(height);
 
-        return <></>;
-      })}
-    </>
+        return (
+          // @ts-ignore
+          <VariableSizeList
+            ref={listRef}
+            width={width}
+            height={height}
+            itemCount={chatsData.length}
+            itemSize={getRowHeight}
+            itemData={rowData}
+          >
+            {/* @ts-ignore */}
+            {Row}
+          </VariableSizeList>
+        );
+      }}
+    </AutoSizer>
   );
 });
 ClientChatRecords.displayName = 'ClientChatRecords';
