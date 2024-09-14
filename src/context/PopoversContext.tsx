@@ -5,6 +5,11 @@ import type { ChatMsg } from '@/hooks/use-pusher';
 import type React from 'react';
 import { MutableRefObject, createContext } from 'react';
 
+export const definedCurrent: ChatPopoverContextData['current'] = {
+  command: '',
+  chat: [],
+};
+
 export interface CommandChatMsg {
   /**
    * 当前指令，点击复制或者编辑指令后，存储到 command
@@ -20,7 +25,7 @@ export type ChatPopoverContextData = {
   referenceElement: HTMLElement | null;
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
   current: CommandChatMsg;
-  syncCurrent: MutableRefObject<ChatPopoverContextData['current'] | null>;
+  syncCurrent: MutableRefObject<ChatPopoverContextData['current']>;
   setCurrent: React.Dispatch<
     React.SetStateAction<ChatPopoverContextData['current']>
   >;
@@ -47,14 +52,11 @@ export const ChatPopoverContext = createContext<ChatPopoverContextData>({
   dialogVisible: false,
   visible: false,
   setVisible: () => false,
-  current: {
-    command: '',
-    chat: [],
-  },
+  current: { ...definedCurrent },
   /**
    * 调用setCurrent会立即改变
    */
-  syncCurrent: { current: null },
+  syncCurrent: { current: { ...definedCurrent } },
   setCurrent: () => null,
 
   /**

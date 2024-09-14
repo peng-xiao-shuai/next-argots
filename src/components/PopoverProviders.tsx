@@ -1,12 +1,11 @@
 'use client';
 
-import { ChatPopoverContext, ChatPopoverContextData } from '@/context';
+import {
+  ChatPopoverContext,
+  ChatPopoverContextData,
+  definedCurrent,
+} from '@/context';
 import React, { useCallback, useRef, useState } from 'react';
-
-const definedCurrent: ChatPopoverContextData['current'] = {
-  command: '',
-  chat: [],
-};
 
 export const ChatPopoverProviders = ({
   children,
@@ -49,7 +48,7 @@ export const ChatPopoverProviders = ({
       setVisible(false);
 
       if (clearCurrent === true) {
-        setCurrentData(null);
+        setCurrentData({ ...definedCurrent });
       }
     },
     [setCurrentData, setVisible]
