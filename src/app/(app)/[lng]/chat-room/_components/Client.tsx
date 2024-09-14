@@ -17,6 +17,7 @@ import {
   AppContext,
   ChatPopoverContext,
   ClientChatContext,
+  definedCurrent,
   type GetLinkPreview,
   type LinkUserInfo,
   type SetUserInfoType,
@@ -101,8 +102,8 @@ export function Client() {
    */
   useBusWatch('complete', (type) => {
     if (type === 'CANCEL') {
-      setCurrent(null);
-      emitter.emit('setSelectChat', null);
+      setCurrent({ ...definedCurrent });
+      emitter.emit('setSelectChat', { ...definedCurrent });
     } else {
       setVisible(true);
     }
