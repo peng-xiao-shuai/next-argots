@@ -1,9 +1,11 @@
+'use client';
 import { ClientChatContext, LinkPreviewInfo } from '@/context';
 import { cn } from '@/utils/utils';
 import {
   FC,
   Fragment,
   memo,
+  ReactNode,
   useContext,
   useEffect,
   useMemo,
@@ -31,56 +33,6 @@ const isHttpUrl = (string: string) => {
   return string.startsWith('http://') || string.startsWith('https://');
 };
 
-const AComponents: FC<{ msg: string }> = memo(({ msg }) => (
-  <a
-    href={msg}
-    target="_blank"
-    className="group-[.group-select.group-select-model]:text-primary-content text-primary hover:underline underline-offset-4 decoration-double duration-300 transition-colors"
-    onClick={({ stopPropagation }) => {
-      stopPropagation();
-    }}
-  >
-    {msg}
-  </a>
-));
-AComponents.displayName = 'AComponents';
-
-export const ChatMsgRender: FC<{ msg: string }> = memo(({ msg }) => {
-  if (isValidUrl(msg)) {
-    return (
-      <div className="message-container">
-        <AComponents msg={msg} />
-        {isHttpUrl(msg) && <LinkPreview url={msg} />}
-      </div>
-    );
-  }
-  const parts = msg.split(/\s+/);
-  const firstUrl = parts.find((part) => isValidUrl(part));
-
-  return (
-    <div className="message-container">
-      {parts.map((part, index) => {
-        if (isValidUrl(part)) {
-          return (
-            <Fragment key={index}>
-              {' '}
-              <AComponents msg={part} />{' '}
-            </Fragment>
-          );
-        }
-        return (
-          <span className="whitespace-break-spaces break-words" key={index}>
-            {part}
-          </span>
-        );
-      })}
-
-      {firstUrl && isHttpUrl(firstUrl) && <LinkPreview url={firstUrl!} />}
-    </div>
-  );
-});
-ChatMsgRender.displayName = 'ChatMsgRender';
-
 const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
   const [preview, setPreview] = useState<LinkPreviewInfo | null>(null);
   const { serveActive } = useContext(ClientChatContext);
@@ -101,12 +53,7 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
   if (!preview) return null;
 
   return (
-    <div
-      className={cn(
-        'p-2 border-l-4 border-primary rounded-md bg-primary/5 mt-1 duration-300 transition-[border,background-color]',
-        'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
-      )}
-    >
+    <QuoteTemplate>
       <a
         href={url}
         target="_blank"
@@ -136,7 +83,86 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
           />
         )}
       </a>
-    </div>
+    </QuoteTemplate>
   );
 });
 LinkPreview.displayName = 'LinkPreview';
+
+const ATemplate: FC<{ msg: string }> = memo(({ msg }) => (
+  <a
+    href={msg}
+    target="_blank"
+    className="group-[.group-select.group-select-model]:text-primary-content text-primary hover:underline underline-offset-4 decoration-double duration-300 transition-colors"
+    onClick={({ stopPropagation }) => {
+      stopPropagation();
+    }}
+  >
+    {msg}
+  </a>
+));
+ATemplate.displayName = 'ATemplate';
+
+const QuoteTemplate: FC<{
+  title?: string;
+  children: ReactNode;
+}> = memo(({ title, children }) => (
+  <div
+    className={cn(
+      'border-l-4 border-primary rounded-md px-2 bg-primary/5 mb-1 duration-300 transition-[border,background-color]',
+      'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
+    )}
+  >
+    {title && (
+      <div
+        className={cn(
+          'font-bold transition-colors duration-300 text-primary',
+          'group-[.group-select.group-select-model]:text-inherit'
+        )}
+      >
+        {title}
+      </div>
+    )}
+
+    {children}
+  </div>
+));
+QuoteTemplate.displayName = 'QuoteTemplate';
+
+export const ContentMsg: FC<{ msg: string }> = memo(({ msg }) => {
+  // 单 Url时显示
+  if (isValidUrl(msg)) {
+    return (
+      <div className="break-words">
+        <ATemplate msg={msg} />
+        {isHttpUrl(msg) && <LinkPreview url={msg} />}
+      </div>
+    );
+  }
+
+  const parts = msg.split(/\s+/);
+  const firstUrl = parts.find((part) => isValidUrl(part));
+  return (
+    <div className="break-words">
+      {parts.map((part, index) => {
+        if (isValidUrl(part)) {
+          return (
+            <Fragment key={index}>
+              {' '}
+              <ATemplate msg={part} />{' '}
+            </Fragment>
+          );
+        }
+        return (
+          <span className="whitespace-break-spaces break-words" key={index}>
+            {part}
+          </span>
+        );
+      })}
+
+      {firstUrl && isHttpUrl(firstUrl) && <LinkPreview url={firstUrl!} />}
+    </div>
+  );
+});
+ContentMsg.displayName = 'ContentMsg';
+
+export { QuoteTemplate as ContentReply };
