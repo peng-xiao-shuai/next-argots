@@ -8,7 +8,6 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -39,6 +38,7 @@ const isHttpUrl = (string: string) => {
 const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
   const [preview, setPreview] = useState<LinkPreviewInfo | null>(null);
   const { serveActive } = useContext(ClientChatContext);
+  const [height, setHeight] = useState<number>(0);
   const textRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -63,6 +63,12 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
     fetchPreview();
   }, [url, serveActive]);
 
+  useEffect(() => {
+    if (textRef.current) {
+      setHeight(textRef.current.clientHeight);
+    }
+  }, [preview?.ogImage]);
+
   if (!preview) return null;
 
   return (
@@ -82,13 +88,12 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
           <h3 className="font-bold">{preview.ogTitle || preview.title}</h3>
           <p>{preview.ogDescription || preview.description}</p>
         </div>
-
-        {preview.ogImage && textRef.current && (
+        {preview.ogImage && height > 0 && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={preview.ogImage}
             alt="Preview"
-            className="block ml-4 rounded-md"
+            className="block ml-4 rounded-md max-w-40 max-h-40"
             style={{
               height: textRef.current?.clientHeight + 'px',
               width: textRef.current?.clientHeight + 'px',
