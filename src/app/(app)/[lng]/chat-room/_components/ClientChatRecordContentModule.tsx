@@ -111,8 +111,8 @@ const ATemplate: FC<{ msg: string }> = memo(({ msg }) => (
     href={msg}
     target="_blank"
     className="group-[.group-select.group-select-model]:text-primary-content text-primary hover:underline underline-offset-4 decoration-double duration-300 transition-colors"
-    onClick={({ stopPropagation }) => {
-      stopPropagation();
+    onClick={(event) => {
+      event.stopPropagation();
     }}
   >
     {msg}
