@@ -129,11 +129,11 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
         (chat) => chat.timestamp === timestamp
       )! as ChatMsg;
 
-      if (syncCurrent?.current.command === COMMAND[COMMON_KEYS.SELECT]) {
+      if (syncCurrent?.current.command === COMMAND.SELECT) {
         setCurrent((state) => {
           const newState = {
             chat: [...state.chat],
-            command: COMMAND[COMMON_KEYS.SELECT],
+            command: COMMAND.SELECT,
           };
 
           if (Array.isArray(newState.chat)) {
@@ -179,8 +179,7 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
     [chats, setCurrent, setReferenceElement, setVisible, syncCurrent]
   );
 
-  const isSelectModel =
-    syncCurrent?.current.command === COMMAND[COMMON_KEYS.SELECT];
+  const isSelectModel = syncCurrent?.current.command === COMMAND.SELECT;
 
   const rowData = useMemo(
     () => ({

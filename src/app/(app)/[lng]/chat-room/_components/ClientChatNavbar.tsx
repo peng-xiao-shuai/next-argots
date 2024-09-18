@@ -88,10 +88,7 @@ export const ClientChatNavbar: FC<{
                 <button
                   className="btn btn-primary btn-sm mr-2"
                   onClick={() => {
-                    emitter.emit(
-                      'commandOperate',
-                      COMMAND[COMMON_KEYS.COPY_TEXT]
-                    );
+                    emitter.emit('commandOperate', COMMAND.COPY_TEXT);
                   }}
                 >
                   {t(COMMON_KEYS.COPY_TEXT)}
@@ -99,7 +96,7 @@ export const ClientChatNavbar: FC<{
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={() => {
-                    emitter.emit('commandOperate', COMMAND[COMMON_KEYS.DELETE]);
+                    emitter.emit('commandOperate', COMMAND.DELETE);
                   }}
                 >
                   {t(COMMON_KEYS.DELETE)}

@@ -12,45 +12,45 @@ import { COMMON_KEYS } from '@@/locales/keys';
 import { AppContext, ChatPopoverContextData } from '@/context';
 
 export const COMMAND = {
-  [COMMON_KEYS.REPLY]: COMMON_KEYS.REPLY,
-  [COMMON_KEYS.EDIT]: COMMON_KEYS.EDIT,
-  [COMMON_KEYS.COPY_TEXT]: COMMON_KEYS.COPY_TEXT,
-  [COMMON_KEYS.DELETE]: COMMON_KEYS.DELETE,
-  [COMMON_KEYS.SELECT]: COMMON_KEYS.SELECT,
+  REPLY: COMMON_KEYS.REPLY,
+  EDIT: COMMON_KEYS.EDIT,
+  COPY_TEXT: COMMON_KEYS.COPY_TEXT,
+  DELETE: COMMON_KEYS.DELETE,
+  SELECT: COMMON_KEYS.SELECT,
 } as const;
 
 export type CommandType = {
   icon: IconType;
   text: COMMON_KEYS;
-  command: keyof typeof COMMAND;
+  command: (typeof COMMAND)[keyof typeof COMMAND];
   role?: 'my' | 'other';
 };
 export const commands: CommandType[] = [
   {
     icon: RiReplyAllLine,
     text: COMMON_KEYS.REPLY,
-    command: COMMAND[COMMON_KEYS.REPLY],
+    command: COMMAND.REPLY,
   },
   {
     icon: RiEditLine,
     text: COMMON_KEYS.EDIT,
-    command: COMMAND[COMMON_KEYS.EDIT],
+    command: COMMAND.EDIT,
     role: 'my',
   },
   {
     icon: RiFileCopy2Line,
     text: COMMON_KEYS.COPY_TEXT,
-    command: COMMAND[COMMON_KEYS.COPY_TEXT],
+    command: COMMAND.COPY_TEXT,
   },
   {
     icon: RiDeleteBin5Line,
     text: COMMON_KEYS.DELETE,
-    command: COMMAND[COMMON_KEYS.DELETE],
+    command: COMMAND.DELETE,
   },
   {
     icon: RiCheckboxCircleLine,
     text: COMMON_KEYS.SELECT,
-    command: COMMAND[COMMON_KEYS.SELECT],
+    command: COMMAND.SELECT,
   },
 ];
 export const MemoPopoverContent: FC<{
