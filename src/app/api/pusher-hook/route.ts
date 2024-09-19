@@ -57,8 +57,14 @@ const handler = async (req: NextRequest) => {
       console.log('body.events', body.events);
 
       try {
-        for (let event of body.events) {
-          await remove(event);
+        if (
+          body.events
+            .map((item) => item.channel)
+            .every((item) => item.includes('presence-'))
+        ) {
+          for (let event of body.events) {
+            await remove(event);
+          }
         }
 
         // 处理有效的 webhook 逻辑
