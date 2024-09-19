@@ -12,69 +12,105 @@ import {
 } from 'react';
 import { COMMAND } from './ClientChatPopoverContent';
 import emitter from '@/utils/bus';
-import { COMMON_KEYS } from '@@/locales/keys';
 import { cn } from '@/utils/utils';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { ClientChatRecordContent } from './ClientChatRecordContent';
 
-const Row: FC<ListChildComponentProps> = ({ index, style, data }) => {
-  const { chatsData, isSelectModel, onChatClick, setRowHeight } = data;
-  const { item, isSelected, replyMsg, last, next } = chatsData[index];
-  const rowRef = useRef<HTMLDivElement>(null);
+const Row: FC<ListChildComponentProps<RowData>> = memo(
+  ({ index, style, data }) => {
+    const { chatsData, isSelectModel, onChatClick, setRowHeight } = data;
+    const { item, isSelected, replyMsg, last, next } = chatsData[index];
+    const rowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (rowRef.current) {
-      const observer = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          const height = entry.contentRect.height;
-          setRowHeight(index, height);
-        }
-      });
+    useEffect(() => {
+      if (rowRef.current) {
+        const observer = new ResizeObserver((entries) => {
+          for (let entry of entries) {
+            const height = entry.contentRect.height;
+            setRowHeight(index, height);
+          }
+        });
 
-      observer.observe(rowRef.current);
+        observer.observe(rowRef.current);
 
-      return () => {
-        observer.disconnect();
-      };
+        return () => {
+          observer.disconnect();
+        };
+      }
+    }, [index, item, setRowHeight]);
+
+    if (item.type === MESSAGE_TYPE.SYSTEM) {
+      return (
+        <div
+          ref={rowRef}
+          style={style}
+          className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+        >
+          {item.msg}
+        </div>
+      );
     }
-  }, [index, item, setRowHeight]);
 
-  if (item.type === MESSAGE_TYPE.SYSTEM) {
     return (
-      <div
-        ref={rowRef}
-        style={style}
-        className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
-      >
-        {item.msg}
+      <div ref={rowRef} style={{ ...style, height: 'auto' }}>
+        <div
+          className={cn(
+            'group duration-300 transition-opacity',
+            'group-[.visible]/list:opacity-20',
+            isSelected && 'group-select !opacity-100',
+            isSelectModel && 'group-select-model'
+          )}
+        >
+          <ClientChatRecordContent
+            last={last}
+            next={next}
+            chatItem={item}
+            replyMsg={replyMsg}
+            onChatClick={onChatClick}
+          />
+        </div>
       </div>
     );
+  },
+  (prevProps, nextProps) => {
+    for (let key of Object.keys(prevProps.data.chatsData[prevProps.index])) {
+      if (
+        // @ts-ignore
+        prevProps.data.chatsData[prevProps.index][key] !=
+        // @ts-ignore
+        nextProps.data.chatsData[prevProps.index][key]
+      ) {
+        return false;
+      }
+    }
+
+    return (
+      prevProps.index === nextProps.index &&
+      prevProps.style === nextProps.style &&
+      prevProps.data.onChatClick === nextProps.data.onChatClick &&
+      prevProps.data.setRowHeight === nextProps.data.setRowHeight &&
+      prevProps.data.isSelectModel === nextProps.data.isSelectModel
+    );
   }
+);
+Row.displayName = 'ClientChatRecordRow';
 
-  return (
-    <div ref={rowRef} style={{ ...style, height: 'auto' }}>
-      <div
-        className={cn(
-          'group',
-          isSelected && 'group-select',
-          isSelectModel && 'group-select-model'
-        )}
-      >
-        <ClientChatRecordContent
-          last={last}
-          next={next}
-          chatItem={item}
-          replyMsg={replyMsg}
-          onChatClick={onChatClick}
-        />
-      </div>
-    </div>
-  );
-};
-
+interface ChatDataType {
+  item: Chat;
+  isSelected: boolean;
+  replyMsg: string | undefined;
+  last: Chat;
+  next: Chat;
+}
+interface RowData {
+  chatsData: ChatDataType[];
+  isSelectModel: boolean;
+  onChatClick: (timestamp: ChatMsg['timestamp']) => void;
+  setRowHeight: (index: number, size: number) => void;
+}
 const useChatData = (chats: Chat[], current: any) => {
-  return useMemo(() => {
+  return useMemo<ChatDataType[]>(() => {
     const selectedChats = new Set(
       current?.chat?.map((chat: Chat) => chat.timestamp) || []
     );
@@ -102,8 +138,8 @@ const useRowHeights = (chats: Chat[]) => {
     (index: number) => rowHeights.current[chats[index].timestamp] || 80,
     [chats]
   );
-  const setRowHeight = useCallback(
-    (index: number, size: number) => {
+  const setRowHeight = useCallback<RowData['setRowHeight']>(
+    (index, size) => {
       const timestamp = chats[index].timestamp;
       if (rowHeights.current[timestamp] !== size) {
         rowHeights.current[timestamp] = size;
@@ -119,12 +155,18 @@ const useRowHeights = (chats: Chat[]) => {
 };
 
 export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
-  const { syncCurrent, current, setCurrent, setReferenceElement, setVisible } =
-    useContext(ChatPopoverContext);
+  const {
+    syncCurrent,
+    current,
+    visible,
+    setCurrent,
+    setReferenceElement,
+    setVisible,
+  } = useContext(ChatPopoverContext);
   const chatsData = useChatData(chats, current);
   const { listRef, getRowHeight, setRowHeight } = useRowHeights(chats);
-  const handleChatClick = useCallback(
-    (timestamp: ChatMsg['timestamp']) => {
+  const handleChatClick = useCallback<RowData['onChatClick']>(
+    (timestamp) => {
       const chatItem = chats.find(
         (chat) => chat.timestamp === timestamp
       )! as ChatMsg;
@@ -181,7 +223,7 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
 
   const isSelectModel = syncCurrent?.current.command === COMMAND.SELECT;
 
-  const rowData = useMemo(
+  const rowData = useMemo<RowData>(
     () => ({
       chatsData,
       isSelectModel,
@@ -202,13 +244,17 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
       {({ height, width }) => {
         return (
           // @ts-ignore
-          <VariableSizeList
+          <VariableSizeList<RowData>
             ref={listRef}
             width={width}
             height={height}
             itemCount={chatsData.length}
             itemSize={getRowHeight}
             itemData={rowData}
+            style={{
+              zIndex: 100,
+            }}
+            className={`${visible && 'visible pointer-events-none'} group/list`}
           >
             {/* @ts-ignore */}
             {Row}

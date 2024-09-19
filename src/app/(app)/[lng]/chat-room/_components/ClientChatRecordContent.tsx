@@ -43,7 +43,7 @@ export const ClientChatRecordContent: FC<
         'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
         `chat-${isUserMessage ? 'end' : 'start'}`,
         !isSystemType(last) && '!pt-2',
-        'group-[.group-select]:*:z-[100]'
+        'group-[.group-select]:*:pointer-events-auto'
       )}
     >
       {/* 头像 html 结构 */}
