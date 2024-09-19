@@ -47,17 +47,12 @@ export const ClientChatRecordContent: FC<
       )}
     >
       {/* 头像 html 结构 */}
-      <div
-        className={cn(
-          'chat-image avatar rounded-lg',
-          !isSystemType(next) && 'b3-opacity-6'
-        )}
-      >
+      <div className={cn('chat-image avatar rounded-lg')}>
         <div className="w-10">
           {/* 头像 */}
           {!isSystemType(next) && (
             <ImageSvg
-              className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg"
+              className="w-10 h-10 border-base-200 border overflow-hidden rounded-lg b3-opacity-6"
               name={chatItem.user?.avatar}
             ></ImageSvg>
           )}
