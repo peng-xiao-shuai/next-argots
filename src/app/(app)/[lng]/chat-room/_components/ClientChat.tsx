@@ -34,7 +34,7 @@ import { useBusWatch } from '@/hooks/use-bus-watch';
 
 export function ClientChat() {
   const pathname = usePathname();
-  const ChatScroll = useRef<HTMLDivElement | null>(null);
+  const chatScroll = useRef<HTMLDivElement | null>(null);
   const { setChat, chat } = useContext(ClientChatContext);
   const {
     clientSendMessage,
@@ -87,30 +87,36 @@ export function ClientChat() {
   /**
    * 发送信息或者接受信息滚动到底部
    */
-  const handleScrollBottom = useCallback(() => {
-    (duration: number = 200) => {
-      const element = ChatScroll.current;
+  const handleScrollBottom = useCallback(
+    (duration: number = 200, targetHeight?: number) => {
+      const element = chatScroll.current;
       if (!element) return;
 
-      const start = element.scrollTop;
-      const end = element.scrollHeight - element.clientHeight;
-      const change = end - start;
+      let animationFrameId: number;
       const startTime = performance.now();
 
       const animateScroll = (currentTime: number) => {
         const elapsedTime = currentTime - startTime;
         const progress = Math.min(elapsedTime / duration, 1);
 
+        const start = element.scrollTop;
+        const end = element.scrollHeight - element.clientHeight;
+        const change = (targetHeight ? targetHeight : end) - start;
+
         element.scrollTop = start + change * progress;
 
-        if (elapsedTime < duration) {
-          requestAnimationFrame(animateScroll);
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animateScroll);
         }
       };
 
-      requestAnimationFrame(animateScroll);
-    };
-  }, []);
+      cancelAnimationFrame(animationFrameId!);
+      animationFrameId = requestAnimationFrame(animateScroll);
+
+      return () => cancelAnimationFrame(animationFrameId);
+    },
+    []
+  );
 
   useEffect(() => {
     return () => {
@@ -175,9 +181,12 @@ export function ClientChat() {
       <div
         className="overflow-y-auto w-full flex-1 px-[var(--padding)] pb-[var(--padding)]"
         data-hide="true"
-        ref={ChatScroll}
       >
-        <ClientChatRecords chats={chat}></ClientChatRecords>
+        <ClientChatRecords
+          chatScroll={chatScroll}
+          handleScrollBottom={handleScrollBottom}
+          chats={chat}
+        ></ClientChatRecords>
       </div>
 
       <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>

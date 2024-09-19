@@ -4,6 +4,7 @@ import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import {
   FC,
   memo,
+  Ref,
   useCallback,
   useContext,
   useEffect,
@@ -154,7 +155,11 @@ const useRowHeights = (chats: Chat[]) => {
   return { listRef, getRowHeight, setRowHeight };
 };
 
-export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
+export const ClientChatRecords: FC<{
+  chats: Chat[];
+  chatScroll: Ref<HTMLDivElement | null>;
+  handleScrollBottom: (duration: number, targetHeight?: number) => void;
+}> = memo(({ chats, chatScroll, handleScrollBottom }) => {
   const {
     syncCurrent,
     current,
@@ -167,6 +172,7 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
   const { listRef, getRowHeight, setRowHeight } = useRowHeights(chats);
   const handleChatClick = useCallback<RowData['onChatClick']>(
     (timestamp) => {
+      // TODO 滚动到引用位置
       const chatItem = chats.find(
         (chat) => chat.timestamp === timestamp
       )! as ChatMsg;
@@ -233,12 +239,6 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
     [chatsData, isSelectModel, handleChatClick, setRowHeight]
   );
 
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [chats, listRef]);
-
   return (
     <AutoSizer>
       {({ height, width }) => {
@@ -251,6 +251,10 @@ export const ClientChatRecords: FC<{ chats: Chat[] }> = memo(({ chats }) => {
             itemCount={chatsData.length}
             itemSize={getRowHeight}
             itemData={rowData}
+            itemKey={(index, data) => {
+              data.chatsData[index].item.timestamp;
+            }}
+            outerRef={chatScroll}
             style={{
               zIndex: 100,
             }}
