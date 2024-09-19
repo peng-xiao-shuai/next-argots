@@ -28,9 +28,6 @@ const nextConfig = {
     config.resolve.alias['@payload-config'] = path.join(__dirname, 'src/server/payload/payload.config.ts')
     // 重要: 返回修改后的配置
     return config
-  },
-  experimental: {
-    reactCompiler: false
   }
 }
 
