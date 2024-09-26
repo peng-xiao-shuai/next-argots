@@ -50,7 +50,7 @@ export default async function SizeChange({
                 className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
                 width={40}
                 height={40}
-                src={item.type === 'user' ? '/logo.svg' : '/logo.svg'}
+                src={item.type === 'user' ? '/logo2.png' : '/logo2.png'}
               />
             </div>
           </div>

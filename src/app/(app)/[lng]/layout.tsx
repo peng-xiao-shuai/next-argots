@@ -6,11 +6,11 @@ import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
-import dynamic from 'next/dynamic';
+import { default as dynamicFunction } from 'next/dynamic';
 import { cookies, headers } from 'next/headers';
 import { COOKIE } from '@/server/enum';
 import { Viewport } from 'next';
-const Navbar = dynamic(() => import('@/components/Navbar'));
+const Navbar = dynamicFunction(() => import('@/components/Navbar'));
 
 export async function getStaticPaths() {
   const paths = languages.map((lng) => ({
@@ -29,10 +29,12 @@ export function generateViewport(): Viewport {
     colorScheme: 'dark light',
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 2,
+    userScalable: true,
   };
 }
+
+export const dynamic = 'force-static';
 
 const inter = localFont({
   src: '../../../../public/Helvetica-Neue.ttf',

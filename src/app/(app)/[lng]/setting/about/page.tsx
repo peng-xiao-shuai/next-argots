@@ -18,7 +18,7 @@ export default async function About({ params: { lng } }: CustomReactParams) {
         <div className="w-24 h-24 mb-4 m-auto rounded-box b3-opacity-6 dark:bg-black flex justify-center items-center">
           <Image
             className="filter invert-[80%] brightness-200 contrast-100 dark:invert-[5%]"
-            src="/logo.svg"
+            src="/logo2.png"
             alt="Logo"
             width={96}
             height={96}

@@ -27,11 +27,17 @@ export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
           <Link
             href={`https://github.com/peng-xiao-shuai/next-argots`}
             target="_blank"
+            className="ml-3"
+            aria-label="Github Repository"
           >
-            <AiFillGithub className="ml-3 svg-icon fill-base-content" />
+            <AiFillGithub className="svg-icon fill-base-content" />
           </Link>
-          <Link href={`/${language}/setting`}>
-            <AiOutlineSetting className="ml-3 svg-icon fill-base-content" />
+          <Link
+            href={`/${language}/setting`}
+            className="ml-3"
+            aria-label="Setting Page"
+          >
+            <AiOutlineSetting className="svg-icon fill-base-content" />
           </Link>
         </>
       ) : metadata.rightOperateType === 'complete' ? (

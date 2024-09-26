@@ -33,7 +33,7 @@ import { GoInfo } from 'react-icons/go';
 import Cookies from 'js-cookie';
 import { trpc } from '@/server/trpc/client';
 import { toast } from 'sonner';
-import { JoinChannel } from '@/app/(app)/[lng]/chat-room/_components/ClientShare';
+import type { JoinChannel } from '@/app/(app)/[lng]/chat-room/_components/ClientShare';
 import dynamic from 'next/dynamic';
 import { Button } from './Button';
 let GridAvatar: typeof import('./ImageSvg').default;
@@ -208,6 +208,7 @@ export const HomeForm: HomeForm = memo(({ roomStatus, lng, visible }) => {
 
             <input
               type="text"
+              name="avatar"
               className="grow !bg-transparent"
               placeholder={t(HOME_KEYS.AVATAR)}
               value={avatar}
@@ -275,9 +276,9 @@ export const ItemLabel: FC<{
 }> = memo(({ label, children }) => {
   return (
     <div className="w-full relative">
-      <label className="inline-block text-base mb-2 text-accent-content _p-x">
+      <span className="inline-block text-base mb-2 text-accent-content _p-x">
         {label}
-      </label>
+      </span>
       {children}
     </div>
   );

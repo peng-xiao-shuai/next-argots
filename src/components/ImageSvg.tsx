@@ -50,7 +50,7 @@ const ImageSvg: FC<{
       }`}
     >
       <Image
-        src={name ? `/avatar/${name}.svg` : '/logo.svg'}
+        src={name ? `/avatar/${name}.svg` : '/logo2.png'}
         alt={name || 'avatar'}
         width={30}
         height={30}
