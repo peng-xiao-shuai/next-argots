@@ -6,6 +6,14 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    cssChunking: 'loose',
+    serverSourceMaps: true,
+    staleTimes: {
+      // dynamic: 30,
+      static: 180,
+    },
+  },
   images: {
     // dangerouslyAllowSVG: true,
     // contentDispositionType: 'attachment',
@@ -20,6 +28,27 @@ const nextConfig = {
     ],
   },
   compress: true,
+  // 重写路径以支持不带语言的路径
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: `/en-US`,
+      },
+      {
+        source: '/setting',
+        destination: '/en-US/setting',
+      },
+      {
+        source: '/setting/:path*',
+        destination: '/en-US/setting/:path*',
+      },
+      {
+        source: '/chat-room',
+        destination: '/en-US/chat-room',
+      },
+    ]
+  },
   webpack: (config) => {
     // 设置别名
     config.resolve.alias['@'] = path.join(__dirname, 'src')

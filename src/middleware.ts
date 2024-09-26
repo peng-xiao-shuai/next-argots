@@ -7,7 +7,7 @@ acceptLanguage.languages(languages);
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|service-worker.js|_next/image|assets|favicon.ico|sw.js|avatar/|logo|en|ja|zh|google6abe2b93559e52fc|sitemap|robots|admin).*)',
+    '/((?!api|_next/static|_vercel|service-worker.js|_next/image|assets|favicon.ico|sw.js|avatar/|logo|google6abe2b93559e52fc|sitemap|robots|admin).*)',
   ],
 };
 
@@ -18,16 +18,33 @@ export function middleware(req: NextRequest) {
   if (!lng) lng = acceptLanguage.get(req.headers.get('Accept-Language'));
   if (!lng) lng = FALLBACK_LNG;
 
-  if (
-    !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
-    !req.nextUrl.pathname.startsWith('/_next')
-  ) {
-    console.log('重定向到', `/${lng}${req.nextUrl.pathname}`);
+  /**
+   * 如果路径是语言路径，不进行重定向
+   */
+  console.log('\x1b[33m%s\x1b[0m', `路径: ${req.nextUrl.pathname} -----------`);
 
-    return NextResponse.redirect(
-      new URL(`/${lng}${req.nextUrl.pathname}`, req.url)
-    );
+  // 如果是根路径或者不带lng的语言路径，不进行重定向，由nextConfig配置重写路径
+  if (
+    req.nextUrl.pathname === '/' ||
+    req.nextUrl.pathname.indexOf(lng) === -1
+  ) {
+    return NextResponse.next();
   }
+
+  // if (
+  //   !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
+  //   !req.nextUrl.pathname.startsWith('/_next')
+  // ) {
+  //   console.log(
+  //     '\x1b[33m%s\x1b[0m',
+  //     '重定向：',
+  //     `/${lng}${req.nextUrl.pathname}`
+  //   );
+
+  //   return NextResponse.redirect(
+  //     new URL(`/${lng}${req.nextUrl.pathname}`, req.url)
+  //   );
+  // }
 
   if (req.headers.has('referer')) {
     const refererUrl = new URL(req.headers.get('referer') || '');
@@ -35,7 +52,7 @@ export function middleware(req: NextRequest) {
       refererUrl.pathname.startsWith(`/${l}`)
     );
     const response = NextResponse.next();
-    if (lngInReferer) response.cookies.set(COOKIE_NAME, lngInReferer);
+    response.cookies.set(COOKIE_NAME, lngInReferer || FALLBACK_LNG);
     return response;
   }
 

@@ -25,6 +25,7 @@ export type Resources = {
   };
 };
 
+// 更改默认语言时需要更改next.config.mjs的重写路径
 export const FALLBACK_LNG = 'en-US' as const;
 export const resources = {
   'en-US': { [DEFAULT_NS]: enUS },
