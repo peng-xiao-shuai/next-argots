@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { COMMON_KEYS } from '@@/locales/keys';
 import { Lng } from '@/locales/i18n';
 import { AppContextData } from '@/context';
+import { usePathname } from 'next/navigation';
 
 export type NavRightProps = {
   metadata: Meta;
@@ -19,6 +20,7 @@ export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
   const handleComplete = useCallback(() => {
     bus.emit('complete');
   }, []);
+  const pathname = usePathname();
 
   return (
     <>
@@ -33,7 +35,7 @@ export const NavRight: FC<NavRightProps> = ({ metadata, t, language }) => {
             <AiFillGithub className="svg-icon fill-base-content" />
           </Link>
           <Link
-            href={`/${language}/setting`}
+            href={pathname === '/' ? `/setting` : pathname + '/setting'}
             className="ml-3"
             aria-label="Setting Page"
           >
