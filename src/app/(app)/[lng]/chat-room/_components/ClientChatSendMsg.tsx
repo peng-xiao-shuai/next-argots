@@ -5,6 +5,7 @@ import { AppContext, ChatPopoverContext, definedCurrent } from '@/context';
 import React, {
   FC,
   KeyboardEvent,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -15,6 +16,7 @@ import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 import { COMMAND, CommandType, commands } from './ClientChatPopoverContent';
 import { RiCloseLine } from 'react-icons/ri';
 import { unicodeToString } from '@/utils/string-transform';
+import { cn } from '@/utils/utils';
 
 export const ClientChatSendMsg: FC<{
   sendMsg: (content: string, cb?: (() => void) | undefined) => Promise<void>;
@@ -47,38 +49,40 @@ export const ClientChatSendMsg: FC<{
   /**
    * send message
    */
-  const handleSendMessage = () => {
-    debounce(() => {
-      if (content.trim() === '') {
-        toast.warning(t(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
+  const handleSendMessage = useCallback(
+    () =>
+      debounce(() => {
+        if (content.trim() === '') {
+          toast.warning(t(CHAT_ROOM_KEYS.CONTENT_CANNOT_BE_EMPTY));
+          if (!visibleEmoji) {
+            textAreaRef.current?.focus();
+          }
+          return;
+        }
+
+        sendMsg(content.trim());
+        setContent('');
+
         if (!visibleEmoji) {
           textAreaRef.current?.focus();
         }
-        return;
-      }
-
-      sendMsg(content.trim());
-      setContent('');
-
-      if (!visibleEmoji) {
-        textAreaRef.current?.focus();
-      }
-    });
-  };
+      }),
+    [content, sendMsg, t, visibleEmoji]
+  );
 
   /**
    * 聚焦按键事件
    */
-  const handleKeyDown = ({
-    key,
-    shiftKey,
-  }: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (key === 'Enter' && !shiftKey && !isMobile.current) {
-      handleSendMessage();
-    } else if (isMobile.current && key === 'Enter' && shiftKey) {
-      handleSendMessage();
-    }
-  };
+  const handleKeyDown = useCallback(
+    ({ key, shiftKey }: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (key === 'Enter' && !shiftKey && !isMobile.current) {
+        handleSendMessage();
+      } else if (isMobile.current && key === 'Enter' && shiftKey) {
+        handleSendMessage();
+      }
+    },
+    [handleSendMessage]
+  );
 
   /**
    * 聚焦
@@ -86,47 +90,61 @@ export const ClientChatSendMsg: FC<{
   const handleFocus = () => {};
 
   // 自动增长高度
-  const autoResize = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (target.value.trim().length === 0) {
-      if (content.length === 0) return;
-      setContent('');
-      return;
-    }
+  const autoResize = useCallback(
+    ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (target.value.trim().length === 0) {
+        if (content.length === 0) return;
+        setContent('');
+        return;
+      }
 
-    setContent(target.value);
-  };
+      setContent(target.value);
+    },
+    [content]
+  );
+
+  const handleClearCommon = useCallback(() => {
+    setCurrent({
+      ...definedCurrent,
+    });
+  }, [setCurrent]);
 
   return (
-    <div className="b3-opacity-6 relative">
-      {currentCommandData &&
-      (
-        [COMMAND.EDIT, COMMAND.REPLY] as unknown as CommandType['command']
-      ).includes(currentCommandData?.command) ? (
-        <div className="absolute top-0 -translate-y-full w-full b3-opacity-6 p-[var(--padding)] pb-0 flex items-center">
-          <currentCommandData.icon className="mr-[var(--padding)] size-5 text-primary" />
+    <div className="b3-opacity-6 relative duration-300 transition-[height,translate]">
+      <div
+        className={cn(
+          'w-full relative z-10 transition-all grid grid-cols-[1fr_calc(100%-var(--padding)*2)] items-center',
+          currentCommandData &&
+            (
+              [COMMAND.EDIT, COMMAND.REPLY] as unknown as CommandType['command']
+            ).includes(currentCommandData?.command)
+            ? 'opacity-100 h-16 p-[var(--padding)] pb-0'
+            : 'opacity-0 h-0 px-[var(--padding)]'
+        )}
+      >
+        {currentCommandData && (
+          <>
+            <currentCommandData.icon className="size-5 text-primary" />
 
-          <div>
-            <strong className="text-primary">
-              {t(currentCommandData.text)}{' '}
-              {unicodeToString(current!.chat[0].user.nickname)}
-            </strong>
-            <div>{current?.chat[0].msg}</div>
-          </div>
+            <div>
+              <strong className="text-primary">
+                {t(currentCommandData.text)}{' '}
+                {unicodeToString(current?.chat[0]?.user.nickname)}
+              </strong>
+              <div className="text-nowrap text-ellipsis line-clamp-1 block">
+                {current?.chat[0].msg}
+              </div>
+            </div>
 
-          <RiCloseLine
-            className="absolute right-[var(--padding)] size-6"
-            onClick={() =>
-              setCurrent({
-                ...definedCurrent,
-              })
-            }
-          ></RiCloseLine>
-        </div>
-      ) : (
-        <></>
-      )}
+            <RiCloseLine
+              className="absolute right-[var(--padding)] size-6"
+              onClick={handleClearCommon}
+            ></RiCloseLine>
+          </>
+        )}
+      </div>
 
-      <div className="flex items-end w-full p-[var(--padding)]">
+      <div className="flex items-end w-full p-[var(--padding)] relative z-20 b3-no-opacity">
         <ClientSwapSvg
           visibleEmoji={visibleEmoji}
           setVisibleEmoji={setVisibleEmoji}

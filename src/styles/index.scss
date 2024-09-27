@@ -18,8 +18,14 @@
   .text-primary {
     color: color-mix(in oklch, oklch(var(--p) / 1), white 10%);
   }
+  .b3-no-opacity {
+    background-color: #0d0f12;
+  }
 }
 
 [data-theme='light'] {
   background-color: white;
+  .b3-no-opacity {
+    background-color: #eff0f0;
+  }
 }
