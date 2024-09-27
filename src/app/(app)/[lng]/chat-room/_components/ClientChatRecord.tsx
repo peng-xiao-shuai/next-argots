@@ -258,7 +258,9 @@ export const ClientChatRecords: FC<{
             style={{
               zIndex: 100,
             }}
-            className={`${visible && 'visible pointer-events-none'} group/list`}
+            className={`${
+              visible && 'visible pointer-events-none'
+            } group/list overflow-x-hidden`}
           >
             {/* @ts-ignore */}
             {Row}

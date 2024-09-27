@@ -179,7 +179,7 @@ export function ClientChat() {
   return (
     <>
       <div
-        className="overflow-y-auto w-full flex-1 px-[var(--padding)] pb-[var(--padding)]"
+        className="overflow-hidden w-full flex-1 px-[var(--padding)] pb-[var(--padding)]"
         data-hide="true"
       >
         <ClientChatRecords
