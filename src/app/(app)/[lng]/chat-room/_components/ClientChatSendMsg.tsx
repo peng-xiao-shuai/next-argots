@@ -110,7 +110,7 @@ export const ClientChatSendMsg: FC<{
   }, [setCurrent]);
 
   return (
-    <div className="b3-opacity-6 relative duration-300 transition-[height,translate]">
+    <div className="b3-opacity-6 relative z-[130] duration-300 transition-[height,translate]">
       <div
         className={cn(
           'w-full relative z-10 transition-all grid grid-cols-[1fr_calc(100%-var(--padding)*2)] items-center',

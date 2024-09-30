@@ -31,11 +31,14 @@ import {
 import { copyText, unicodeToString } from '@/utils/string-transform';
 import emitter from '@/utils/bus';
 import { useBusWatch } from '@/hooks/use-bus-watch';
+import { FaArrowDown } from 'react-icons/fa';
+import { cn } from '@/utils/utils';
 
 export function ClientChat() {
   const pathname = usePathname();
   const chatScroll = useRef<HTMLDivElement | null>(null);
   const { setChat, chat } = useContext(ClientChatContext);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const {
     clientSendMessage,
     clientOperateMessage,
@@ -118,6 +121,18 @@ export function ClientChat() {
     []
   );
 
+  /**
+   * 监听滚动条
+   */
+  const handleScroll = useCallback(() => {
+    if (chatScroll.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatScroll.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight <= 100;
+
+      setShowScrollButton(!isNearBottom);
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       if (window.location.pathname !== pathname) {
@@ -127,8 +142,18 @@ export function ClientChat() {
   }, [pathname, exitRoom, mutate]);
 
   useEffect(() => {
-    handleScrollBottom();
-  }, [chat, handleScrollBottom]);
+    // 用户未滚动，则自动滚动到底部
+    if (!showScrollButton) {
+      handleScrollBottom();
+    }
+
+    const scrollElement = chatScroll.current;
+
+    if (scrollElement) {
+      scrollElement?.addEventListener('scroll', handleScroll);
+      return () => scrollElement?.removeEventListener('scroll', handleScroll);
+    }
+  }, [chat, handleScroll, handleScrollBottom, showScrollButton]);
 
   /**
    * 指令操作
@@ -179,7 +204,7 @@ export function ClientChat() {
   return (
     <>
       <div
-        className="overflow-hidden w-full flex-1 px-[var(--padding)] pb-[var(--padding)]"
+        className="overflow-hidden relative w-full flex-1 px-[var(--padding)] pb-[var(--padding)]"
         data-hide="true"
       >
         <ClientChatRecords
@@ -187,6 +212,22 @@ export function ClientChat() {
           handleScrollBottom={handleScrollBottom}
           chats={chat}
         ></ClientChatRecords>
+      </div>
+
+      <div>
+        <div
+          className={cn(
+            'absolute cursor-pointer z-[120] right-4 rounded-full transition-all duration-300 flex items-center justify-center bg-primary size-10',
+            showScrollButton
+              ? '-translate-y-[120%] opacity-100'
+              : 'translate-y-0 opacity-0'
+          )}
+          onClick={() => {
+            handleScrollBottom();
+          }}
+        >
+          <FaArrowDown className="text-primary-content" />
+        </div>
       </div>
 
       <ClientChatSendMsg sendMsg={clientSendMessage}></ClientChatSendMsg>
