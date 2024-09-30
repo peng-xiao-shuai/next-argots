@@ -251,9 +251,7 @@ export const ClientChatRecords: FC<{
             itemCount={chatsData.length}
             itemSize={getRowHeight}
             itemData={rowData}
-            itemKey={(index, data) => {
-              data.chatsData[index].item.timestamp;
-            }}
+            itemKey={(index, data) => data.chatsData[index].item.timestamp}
             outerRef={chatScroll}
             style={{
               zIndex: 100,
