@@ -13,7 +13,10 @@ import {
 } from 'react';
 
 // 创建一个全局缓存对象
-const globalPreviewCache = new Map<string, LinkPreviewInfo>();
+const globalPreviewCache = new Map<
+  string,
+  LinkPreviewInfo & { height: number | undefined }
+>();
 
 // 正则表达式用于快速检查 URL 格式
 const URL_REGEX =
@@ -36,9 +39,10 @@ const isHttpUrl = (string: string) => {
 };
 
 const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
-  const [preview, setPreview] = useState<LinkPreviewInfo | null>(null);
+  const [preview, setPreview] = useState<
+    (LinkPreviewInfo & { height: number | undefined }) | null
+  >(null);
   const { serveActive } = useContext(ClientChatContext);
-  const [height, setHeight] = useState<number>(0);
   const textRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -52,9 +56,14 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
         const data = await serveActive.getLinkPreview(url);
 
         if (data) {
+          const cacheData = {
+            ...data,
+            height: textRef.current?.clientHeight,
+          };
+
           // 将新获取的数据存入缓存
-          globalPreviewCache.set(url, data);
-          setPreview(data);
+          globalPreviewCache.set(url, cacheData);
+          setPreview(cacheData);
         }
       } catch (error) {
         console.error('Error fetching link preview:', error);
@@ -62,12 +71,6 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
     };
     fetchPreview();
   }, [url, serveActive]);
-
-  useEffect(() => {
-    if (textRef.current) {
-      setHeight(textRef.current.clientHeight);
-    }
-  }, [preview?.ogImage]);
 
   if (!preview) return null;
 
@@ -88,15 +91,15 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
           <h3 className="font-bold">{preview.ogTitle || preview.title}</h3>
           <p>{preview.ogDescription || preview.description}</p>
         </div>
-        {preview.ogImage && height > 0 && (
+        {preview.ogImage && preview.height && preview.height > 0 && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={preview.ogImage}
             alt="Preview"
             className="block ml-4 rounded-md max-w-40 max-h-40"
             style={{
-              height: textRef.current?.clientHeight + 'px',
-              width: textRef.current?.clientHeight + 'px',
+              height: preview.height + 'px',
+              width: preview.height + 'px',
             }}
           />
         )}
