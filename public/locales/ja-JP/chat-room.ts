@@ -21,4 +21,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK]: 'ネットワークが切断されました',
   [CHAT_ROOM_KEYS.NAV_TITLE_CONNECT_UNAVAILABLE]:
     'リンクはしばらく利用できません。',
+  [CHAT_ROOM_KEYS.REPLY_MESSAGE_NOT_EXIST]: '返信メッセージが存在しません',
 } as const;

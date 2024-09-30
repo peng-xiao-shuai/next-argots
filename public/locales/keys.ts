@@ -67,6 +67,8 @@ export enum CHAT_ROOM_KEYS {
 
   NAV_TITLE_NO_NETWORK = 'Loss_of_network_connection',
   NAV_TITLE_CONNECT_UNAVAILABLE = 'Link_temporarily_unavailable',
+
+  REPLY_MESSAGE_NOT_EXIST = 'Reply_message_not_exist',
 }
 
 export enum COMMON_KEYS {

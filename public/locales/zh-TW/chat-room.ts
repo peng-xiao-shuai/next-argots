@@ -20,4 +20,5 @@ export const CHAT_ROOM = {
 
   [CHAT_ROOM_KEYS.NAV_TITLE_NO_NETWORK]: '網絡已斷開',
   [CHAT_ROOM_KEYS.NAV_TITLE_CONNECT_UNAVAILABLE]: '連接暫時不可用',
+  [CHAT_ROOM_KEYS.REPLY_MESSAGE_NOT_EXIST]: '回復消息不存在',
 } as const;

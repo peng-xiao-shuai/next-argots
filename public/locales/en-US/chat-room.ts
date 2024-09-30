@@ -12,4 +12,5 @@ export const CHAT_ROOM = {
   [CHAT_ROOM_KEYS.NAME_EXISTS]: 'Nickname already exists',
   [CHAT_ROOM_KEYS.INVITATION_DESCRIPTION]:
     'Each invitation link can only invite one user, and the invitation is invalid after success',
+  [CHAT_ROOM_KEYS.REPLY_MESSAGE_NOT_EXIST]: 'The reply message does not exist',
 } as const;
