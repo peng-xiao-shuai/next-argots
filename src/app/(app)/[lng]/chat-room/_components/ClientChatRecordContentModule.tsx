@@ -126,15 +126,19 @@ ATemplate.displayName = 'ATemplate';
 const QuoteTemplate: FC<{
   title?: string;
   children: ReactNode;
-}> = memo(({ title, children }) => (
+  attrs?: Record<string, string>;
+}> = memo(({ title, children, attrs }) => (
   <div
+    {...attrs}
     className={cn(
       'border-l-4 border-primary rounded-md px-2 bg-primary/5 mb-1 duration-300 transition-[border,background-color]',
-      'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10'
+      'group-[.group-select.group-select-model]:border-primary-content group-[.group-select.group-select-model]:text-primary-content group-[.group-select.group-select-model]:bg-white/10',
+      attrs?.className
     )}
   >
     {title && (
       <div
+        {...attrs}
         className={cn(
           'font-bold transition-colors duration-300 text-primary',
           'group-[.group-select.group-select-model]:text-inherit'

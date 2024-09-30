@@ -18,7 +18,10 @@ export const ClientChatRecordContent: FC<
   {
     chatItem: ChatMsg;
     replyMsg: string | undefined;
-    onChatClick: (timestamp: ChatMsg['timestamp']) => void;
+    onChatClick: (
+      timestamp: ChatMsg['timestamp'],
+      event: React.MouseEvent<HTMLDivElement>
+    ) => void;
   } & ExtensionRecord<Chat>
 > = memo(({ chatItem, next, last, replyMsg, onChatClick }) => {
   const { t } = useContext(AppContext);
@@ -33,16 +36,20 @@ export const ClientChatRecordContent: FC<
   const isUserMessage = useMemo(() => {
     return chatItem.user.nickname === userInfo.nickname;
   }, [chatItem.user.nickname, userInfo.nickname]);
-  const handleClick = useCallback(() => {
-    onChatClick(chatItem.timestamp);
-  }, [chatItem.timestamp, onChatClick]);
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      onChatClick(chatItem.timestamp, event);
+    },
+    [chatItem.timestamp, onChatClick]
+  );
 
   return (
     <div
       className={cn(
-        'chat !pb-0 pt-[0.15rem] *:transition-all *:duration-300 *:relative hover:*:z-[100]',
+        'chat mt-[0.15rem] py-0.5 rounded-xl *:transition-all *:duration-300 *:relative hover:*:z-[100]',
         `chat-${isUserMessage ? 'end' : 'start'}`,
-        !isSystemType(last) && '!pt-2',
+        !isSystemType(last) && '!mt-2',
+        'transition-[background-color] duration-300 has-[div.checked]:bg-primary/60',
         'group-[.group-select]:*:pointer-events-auto'
       )}
     >
@@ -88,8 +95,15 @@ export const ClientChatRecordContent: FC<
         )}
         {/* 回复 */}
         {chatItem.reply && (
-          <ContentReply title={unicodeToString(chatItem.reply.user.nickname)}>
+          <ContentReply
+            attrs={{
+              'data-reply-msg': chatItem.reply.timestamp.toString(),
+              className: 'cursor-pointer',
+            }}
+            title={unicodeToString(chatItem.reply.user.nickname)}
+          >
             <div
+              data-reply-msg={chatItem.reply.timestamp.toString()}
               className={cn('whitespace-break-spaces break-words text-inherit')}
             >
               {replyMsg}

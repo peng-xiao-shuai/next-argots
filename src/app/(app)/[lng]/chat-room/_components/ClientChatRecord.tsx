@@ -1,5 +1,5 @@
 'use client';
-import { ChatPopoverContext } from '@/context';
+import { AppContext, ChatPopoverContext } from '@/context';
 import { Chat, ChatMsg, MESSAGE_TYPE } from '@/hooks/use-pusher';
 import {
   FC,
@@ -17,6 +17,8 @@ import { cn } from '@/utils/utils';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { ClientChatRecordContent } from './ClientChatRecordContent';
+import { toast } from 'sonner';
+import { CHAT_ROOM_KEYS } from '@@/locales/keys';
 
 const Row: FC<ListChildComponentProps<RowData>> = memo(
   ({ index, style, data }) => {
@@ -107,7 +109,10 @@ interface ChatDataType {
 interface RowData {
   chatsData: ChatDataType[];
   isSelectModel: boolean;
-  onChatClick: (timestamp: ChatMsg['timestamp']) => void;
+  onChatClick: (
+    timestamp: ChatMsg['timestamp'],
+    event: React.MouseEvent<HTMLDivElement>
+  ) => void;
   setRowHeight: (index: number, size: number) => void;
 }
 const useChatData = (chats: Chat[], current: any) => {
@@ -159,7 +164,8 @@ export const ClientChatRecords: FC<{
   chats: Chat[];
   chatScroll: Ref<HTMLDivElement | null>;
   handleScrollBottom: (duration: number, targetHeight?: number) => void;
-}> = memo(({ chats, chatScroll, handleScrollBottom }) => {
+}> = memo(({ chats, chatScroll }) => {
+  const { t } = useContext(AppContext);
   const {
     syncCurrent,
     current,
@@ -171,8 +177,40 @@ export const ClientChatRecords: FC<{
   const chatsData = useChatData(chats, current);
   const { listRef, getRowHeight, setRowHeight } = useRowHeights(chats);
   const handleChatClick = useCallback<RowData['onChatClick']>(
-    (timestamp) => {
-      // TODO 滚动到引用位置
+    (timestamp, event) => {
+      // 跳转到回复消息
+      const replyMsgTimestamp = (event.target as HTMLElement).dataset.replyMsg;
+      if (replyMsgTimestamp) {
+        const index = chats.findIndex((chat) => {
+          return chat?.timestamp === Number(replyMsgTimestamp);
+        });
+
+        // 关闭弹窗
+        setVisible(false);
+        setCurrent({
+          command: '',
+          chat: [],
+        });
+
+        if (index >= 0) {
+          listRef.current?.scrollToItem(index, 'start');
+          const timer = setTimeout(() => {
+            document
+              .getElementById(replyMsgTimestamp)
+              ?.classList.add('checked');
+            const removeTimer = setTimeout(() => {
+              document
+                .getElementById(replyMsgTimestamp)
+                ?.classList.remove('checked');
+
+              clearTimeout(timer);
+              clearTimeout(removeTimer);
+            }, 600);
+          }, 0);
+        } else toast.warning(t!(CHAT_ROOM_KEYS.REPLY_MESSAGE_NOT_EXIST));
+        return;
+      }
+
       const chatItem = chats.find(
         (chat) => chat.timestamp === timestamp
       )! as ChatMsg;
@@ -224,7 +262,15 @@ export const ClientChatRecords: FC<{
         });
       }
     },
-    [chats, setCurrent, setReferenceElement, setVisible, syncCurrent]
+    [
+      chats,
+      listRef,
+      setCurrent,
+      setReferenceElement,
+      setVisible,
+      syncCurrent,
+      t,
+    ]
   );
 
   const isSelectModel = syncCurrent?.current.command === COMMAND.SELECT;
