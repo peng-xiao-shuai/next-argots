@@ -57,7 +57,7 @@ export const DialogMask: FC<{
 }> = ({ visible, children, onClose }) => {
   return (
     <div
-      className={`dialog fixed w-full z-50 h-[100vh] left-0 top-0 transition-all duration-300 ${
+      className={`dialog fixed w-full z-[130] h-[100vh] left-0 top-0 transition-all duration-300 ${
         visible ? 'opacity-1' : 'opacity-0 pointer-events-none'
       }`}
     >
