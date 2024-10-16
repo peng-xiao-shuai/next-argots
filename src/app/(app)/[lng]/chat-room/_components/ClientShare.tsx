@@ -22,7 +22,7 @@ import {
 import LoadingRender from '../../loading';
 import { InviteLink } from '@/server/payload/payload-types';
 import { GoLink, GoTrash } from 'react-icons/go';
-import { copyText } from '@/utils/string-transform';
+import { copyText, stringToUnicode } from '@/utils/string-transform';
 import { debounce } from '@/utils/debounce-throttle';
 import type { FieldPath } from 'react-hook-form';
 import { AppContext, ClientChatContext, LinkUserInfo } from '@/context';
@@ -54,7 +54,7 @@ export const ClientShare: FC<{
                 method: 'post',
                 body: JSON.stringify({
                   roomName: userInfo.roomName,
-                  nickName: formData.nickName,
+                  nickName: stringToUnicode(formData.nickName),
                 }),
               })
             ).json();
