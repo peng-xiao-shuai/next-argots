@@ -10,7 +10,7 @@ type Args = {
 };
 
 const Layout = ({ children }: Args) => (
-  <RootLayout config={configPromise}>{children}</RootLayout>
+  <RootLayout importMap={{}} config={configPromise}>{children}</RootLayout>
 );
 
 export default Layout;
