@@ -5,7 +5,7 @@ import type { JoinLinkType } from '@/app/api/join-link/route';
 import { getBaseUrl } from '@/utils/server-utils';
 import payloadPromise from '@/server/payload/get-payload';
 import { parse } from 'node-html-parser';
-import type { LinkUserInfo, SetUserInfoType } from '@/context';
+import type { SetUserInfoType } from '@/context';
 
 export const generateMetadata = async (props: CustomReactParams) => {
   const { lng } = await props.params;
