@@ -286,11 +286,11 @@ export const ClientChatRecords: FC<{
   );
 
   return (
-    <AutoSizer>
+    (<AutoSizer>
       {({ height, width }) => {
         return (
           // @ts-ignore
-          <VariableSizeList<RowData>
+          (<VariableSizeList<RowData>
             ref={listRef}
             width={width}
             height={height}
@@ -308,10 +308,10 @@ export const ClientChatRecords: FC<{
           >
             {/* @ts-ignore */}
             {Row}
-          </VariableSizeList>
+          </VariableSizeList>)
         );
       }}
-    </AutoSizer>
+    </AutoSizer>)
   );
 });
 ClientChatRecords.displayName = 'ClientChatRecords';

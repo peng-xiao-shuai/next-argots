@@ -1,12 +1,12 @@
 import { TRPCError, initTRPC } from '@trpc/server';
 import { Context } from './context';
-import { cookies } from 'next/headers';
+import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
 import { diffHash } from '@/utils/server-utils';
 const t = initTRPC.context<Context>().create();
 
 const authMiddleware = t.middleware(({ ctx, next }) => {
-  const hash = cookies().get('hash')?.value;
-  const pw = cookies().get('pw-256')?.value;
+  const hash = (cookies() as unknown as UnsafeUnwrappedCookies).get('hash')?.value;
+  const pw = (cookies() as unknown as UnsafeUnwrappedCookies).get('pw-256')?.value;
 
   if (!diffHash(pw || '', hash || '')) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });

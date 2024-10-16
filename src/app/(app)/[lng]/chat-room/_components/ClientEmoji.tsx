@@ -52,7 +52,7 @@ export const ClientEmojiPicker: FC<{
       const getData = async () => {
         const response = await fetch(
           'https://cdn.jsdelivr.net/npm/@emoji-mart/data'
-        );
+          , { cache: 'force-cache' });
         const res = await response.json();
         setEmojiData(res);
       };

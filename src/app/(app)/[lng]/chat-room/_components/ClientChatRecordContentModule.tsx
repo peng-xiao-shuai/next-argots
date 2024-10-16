@@ -75,7 +75,7 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
   if (!preview) return null;
 
   return (
-    <QuoteTemplate>
+    (<QuoteTemplate>
       <a
         href={url}
         target="_blank"
@@ -93,7 +93,7 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
         </div>
         {preview.ogImage && preview.height && preview.height > 0 && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
+          (<img
             src={preview.ogImage}
             alt="Preview"
             className="block ml-4 rounded-md max-w-40 max-h-40"
@@ -101,10 +101,10 @@ const LinkPreview: FC<{ url: string }> = memo(({ url }) => {
               height: preview.height + 'px',
               width: preview.height + 'px',
             }}
-          />
+          />)
         )}
       </a>
-    </QuoteTemplate>
+    </QuoteTemplate>)
   );
 });
 LinkPreview.displayName = 'LinkPreview';

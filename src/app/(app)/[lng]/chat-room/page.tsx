@@ -7,14 +7,15 @@ import payloadPromise from '@/server/payload/get-payload';
 import { parse } from 'node-html-parser';
 import type { LinkUserInfo, SetUserInfoType } from '@/context';
 
-export const generateMetadata = async ({
-  params: { lng },
-}: CustomReactParams) => await GenerateMetadata(lng, '/chat-room');
+export const generateMetadata = async (props: CustomReactParams) => {
+  const { lng } = await props.params;
+  return await GenerateMetadata(lng, '/chat-room');
+};
 
 interface Props extends CustomReactParams {
-  searchParams: {
+  searchParams: Promise<{
     link?: string;
-  };
+  }>;
 }
 
 /**
@@ -60,27 +61,25 @@ const getLinkPreview = async (url: string) => {
   }
 };
 
-export default async function ChatRoom({
-  params: { lng },
-  searchParams,
-}: Props) {
+export default async function ChatRoom(props: Props) {
+  const searchParams = await props.searchParams;
+  const { lng } = await props.params;
+
   let response: JoinLinkType;
 
   /**
    * 邀请进来后更改用户信息时调用
    */
-  const setDBUserInfo: SetUserInfoType = async (userInfo: LinkUserInfo) => {
+  const setDBUserInfo: SetUserInfoType = async (userInfo) => {
     'use server';
-    if (searchParams.link) {
-      const payload = await payloadPromise;
-      payload.update({
-        collection: 'invite-link',
-        id: searchParams.link,
-        data: {
-          userInfo: JSON.stringify(userInfo),
-        },
-      });
-    }
+    const payload = await payloadPromise;
+    return payload.update({
+      collection: 'invite-link',
+      id: searchParams.link!,
+      data: {
+        userInfo: JSON.stringify(userInfo),
+      },
+    });
   };
 
   if (searchParams.link) {

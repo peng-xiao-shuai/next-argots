@@ -7,9 +7,9 @@ declare interface Window {
 declare type Indexes<T = any> = { [s: string | number]: T };
 
 declare interface CustomReactParams {
-  params: {
+  params: Promise<{
     lng: import('@/locales/i18n').Lng;
-  };
+  }>;
 }
 
 declare interface CustomReactLayout extends CustomReactParams {

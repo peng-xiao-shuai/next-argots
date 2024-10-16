@@ -1,9 +1,10 @@
 import { GenerateMetadata } from '../meta';
 import { ClientMenu } from './_components/Client';
 
-export const generateMetadata = async ({
-  params: { lng },
-}: CustomReactParams) => await GenerateMetadata(lng, '/setting');
+export const generateMetadata = async (props: CustomReactParams) => {
+  const { lng } = await props.params;
+  return await GenerateMetadata(lng, '/setting');
+};
 
 export default function Setting() {
   return (

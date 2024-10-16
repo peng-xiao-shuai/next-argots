@@ -9,6 +9,7 @@ const nextConfig = {
   experimental: {
     cssChunking: 'loose',
     serverSourceMaps: true,
+    reactCompiler: false,
     staleTimes: {
       // dynamic: 30,
       static: 180,

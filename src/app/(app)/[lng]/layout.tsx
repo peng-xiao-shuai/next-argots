@@ -34,17 +34,18 @@ export function generateViewport(): Viewport {
   };
 }
 
-export const dynamic = 'force-static';
+export const fetchCache = 'default-cache';
 
 const inter = localFont({
   src: '../../../../public/Helvetica-Neue.ttf',
 });
 
-export default async function RootLayout({
-  children,
-  params: { lng },
-}: CustomReactLayout) {
-  const cookieStore = cookies();
+export default async function RootLayout(props: CustomReactLayout) {
+  const params = await props.params;
+  const { lng } = params;
+  const { children } = props;
+
+  const cookieStore = await cookies();
   const size = cookieStore.get(COOKIE.SIZE)?.value;
   const theme = cookieStore.get(COOKIE.THEME)?.value;
 
@@ -80,6 +81,7 @@ export default async function RootLayout({
             </AppProvider>
           </TrpcProviders>
           <Toaster
+            position="top-center"
             toastOptions={{
               duration: 1500,
             }}

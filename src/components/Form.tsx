@@ -170,7 +170,10 @@ export const HomeForm: HomeForm = memo(({ roomStatus, lng, visible }) => {
     if (visible) {
       if (!Boolean(GridAvatar)) {
         GridAvatar = dynamic(
-          () => import('./ImageSvg').then((m) => m.default),
+          () =>
+            import('./ImageSvg').then((m) => ({
+              default: m.default,
+            })),
           { ssr: false }
         );
       }
@@ -392,9 +395,15 @@ export const ShareForm: FC<{
   );
   useEffect(() => {
     if (!Boolean(GridAvatar)) {
-      GridAvatar = dynamic(() => import('./ImageSvg').then((m) => m.default), {
-        ssr: false,
-      });
+      GridAvatar = dynamic(
+        () =>
+          import('./ImageSvg').then((m) => ({
+            default: m.default,
+          })),
+        {
+          ssr: false,
+        }
+      );
     }
     setFocus('nickName');
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -23,13 +23,14 @@ const chat = [
   },
 ];
 
-export const generateMetadata = async ({
-  params: { lng },
-}: CustomReactParams) => await GenerateMetadata(lng, '/setting/size-change');
+export const generateMetadata = async (props: CustomReactParams) => {
+  const { lng } = await props.params;
+  return await GenerateMetadata(lng, '/setting/size-change');
+};
+export default async function SizeChange(props: CustomReactParams) {
+  const params = await props.params;
+  const { lng } = params;
 
-export default async function SizeChange({
-  params: { lng },
-}: CustomReactParams) {
   const { t } = await useTranslation(lng);
 
   return (

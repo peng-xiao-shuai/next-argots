@@ -2,11 +2,15 @@ import Image from 'next/image';
 import { ClientOperate } from './_components/Client';
 import { GenerateMetadata } from './meta';
 
-export const generateMetadata = async ({
-  params: { lng },
-}: CustomReactParams) => await GenerateMetadata(lng, '/');
+export const generateMetadata = async (props: CustomReactParams) => {
+  const { lng } = await props.params;
+  return await GenerateMetadata(lng, '/');
+};
 
-export default function Home({ params: { lng } }: CustomReactParams) {
+export default async function Home(props: CustomReactParams) {
+  const params = await props.params;
+  const { lng } = params;
+
   return (
     <>
       <div className="flex flex-wrap h-full items-center">

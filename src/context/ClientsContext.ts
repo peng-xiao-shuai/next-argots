@@ -5,6 +5,7 @@ import { type Data } from '@/app/api/join-link/route';
 import { type Lng } from '@/locales/i18n';
 import { createContext, Dispatch, SetStateAction } from 'react';
 import type { Chat } from '@/hooks/use-pusher';
+import type { DataFromCollectionSlug } from 'payload';
 
 export type LinkUserInfo = {
   nickName: string;
@@ -23,7 +24,9 @@ export type LinkPreviewInfo = {
   twitterSite: null | string;
   canonicalUrl: null | string;
 };
-export type SetUserInfoType = (userInfo: LinkUserInfo) => void;
+export type SetUserInfoType = (
+  userInfo: LinkUserInfo
+) => Promise<DataFromCollectionSlug<'invite-link'>>;
 export type GetLinkPreview = (url: string) => Promise<LinkPreviewInfo | null>;
 
 export const ClientChatContext = createContext<{

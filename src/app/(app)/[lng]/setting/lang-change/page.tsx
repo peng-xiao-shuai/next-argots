@@ -22,11 +22,14 @@ const langs: LangType[] = [
   },
 ];
 
-export const generateMetadata = async ({
-  params: { lng },
-}: CustomReactParams) => await GenerateMetadata(lng, '/setting/lang-change');
+export const generateMetadata = async (props: CustomReactParams) => {
+  const { lng } = await props.params;
+  return await GenerateMetadata(lng, '/setting/lang-change');
+};
+export default async function LangChange(props: CustomReactParams) {
+  const params = await props.params;
+  const { lng } = params;
 
-export default function LangChange({ params: { lng } }: CustomReactParams) {
   return (
     <ul className="menu">
       <ClientLang langs={langs} lng={lng}></ClientLang>
