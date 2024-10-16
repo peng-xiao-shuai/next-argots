@@ -1,6 +1,6 @@
 {
   "name": "argots",
-  "version": "2.0.0-fc-20240704",
+  "version": "2.0.0-fc-20241016",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,10 +14,10 @@
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
     "@hookform/resolvers": "^3.9.0",
-    "@payloadcms/db-mongodb": "3.0.0-beta.108",
-    "@payloadcms/next": "3.0.0-beta.108",
-    "@payloadcms/richtext-slate": "3.0.0-beta.108",
-    "@payloadcms/ui": "3.0.0-beta.108",
+    "@payloadcms/db-mongodb": "3.0.0-beta.113",
+    "@payloadcms/next": "3.0.0-beta.113",
+    "@payloadcms/richtext-slate": "3.0.0-beta.113",
+    "@payloadcms/ui": "3.0.0-beta.113",
     "@popperjs/core": "^2.11.8",
     "@tanstack/react-query": "4.36.1",
     "@trpc/client": "^10.45.2",
@@ -43,7 +43,7 @@
     "next": "15.0.0-canary.191",
     "next-sitemap": "^4.2.3",
     "node-html-parser": "^6.1.13",
-    "payload": "3.0.0-beta.108",
+    "payload": "3.0.0-beta.113",
     "pusher": "^5.2.0",
     "pusher-js": "8.4.0-rc2",
     "react": "19.0.0-rc-cd22717c-20241013",
