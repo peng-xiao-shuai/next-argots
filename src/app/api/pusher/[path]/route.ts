@@ -1,10 +1,12 @@
 import { NextRequest } from 'next/server';
 import { pusherAuthApi } from './pusher-auth';
 
-const handler = (
+type Params = Promise<{  path: keyof typeof pusherAuthApi }>
+const handler = async  (
   req: NextRequest,
-  { params: { path } }: { params: { path: keyof typeof pusherAuthApi } }
+  segmentData: { params: Params }
 ) => {
+  const { path } = await segmentData.params
   return pusherAuthApi[path](req);
 };
 

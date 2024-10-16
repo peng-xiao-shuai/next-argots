@@ -6,23 +6,21 @@ import config from '@payload-config';
 import { RootPage, generatePageMetadata } from '@payloadcms/next/views';
 import { importMap } from '../importMap';
 type Args = {
-  params: {
+  params: Promise<{
     segments: string[];
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     [key: string]: string | string[];
-  };
+  }>;
 };
 
-export const generateMetadata = async (props: Args): Promise<Metadata> => {
-  const searchParams = await props.searchParams;
-  const params = await props.params;
+export const generateMetadata = ({params, searchParams}: Args): Promise<Metadata> => {
+  // @ts-ignore
   return generatePageMetadata({ config, params, searchParams });
 };
 
-const Page = async (props: Args) => {
-  const searchParams = await props.searchParams;
-  const params = await props.params;
+const Page = ({params, searchParams}: Args) => {
+  // @ts-ignore
   return RootPage({ config, params, importMap, searchParams });
 };
 
