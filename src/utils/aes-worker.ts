@@ -85,7 +85,7 @@ self.onmessage = function ({ data }: { data: WorkerMessageData }) {
     const derivedKey = CryptoJS.PBKDF2(
       passphrase,
       CryptoJS.enc.Hex.parse(salt),
-      { keySize: 256 / 32 }
+      { keySize: 256 / 32, iterations: 1000 }
     );
     self.postMessage({ type: 'derivedKey', key: derivedKey.toString() });
   } else if (type === 'encrypt' && value && key && ivHexString) {
@@ -93,8 +93,8 @@ self.onmessage = function ({ data }: { data: WorkerMessageData }) {
     const parsedKey = CryptoJS.enc.Hex.parse(key);
     const encrypted = CryptoJS.AES.encrypt(value, parsedKey, {
       iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CTR,
+      padding: CryptoJS.pad.NoPadding,
     }).toString();
     self.postMessage({ type: 'encrypted', encrypted });
   } else if (type === 'decrypt' && value && key && ivHexString) {
@@ -102,8 +102,8 @@ self.onmessage = function ({ data }: { data: WorkerMessageData }) {
     const parsedKey = CryptoJS.enc.Hex.parse(key);
     const decrypted = CryptoJS.AES.decrypt(value, parsedKey, {
       iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CTR,
+      padding: CryptoJS.pad.NoPadding,
     }).toString(CryptoJS.enc.Utf8);
     self.postMessage({ type: 'decrypted', decrypted });
   }
