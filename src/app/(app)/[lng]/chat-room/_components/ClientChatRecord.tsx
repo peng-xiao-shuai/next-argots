@@ -45,12 +45,12 @@ const Row: FC<ListChildComponentProps<RowData>> = memo(
 
     if (item.type === MESSAGE_TYPE.SYSTEM) {
       return (
-        <div
-          ref={rowRef}
-          style={style}
-          className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
-        >
-          {item.msg}
+        <div ref={rowRef} style={{ ...style, height: 'auto' }}>
+          <div
+            className="py-2 text-center text-base-content text-opacity-60 text-sm w-full justify-between"
+          >
+            {item.msg}
+          </div>
         </div>
       );
     }
