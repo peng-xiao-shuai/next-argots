@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename)
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    cssChunking: 'loose',
+    cssChunking: 'strict',
     serverSourceMaps: true,
     reactCompiler: false,
     staleTimes: {

@@ -6,7 +6,7 @@ import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
 import { languages, useTranslation } from '@/locales/i18n';
-import { default as dynamicFunction } from 'next/dynamic';
+import dynamicFunction from 'next/dynamic';
 import { cookies, headers } from 'next/headers';
 import { COOKIE } from '@/server/enum';
 import { Viewport } from 'next';
