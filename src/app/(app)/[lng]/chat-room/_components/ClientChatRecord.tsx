@@ -81,10 +81,12 @@ const Row: FC<ListChildComponentProps<RowData>> = memo(
   (prevProps, nextProps) => {
     for (let key of Object.keys(prevProps.data.chatsData[prevProps.index])) {
       if (
-        // @ts-ignore
-        prevProps.data.chatsData[prevProps.index][key] !=
-        // @ts-ignore
-        nextProps.data.chatsData[prevProps.index][key]
+        prevProps.data.chatsData[prevProps.index][
+          key as keyof (typeof prevProps.data.chatsData)[number]
+        ] !=
+        nextProps.data.chatsData[prevProps.index]?.[
+          key as keyof (typeof prevProps.data.chatsData)[number]
+        ]
       ) {
         return false;
       }
