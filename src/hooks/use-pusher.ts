@@ -505,10 +505,9 @@ export const usePusher = (
 
           setFun = (state) => {
             const CopyState = [...state];
-            const index = state.findIndex(
-              (item) =>
-                item.timestamp === syncCurrent.current?.chat[0].timestamp
-            );
+            const index = state.findIndex((item) => {
+              return item.timestamp === syncCurrent.current?.chat[0]?.timestamp;
+            });
 
             const data = CopyState[index] as ChatMsg;
 
@@ -655,7 +654,7 @@ export const usePusher = (
         nickName: string;
         recordId: string;
       }
-    >
+    >,
   >(
     mutate: T
   ) => {
