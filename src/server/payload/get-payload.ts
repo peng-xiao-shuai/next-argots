@@ -1,4 +1,4 @@
-import { getPayloadHMR } from '@payloadcms/next/utilities';
+import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import type { BasePayload } from 'payload';
 
@@ -6,7 +6,7 @@ class Singleton {
   private static _instance: Singleton;
   private payloadClient: Promise<BasePayload>;
   constructor() {
-    this.payloadClient = getPayloadHMR({
+    this.payloadClient = getPayload({
       config: configPromise,
     });
   }
