@@ -18,7 +18,7 @@ const beforeChange: CollectionBeforeChangeHook<FeedbackRecord> = async ({
         to: [data.email],
         subject: '[Feed Back] ' + data.content?.substring(0, 10) + '...',
         html: slateToHtml(data.replyContent),
-        reply_to: 'pxs1612565136@gmail.com',
+        replyTo: 'pxs1612565136@gmail.com',
       });
 
       if (response.error) {

@@ -1,7 +1,7 @@
 import './style.css';
 import Image from 'next/image';
 import { SETTING_KEYS } from '@@/locales/keys';
-import { useTranslation } from '@/locales/i18n';
+import { UseTranslation } from '@/locales/i18n';
 import { GenerateMetadata } from '../../meta';
 import { ClientRangeInput } from '../_components/ClientSizeChange';
 
@@ -31,7 +31,7 @@ export default async function SizeChange(props: CustomReactParams) {
   const params = await props.params;
   const { lng } = params;
 
-  const { t } = await useTranslation(lng);
+  const { t } = await UseTranslation(lng);
 
   return (
     <div>

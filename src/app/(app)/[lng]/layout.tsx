@@ -5,7 +5,7 @@ import { dir } from 'i18next';
 import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import '@/styles/index.scss';
-import { languages, useTranslation } from '@/locales/i18n';
+import { languages, UseTranslation } from '@/locales/i18n';
 import dynamicFunction from 'next/dynamic';
 import { cookies, headers } from 'next/headers';
 import { COOKIE } from '@/server/enum';

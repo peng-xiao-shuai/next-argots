@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { DEFAULT_NS, Lng, Resources } from '@/locales/i18n';
 import { AppContextData, AppContext, defaultData } from '@/context';
-import { useTranslation } from '@/locales/client';
+import { UseTranslation } from '@/locales/client';
 export function AppProvider({
   children,
   language,
@@ -10,7 +10,7 @@ export function AppProvider({
   children: React.ReactNode;
   language: Lng;
 }) {
-  const { t } = useTranslation();
+  const { t } = UseTranslation();
   const [setting, setSetting] = useState<AppContextData>({
     ...defaultData,
     language: language,

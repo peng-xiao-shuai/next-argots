@@ -86,7 +86,7 @@ export const ClientShare: FC<{
   const [listVisible, setListVisible] = useState(false);
   const { isChannelUserExist } = usePusher();
   const [list, setList] = useState<InviteLink[]>([]);
-  const { mutate, isLoading } = trpc.inviteLinkGet.useMutation({
+  const { mutate, isPending } = trpc.inviteLinkGet.useMutation({
     onSuccess: (data) => {
       setList(data);
     },
@@ -119,7 +119,7 @@ export const ClientShare: FC<{
         setVisible={setListVIsibleCb}
       >
         <LinkRecord
-          isLoading={isLoading}
+          isLoading={isPending}
           list={list || []}
           removeMutate={removeMutate}
           setList={setList}

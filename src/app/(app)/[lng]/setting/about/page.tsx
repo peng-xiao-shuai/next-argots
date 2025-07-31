@@ -2,7 +2,7 @@
 import './style.css';
 import Image from 'next/image';
 import pck from '../../../../../../package.json';
-import { useTranslation } from '@/locales/i18n';
+import { UseTranslation } from '@/locales/i18n';
 import { ClientAboutMenu } from '../_components/ClientAbout';
 import { GenerateMetadata } from '../../meta';
 
@@ -14,7 +14,7 @@ export default async function About(props: CustomReactParams) {
   const params = await props.params;
   const { lng } = params;
 
-  const { t } = await useTranslation(lng);
+  const { t } = await UseTranslation(lng);
   return (
     <>
       <div className="mt-36 mb-6 flex justify-center flex-wrap">

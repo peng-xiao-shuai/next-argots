@@ -19,8 +19,8 @@ export type Resources = {
       [P in LOCALES_KEYS]: P extends keyof (typeof resources)[K][typeof DEFAULT_NS]
         ? (typeof resources)[K][typeof DEFAULT_NS][P]
         : P extends keyof (typeof resources)[typeof FALLBACK_LNG][typeof DEFAULT_NS]
-        ? (typeof resources)[typeof FALLBACK_LNG][typeof DEFAULT_NS][P]
-        : 'undefined';
+          ? (typeof resources)[typeof FALLBACK_LNG][typeof DEFAULT_NS][P]
+          : 'undefined';
     };
   };
 };
@@ -50,7 +50,7 @@ const initI18next = async (lng: Lng, ns: string = DEFAULT_NS) => {
   return i18nInstance;
 };
 
-export async function useTranslation(lng: Lng, options = { keyPrefix: '' }) {
+export async function UseTranslation(lng: Lng, options = { keyPrefix: '' }) {
   const i18nextInstance = cacheI18n ? cacheI18n : await initI18next(lng);
   if (!cacheI18n) {
     cacheI18n = i18nextInstance;

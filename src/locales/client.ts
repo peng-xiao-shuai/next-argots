@@ -5,10 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import i18next from 'i18next';
-import {
-  initReactI18next,
-  useTranslation as useTranslationOrg,
-} from 'react-i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
 import { useCookies } from 'react-cookie';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -31,12 +28,12 @@ i18next
     preload: runsOnServerSide ? languages : [],
   });
 
-export function useTranslation() {
+export function UseTranslation() {
   const ns = DEFAULT_NS;
   const { lng }: { lng: Lng } = useParams();
 
   const [cookies, setCookie] = useCookies([COOKIE_NAME]);
-  const ret = useTranslationOrg(ns);
+  const ret = useTranslation(ns);
   const { i18n } = ret;
   if (runsOnServerSide && lng && i18n.resolvedLanguage !== lng) {
     i18n.changeLanguage(lng);

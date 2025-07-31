@@ -1,4 +1,4 @@
-import { Lng, useTranslation } from '@/locales/i18n';
+import { Lng, UseTranslation } from '@/locales/i18n';
 import { COMMON_KEYS, LOCALES_KEYS, META } from '@@/locales/keys';
 import type { Metadata } from 'next';
 import { FC } from 'react';
@@ -84,7 +84,7 @@ export const GenerateMetadata = async (
   path: keyof typeof pathMetaData
 ) => {
   const metadata = { ...meta[path] };
-  const { t } = await useTranslation(lng);
+  const { t } = await UseTranslation(lng);
   metadata.applicationName = t(COMMON_KEYS.PACKAGE_NAME);
   metadata.title = `${t(metadata.locale)} | ${t(COMMON_KEYS.PACKAGE_NAME)}`;
   metadata.description = `${t(META.DESC)}`;
