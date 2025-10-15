@@ -29,24 +29,28 @@ const nextConfig = {
     ],
   },
   compress: true,
-  // 重写路径以支持不带语言的路径
-  async rewrites() {
+  // 重定向到规范 URL 以避免重复内容
+  async redirects() {
     return [
       {
         source: '/',
-        destination: `/en-US`,
+        destination: '/en-US',
+        permanent: true,
       },
       {
         source: '/setting',
         destination: '/en-US/setting',
+        permanent: true,
       },
       {
         source: '/setting/:path*',
         destination: '/en-US/setting/:path*',
+        permanent: true,
       },
       {
         source: '/chat-room',
         destination: '/en-US/chat-room',
+        permanent: true,
       },
     ]
   },

@@ -90,6 +90,19 @@ export const GenerateMetadata = async (
   metadata.description = `${t(META.DESC)}`;
   metadata.keywords = `${t(META.KEYWORDS)}`;
   metadata.robots = 'index, follow';
+  metadata.metadataBase = new URL(process.env.NEXT_PUBLIC_SITE_URL as string);
+
+  // 设置正确的 canonical URL，包含语言路径
+  const canonicalPath = path === '/' ? `/${lng}` : `/${lng}${path}`;
+  metadata.alternates = {
+    canonical: canonicalPath,
+    languages: {
+      'en-US': `/${lng === 'en-US' ? '' : 'en-US'}${path === '/' ? '' : path}`,
+      'zh-CN': `/zh-CN${path === '/' ? '' : path}`,
+      'zh-TW': `/zh-TW${path === '/' ? '' : path}`,
+      'ja-JP': `/ja-JP${path === '/' ? '' : path}`,
+    },
+  };
   metadata.appleWebApp = {
     capable: true,
     title: t(COMMON_KEYS.PACKAGE_NAME),

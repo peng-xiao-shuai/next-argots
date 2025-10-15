@@ -1,28 +1,22 @@
-const paths = ['/', '/setting', '/setting/theme-change', '/setting/size-change', '/setting/lang-change', '/setting/about', '/setting/about/feedback', '/chat-room']
 /** @type {import('next-sitemap').IConfig} */
 export default {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
-  generateRobotsTxt: true,
+  siteUrl: 'https://argots.cn',
+  generateRobotsTxt: false, // 使用动态 robots.txt
   generateIndexSitemap: false,
-  additionalPaths: (config) => {
-    const result = []
+  exclude: ['/api/*', '/_next/*', '/admin/*', '/robots.txt'],
+  changefreq: 'daily',
+  priority: 0.7,
+  sitemapSize: 5000,
+  transform: async (config, path) => {
+    // 为英文页面设置更高优先级
+    const priority = path.startsWith('/en-US') ? 0.8 : 0.7
 
-    paths.forEach(item => {
-      const alternateRefs = ['ja-JP', 'zh-TW', '', 'zh-CN'].map(lng => ({
-        href: process.env.NEXT_PUBLIC_SITE_URL + '/' + lng,
-        hreflang: lng || 'en-US',
-      }))
-
-      result.push({
-        loc: item,
-        changefreq: 'daily',
-        priority: 0.7,
-        lastmod: new Date().toISOString(),
-
-        alternateRefs: alternateRefs
-      })
-    })
-
-    return result
-  }
+    return {
+      loc: path,
+      changefreq: config.changefreq,
+      priority: priority,
+      lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+      alternateRefs: config.alternateRefs ?? [],
+    }
+  },
 }
